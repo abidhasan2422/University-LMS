@@ -1,0 +1,27 @@
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual Environments
+venv/
+env/
+.venv/
+
+# Environment Variables (Secrets)
+.env
+
+# Django specific
+db.sqlite3
+db.sqlite3-journal
+*.log
+
+# Static and Media files (User uploads/collected static)
+/media/
+/static/ 
+
+# IDE / OS files
+.vscode/
+.idea/
+.DS_Store
+__MACOSX/
