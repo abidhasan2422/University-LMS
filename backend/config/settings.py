@@ -31,6 +31,8 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "apps.users",
+    "apps.authentication",
 ]
 
 
@@ -157,3 +159,8 @@ SPECTACULAR_SETTINGS = {
 # CORS
 # ==========================
 CORS_ALLOW_ALL_ORIGINS = True
+
+# ==========================
+# CUSTOM USER MODEL
+# ==========================
+AUTH_USER_MODEL = "users.User"
