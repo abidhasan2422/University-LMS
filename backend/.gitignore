@@ -1,27 +1,70 @@
-# Python cache
+# ==========================
+# Python
+# ==========================
 __pycache__/
 *.py[cod]
 *$py.class
 
-# Virtual Environments
+# ==========================
+# Virtual Environment
+# ==========================
 venv/
 env/
 .venv/
 
-# Environment Variables (Secrets)
+# ==========================
+# Environment Variables
+# ==========================
 .env
+.env.*
 
-# Django specific
+!.env.example
+
+# ==========================
+# Django
+# ==========================
 db.sqlite3
 db.sqlite3-journal
+
+# User uploaded files
+media/
+
+# Collected static files
+static/
+
+# ==========================
+# Logs
+# ==========================
 *.log
 
-# Static and Media files (User uploads/collected static)
-/media/
-/static/ 
-
-# IDE / OS files
+# ==========================
+# IDE
+# ==========================
 .vscode/
 .idea/
+
+# ==========================
+# OS Files
+# ==========================
 .DS_Store
+Thumbs.db
 __MACOSX/
+
+# ==========================
+# Pytest / Coverage
+# ==========================
+.pytest_cache/
+.coverage
+htmlcov/
+
+# ==========================
+# Python Packaging
+# ==========================
+build/
+dist/
+*.egg-info/
+
+# ==========================
+# Docker
+# ==========================
+docker-compose.override.yml
