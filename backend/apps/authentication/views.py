@@ -1,8 +1,8 @@
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
-
-from .serializers import RegisterSerializer,LoginSerializer
+from rest_framework.permissions import IsAuthenticated
+from .serializers import RegisterSerializer,LoginSerializer,ProfileSerializer
 from .services import AuthenticationService
 
 
@@ -63,4 +63,19 @@ class LoginView(APIView):
         return Response(
             serializer.errors,
             status=status.HTTP_400_BAD_REQUEST,
+        )
+    
+class ProfileView(APIView):
+    """
+    User Profile API
+    """
+
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        serializer = ProfileSerializer(request.user)
+
+        return Response(
+            serializer.data,
+            status=status.HTTP_200_OK,
         )

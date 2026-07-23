@@ -88,3 +88,20 @@ class LoginSerializer(serializers.Serializer):
 
         attrs["user"] = user
         return attrs
+    
+class ProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+
+        fields = [
+            "id",
+            "first_name",
+            "last_name",
+            "email",
+            "phone_number",
+            "role",
+            "status",
+            "created_at",
+        ]
+
+        read_only_fields = fields
