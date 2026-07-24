@@ -33,6 +33,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "apps.users",
     "apps.authentication",
+    "rest_framework_simplejwt.token_blacklist",
 ]
 
 
@@ -170,9 +171,9 @@ SIMPLE_JWT = {
 
     "REFRESH_TOKEN_LIFETIME": timedelta(days=7),
 
-    "ROTATE_REFRESH_TOKENS": False,
+    "ROTATE_REFRESH_TOKENS": True,
 
-    "BLACKLIST_AFTER_ROTATION": False,
+    "BLACKLIST_AFTER_ROTATION": True,
 
     "UPDATE_LAST_LOGIN": True,
 }

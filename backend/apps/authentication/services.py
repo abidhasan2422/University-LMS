@@ -2,6 +2,7 @@ from rest_framework import serializers
 from rest_framework import serializers
 from rest_framework_simplejwt.tokens import RefreshToken
 
+
 from apps.users.models import (
     User,
     UserRole,
@@ -84,4 +85,17 @@ class AuthenticationService:
                 "role": user.role,
                 "status": user.status,
             }
+        }
+    @staticmethod
+    def logout_user(refresh_token):
+        """
+        Blacklist Refresh Token
+        """
+
+        token = RefreshToken(refresh_token)
+
+        token.blacklist()
+
+        return {
+            "message": "Logout successful."
         }

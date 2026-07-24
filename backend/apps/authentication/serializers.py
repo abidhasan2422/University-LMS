@@ -105,3 +105,5 @@ class ProfileSerializer(serializers.ModelSerializer):
         ]
 
         read_only_fields = fields
+class LogoutSerializer(serializers.Serializer):
+    refresh = serializers.CharField()

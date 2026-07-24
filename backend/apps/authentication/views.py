@@ -3,7 +3,7 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
-from .serializers import RegisterSerializer,LoginSerializer,ProfileSerializer
+from .serializers import RegisterSerializer,LoginSerializer,ProfileSerializer,LogoutSerializer
 from .services import AuthenticationService
 
 
@@ -78,4 +78,32 @@ class ProfileView(APIView):
         return Response(
             serializer.data,
             status=status.HTTP_200_OK,
+        )
+class LogoutView(APIView):
+    """
+    Logout API
+    """
+
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+
+        serializer = LogoutSerializer(
+            data=request.data
+        )
+
+        if serializer.is_valid():
+
+            response = AuthenticationService.logout_user(
+                serializer.validated_data["refresh"]
+            )
+
+            return Response(
+                response,
+                status=status.HTTP_200_OK
+            )
+
+        return Response(
+            serializer.errors,
+            status=status.HTTP_400_BAD_REQUEST
         )
