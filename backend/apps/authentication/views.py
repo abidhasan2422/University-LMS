@@ -3,7 +3,7 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
-from .serializers import RegisterSerializer,LoginSerializer,ProfileSerializer,LogoutSerializer,ChangePasswordSerializer
+from .serializers import RegisterSerializer,LoginSerializer,ProfileSerializer,LogoutSerializer,ChangePasswordSerializer,ForgotPasswordSerializer
 from .services import AuthenticationService
 
 
@@ -124,6 +124,32 @@ class ChangePasswordView(APIView):
             response = AuthenticationService.change_password(
                 request.user,
                 serializer.validated_data,
+            )
+
+            return Response(
+                response,
+                status=status.HTTP_200_OK,
+            )
+
+        return Response(
+            serializer.errors,
+            status=status.HTTP_400_BAD_REQUEST,
+        )
+class ForgotPasswordView(APIView):
+    """
+    Forgot Password API
+    """
+
+    def post(self, request):
+
+        serializer = ForgotPasswordSerializer(
+            data=request.data
+        )
+
+        if serializer.is_valid():
+
+            response = AuthenticationService.forgot_password(
+                serializer.validated_data
             )
 
             return Response(
