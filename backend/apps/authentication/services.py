@@ -1,6 +1,8 @@
 from rest_framework import serializers
 from rest_framework import serializers
 from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework_simplejwt.exceptions import TokenError
+
 
 
 from apps.users.models import (
@@ -88,14 +90,11 @@ class AuthenticationService:
         }
     @staticmethod
     def logout_user(refresh_token):
-        """
-        Blacklist Refresh Token
-        """
-
-        token = RefreshToken(refresh_token)
-
-        token.blacklist()
-
-        return {
-            "message": "Logout successful."
-        }
+        try:
+            token = RefreshToken(refresh_token)
+            token.blacklist()
+            return {"message": "Logout successful."}
+        except TokenError:
+            raise serializers.ValidationError({
+                "refresh": "Invalid or expired refresh token."
+            })
