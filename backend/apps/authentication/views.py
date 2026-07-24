@@ -3,7 +3,7 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
-from .serializers import RegisterSerializer,LoginSerializer,ProfileSerializer,LogoutSerializer
+from .serializers import RegisterSerializer,LoginSerializer,ProfileSerializer,LogoutSerializer,ChangePasswordSerializer
 from .services import AuthenticationService
 
 
@@ -106,4 +106,32 @@ class LogoutView(APIView):
         return Response(
             serializer.errors,
             status=status.HTTP_400_BAD_REQUEST
+        )
+class ChangePasswordView(APIView):
+    """
+    Change Password API
+    """
+
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        serializer = ChangePasswordSerializer(
+            data=request.data
+        )
+
+        if serializer.is_valid():
+
+            response = AuthenticationService.change_password(
+                request.user,
+                serializer.validated_data,
+            )
+
+            return Response(
+                response,
+                status=status.HTTP_200_OK,
+            )
+
+        return Response(
+            serializer.errors,
+            status=status.HTTP_400_BAD_REQUEST,
         )

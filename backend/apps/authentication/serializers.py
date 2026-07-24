@@ -107,3 +107,32 @@ class ProfileSerializer(serializers.ModelSerializer):
         read_only_fields = fields
 class LogoutSerializer(serializers.Serializer):
     refresh = serializers.CharField()
+
+class ChangePasswordSerializer(serializers.Serializer):
+    old_password = serializers.CharField(
+        write_only=True
+    )
+
+    new_password = serializers.CharField(
+        write_only=True,
+        validators=[validate_password_strength]
+    )
+
+    confirm_password = serializers.CharField(
+        write_only=True
+    )
+
+    def validate(self, attrs):
+        """
+        Validate password confirmation.
+        """
+
+        if attrs["new_password"] != attrs["confirm_password"]:
+            raise serializers.ValidationError(
+                {
+                    "confirm_password":
+                        "Passwords do not match."
+                }
+            )
+
+        return attrs

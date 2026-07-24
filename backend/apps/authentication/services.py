@@ -98,3 +98,32 @@ class AuthenticationService:
             raise serializers.ValidationError({
                 "refresh": "Invalid or expired refresh token."
             })
+
+    @staticmethod
+    def change_password(user, validated_data):
+        """
+        Change user password.
+        """
+
+        old_password = validated_data.get("old_password")
+        new_password = validated_data.get("new_password")
+
+        # Check old password
+        if not user.check_password(old_password):
+            raise serializers.ValidationError(
+                {
+                    "old_password": [
+                        "Old password is incorrect."
+                    ]
+                }
+            )
+
+        # Set new password
+        user.set_password(new_password)
+
+        # Save user
+        user.save()
+
+        return {
+            "message": "Password changed successfully."
+        }
