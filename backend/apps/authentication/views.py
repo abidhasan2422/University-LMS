@@ -187,3 +187,15 @@ class ResetPasswordView(APIView):
             serializer.errors,
             status=status.HTTP_400_BAD_REQUEST,
         )
+
+from rest_framework.permissions import IsAuthenticated
+from .permissions import IsAdmin
+
+
+class AdminOnlyView(APIView):
+    permission_classes = [IsAuthenticated, IsAdmin]
+
+    def get(self, request):
+        return Response({
+            "message": "Welcome Admin!"
+        })

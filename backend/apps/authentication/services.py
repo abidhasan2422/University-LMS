@@ -5,7 +5,7 @@ from rest_framework_simplejwt.exceptions import TokenError
 from django.conf import settings
 from django.core.mail import send_mail
 from django.utils.encoding import force_bytes,force_str
-from django.utils.http import urlsafe_base64_encode
+from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
 from django.contrib.auth.tokens import default_token_generator
 
 
@@ -49,21 +49,26 @@ class AuthenticationService:
 
         return user
     
+   
+    
     @staticmethod
     def login_user(user):
         """
         Authenticate user and generate JWT tokens.
         """
 
-        # Check account status
-        if user.status == AccountStatus.PENDING:
+        # Only instructors require admin approval
+        if (
+            user.role == UserRole.INSTRUCTOR
+            and user.status == AccountStatus.PENDING
+        ):
             raise serializers.ValidationError({
                 "detail": "Your instructor account is pending administrator approval."
             })
 
         if user.status == AccountStatus.REJECTED:
             raise serializers.ValidationError({
-                "detail": "Your registration has been rejected."
+                "detail": "Your account has been rejected."
             })
 
         if user.status == AccountStatus.SUSPENDED:
@@ -76,7 +81,6 @@ class AuthenticationService:
                 "detail": "Your account has been deactivated."
             })
 
-        # Generate JWT Tokens
         refresh = RefreshToken.for_user(user)
 
         return {
@@ -91,18 +95,21 @@ class AuthenticationService:
                 "phone_number": user.phone_number,
                 "role": user.role,
                 "status": user.status,
-            }
+            },
         }
+
+
+
     @staticmethod
     def logout_user(refresh_token):
-        try:
-            token = RefreshToken(refresh_token)
-            token.blacklist()
-            return {"message": "Logout successful."}
-        except TokenError:
-            raise serializers.ValidationError({
-                "refresh": "Invalid or expired refresh token."
-            })
+            try:
+                token = RefreshToken(refresh_token)
+                token.blacklist()
+                return {"message": "Logout successful."}
+            except TokenError:
+                raise serializers.ValidationError({
+                    "refresh": "Invalid or expired refresh token."
+                })
 
     @staticmethod
     def change_password(user, validated_data):
