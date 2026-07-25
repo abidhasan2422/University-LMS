@@ -4,11 +4,8 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.exceptions import TokenError
 from django.conf import settings
 from django.core.mail import send_mail
-
-from django.utils.encoding import force_bytes
-
+from django.utils.encoding import force_bytes,force_str
 from django.utils.http import urlsafe_base64_encode
-
 from django.contrib.auth.tokens import default_token_generator
 
 
@@ -177,3 +174,41 @@ class AuthenticationService:
             "message":
                 "Password reset link has been sent to your email."
         } 
+    @staticmethod
+    def reset_password(validated_data):
+        """
+        Reset user password.
+        """
+
+        uid = validated_data.get("uid")
+        token = validated_data.get("token")
+        new_password = validated_data.get("new_password")
+
+        try:
+            user_id = force_str(urlsafe_base64_decode(uid))
+            user = User.objects.get(pk=user_id)
+
+        except (TypeError, ValueError, OverflowError, User.DoesNotExist):
+            raise serializers.ValidationError(
+                {
+                    "uid": [
+                        "Invalid reset link."
+                    ]
+                }
+            )
+
+        if not default_token_generator.check_token(user, token):
+            raise serializers.ValidationError(
+                {
+                    "token": [
+                        "Invalid or expired token."
+                    ]
+                }
+            )
+
+        user.set_password(new_password)
+        user.save()
+
+        return {
+            "message": "Password reset successfully."
+        }
