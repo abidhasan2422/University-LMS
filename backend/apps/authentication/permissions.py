@@ -16,7 +16,7 @@ class IsAdmin(BasePermission):
     def has_permission(self, request, view):
         return (
             request.user.is_authenticated
-            and request.user.role == Role.ADMIN
+            and request.user.role == UserRole.ADMIN
         )
 
 
@@ -30,7 +30,7 @@ class IsInstructor(BasePermission):
     def has_permission(self, request, view):
         return (
             request.user.is_authenticated
-            and request.user.role == Role.INSTRUCTOR
+            and request.user.role == UserRole.INSTRUCTOR
             and request.user.status == AccountStatus.ACTIVE
         )
 
@@ -45,7 +45,7 @@ class IsStudent(BasePermission):
     def has_permission(self, request, view):
         return (
             request.user.is_authenticated
-            and request.user.role == Role.STUDENT
+            and request.user.role == UserRole.STUDENT
         )
 
 
@@ -63,9 +63,9 @@ class IsAdminOrInstructor(BasePermission):
         return (
             request.user.is_authenticated
             and (
-                request.user.role == Role.ADMIN
+                request.user.role == UserRole.ADMIN
                 or (
-                    request.user.role == Role.INSTRUCTOR
+                    request.user.role == UserRole.INSTRUCTOR
                     and request.user.status == AccountStatus.ACTIVE
                 )
             )
@@ -86,8 +86,8 @@ class IsAdminOrStudent(BasePermission):
         return (
             request.user.is_authenticated
             and request.user.role in [
-                Role.ADMIN,
-                Role.STUDENT,
+                UserRole.ADMIN,
+                UserRole.STUDENT,
             ]
         )
 
