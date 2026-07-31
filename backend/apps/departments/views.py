@@ -2,12 +2,10 @@ from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
-
 from apps.authentication.permissions import IsAdmin
-
 from .serializers import DepartmentSerializer
 from .services import DepartmentService
-
+from apps.common.pagination import (StandardResultsSetPagination)
 
 class DepartmentListCreateView(APIView):
     """
@@ -25,14 +23,16 @@ class DepartmentListCreateView(APIView):
         return [IsAuthenticated()]
 
     def get(self, request):
+        pagination = StandardResultsSetPagination()
         departments = DepartmentService.get_all_departments()
+        result = pagination.paginate_queryset(departments,request)
 
         serializer = DepartmentSerializer(
-            departments,
+             result,
             many=True,
         )
 
-        return Response(
+        pagination.get_paginated_response(
             serializer.data,
             status=status.HTTP_200_OK,
         )
