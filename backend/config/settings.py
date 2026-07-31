@@ -36,7 +36,8 @@ INSTALLED_APPS = [
     "apps.users",
     "apps.authentication",
     "rest_framework_simplejwt.token_blacklist",
-    "apps.departments"
+    "apps.departments",
+    "apps.common",
 ]
 
 
