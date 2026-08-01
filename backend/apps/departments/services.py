@@ -1,5 +1,5 @@
 from django.shortcuts import get_object_or_404
-
+from django.db.models import Q
 from .models import Department
 
 
@@ -16,11 +16,20 @@ class DepartmentService:
         return serializer.save()
 
     @staticmethod
-    def get_all_departments():
+    def get_all_departments(search=None):
         """
-        Return all departments.
+        Return all departments with optional search.
         """
-        return Department.objects.all()
+
+        queryset = Department.objects.all()
+
+        if search:
+            queryset = queryset.filter(
+                Q(name__icontains=search) |
+                Q(code__icontains=search)
+            )
+
+        return queryset
 
     @staticmethod
     def get_department_by_id(department_id):

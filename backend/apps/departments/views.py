@@ -23,8 +23,13 @@ class DepartmentListCreateView(APIView):
         return [IsAuthenticated()]
 
     def get(self, request):
+        search = request.query_params.get("search")
+
+        departments = DepartmentService.get_all_departments(
+        search=search
+    )
+
         pagination = StandardResultsSetPagination()
-        departments = DepartmentService.get_all_departments()
         result = pagination.paginate_queryset(departments,request)
 
         serializer = DepartmentSerializer(
