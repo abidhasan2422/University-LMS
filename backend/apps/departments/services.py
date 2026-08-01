@@ -63,13 +63,16 @@ class DepartmentService:
     @staticmethod
     def delete_department(department):
         """
-        Soft delete of a department.
+        Soft delete a department.
         """
-        department.is_active = False
-        department.save()
+        department.soft_delete()
         return department
+
+
     @staticmethod
     def restore_department(department):
-        department.is_active = True
-        department.save()
+        """
+        Restore a soft deleted department.
+        """
+        department.restore()
         return department
