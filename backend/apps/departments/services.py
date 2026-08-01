@@ -16,13 +16,12 @@ class DepartmentService:
         return serializer.save()
 
     @staticmethod
-    def get_all_departments(search=None, ordering=None,  is_active=True):
+    def get_all_departments(search=None, ordering=None):
         """
         Return all departments with optional search.
         """
 
-        queryset = Department.objects.filter( is_active=is_active)
-
+        queryset = Department.objects.all()
         if search:
             queryset = queryset.filter(
                 Q(name__icontains=search) |
@@ -48,9 +47,9 @@ class DepartmentService:
         Return a single department by ID.
         """
         return get_object_or_404(
-            Department,
+          Department.objects.all(),
             id=department_id,
-             is_active=True,
+           
         )
 
     @staticmethod
@@ -76,3 +75,20 @@ class DepartmentService:
         """
         department.restore()
         return department
+
+    @staticmethod
+    def get_all_departments_for_admin():
+        """
+        Return all departments including soft deleted.
+        """
+        return Department.all_objects.all()
+
+
+    @staticmethod
+    def get_deleted_departments():
+        """
+        Return only soft deleted departments.
+        """
+        return Department.all_objects.filter(
+            is_active=False
+        )
