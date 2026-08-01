@@ -16,7 +16,7 @@ class DepartmentService:
         return serializer.save()
 
     @staticmethod
-    def get_all_departments(search=None):
+    def get_all_departments(search=None, ordering=None):
         """
         Return all departments with optional search.
         """
@@ -29,7 +29,7 @@ class DepartmentService:
                 Q(code__icontains=search)
             )
         allowed_ordering = [
-            "name"
+            "name",
             "-name",
             "code",
             "-code",

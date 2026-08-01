@@ -22,7 +22,9 @@ class DepartmentListCreateView(APIView):
             return [IsAuthenticated(), IsAdmin()]
         return [IsAuthenticated()]
 
-    def get(self, request):
+    def get(self, request):   
+         # Return all departments with search and ordering.
+
         search = request.query_params.get("search")
         ordering = request.query_params.get("ordering")
         departments = DepartmentService.get_all_departments(
@@ -38,10 +40,7 @@ class DepartmentListCreateView(APIView):
             many=True,
         )
 
-        pagination.get_paginated_response(
-            serializer.data,
-            status=status.HTTP_200_OK,
-        )
+        return pagination.get_paginated_response(serializer.data)
 
     def post(self, request):
         serializer = DepartmentSerializer(
