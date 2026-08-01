@@ -1,4 +1,5 @@
 from rest_framework import status
+from apps.departments.models import Department
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -30,7 +31,7 @@ class DepartmentListCreateView(APIView):
         departments = DepartmentService.get_all_departments(
         search=search,
         ordering = ordering,
-    )
+        )
 
         pagination = StandardResultsSetPagination()
         result = pagination.paginate_queryset(departments,request)
@@ -131,5 +132,18 @@ class DepartmentDetailView(APIView):
             {
                 "message": "Department deleted successfully."
             },
+            status=status.HTTP_200_OK,
+        )
+class DepartmentRestoreView(APIView):
+
+    permission_classes = [IsAuthenticated, IsAdmin]
+
+    def patch(self, request, department_id):
+        department = Department.objects.get(id=department_id)
+
+        department = DepartmentService.restore_department(department)
+
+        return Response(
+            {"message": "Department restored successfully."},
             status=status.HTTP_200_OK,
         )
