@@ -1,17 +1,19 @@
 from django.db import models
+from apps.common.models import BaseModel
 
-class BaseModel(models.Model):
-    is_active = models.BooleanField(default=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
+class Department(BaseModel):
+    """
+    Department Model
+    """
 
-    def soft_delete(self):
-        self.is_active = False
-        self.save(update_fields=["is_active"])
-
-    def restore(self):
-        self.is_active = True
-        self.save(update_fields=["is_active"])
-
+    name = models.CharField( max_length=150, unique=True)
+    code = models.CharField(max_length=20,unique=True)
+    description = models.TextField(blank=True,null=True)
     class Meta:
-        abstract = True
+        db_table = "departments"
+        ordering = ["name"]
+        verbose_name = "Department"
+        verbose_name_plural = "Departments"
+
+    def __str__(self):
+        return f"{self.code} - {self.name}"

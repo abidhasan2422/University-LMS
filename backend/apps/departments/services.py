@@ -1,7 +1,7 @@
 from django.shortcuts import get_object_or_404
 from django.db.models import Q
 from .models import Department
-
+from apps.common.query_service import QueryService
 
 class DepartmentService:
     """
@@ -15,31 +15,38 @@ class DepartmentService:
         """
         return serializer.save()
 
-    @staticmethod
-    def get_all_departments(search=None, ordering=None):
-        """
-        Return all departments with optional search.
-        """
+@staticmethod
+def get_all_departments(
+    search=None,
+    ordering=None,
+    is_active=None,
+):
+    """
+    Return departments with search, ordering, and filtering.
+    """
 
-        queryset = Department.objects.all()
-        if search:
-            queryset = queryset.filter(
-                Q(name__icontains=search) |
-                Q(code__icontains=search)
-            )
-        allowed_ordering = [
+    queryset = Department.objects.all()
+
+    return QueryService.apply(
+        queryset=queryset,
+        search=search,
+        search_fields=[
+            "name",
+            "code",
+        ],
+        ordering=ordering,
+        allowed_ordering=[
             "name",
             "-name",
             "code",
             "-code",
             "created_at",
             "-created_at",
-        ]
-        if ordering in allowed_ordering:
-            queryset = queryset.order_by(ordering)
-
-
-        return queryset
+        ],
+        filters={
+            "is_active": is_active,
+        },
+    )
 
     @staticmethod
     def get_department_by_id(department_id):

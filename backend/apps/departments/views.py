@@ -23,26 +23,50 @@ class DepartmentListCreateView(APIView):
             return [IsAuthenticated(), IsAdmin()]
         return [IsAuthenticated()]
 
-    def get(self, request):   
-         # Return all departments with search and ordering.
+    # def get(self, request):   
+    #      # Return all departments with search and ordering.
+
+    #     search = request.query_params.get("search")
+    #     ordering = request.query_params.get("ordering")
+    #     departments = DepartmentService.get_all_departments(
+    #     search=search,
+    #     ordering = ordering,
+    #     )
+
+    #     pagination = StandardResultsSetPagination()
+    #     result = pagination.paginate_queryset(departments,request)
+
+    #     serializer = DepartmentSerializer(
+    #          result,
+    #         many=True,
+    #     )
+
+    #     return pagination.get_paginated_response(serializer.data)
+    def get(self, request):
 
         search = request.query_params.get("search")
         ordering = request.query_params.get("ordering")
+
         departments = DepartmentService.get_all_departments(
-        search=search,
-        ordering = ordering,
+            search=search,
+            ordering=ordering,
         )
 
         pagination = StandardResultsSetPagination()
-        result = pagination.paginate_queryset(departments,request)
+
+        result = pagination.paginate_queryset(
+            departments,
+            request,
+        )
 
         serializer = DepartmentSerializer(
-             result,
+            result,
             many=True,
         )
 
-        return pagination.get_paginated_response(serializer.data)
-
+        return pagination.get_paginated_response(
+            serializer.data,
+        )
     def post(self, request):
         serializer = DepartmentSerializer(
             data=request.data
