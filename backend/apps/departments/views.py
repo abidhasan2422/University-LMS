@@ -24,9 +24,10 @@ class DepartmentListCreateView(APIView):
 
     def get(self, request):
         search = request.query_params.get("search")
-
+        ordering = request.query_params.get("ordering")
         departments = DepartmentService.get_all_departments(
-        search=search
+        search=search,
+        ordering = ordering,
     )
 
         pagination = StandardResultsSetPagination()

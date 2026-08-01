@@ -28,6 +28,18 @@ class DepartmentService:
                 Q(name__icontains=search) |
                 Q(code__icontains=search)
             )
+        allowed_ordering = [
+            "name"
+            "-name",
+            "code",
+            "-code",
+            "created_at",
+            "created_at",
+            "-created_at",
+        ]
+        if ordering in allowed_ordering:
+            queryset = queryset.order_by(ordering)
+
 
         return queryset
 
