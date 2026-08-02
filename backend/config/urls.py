@@ -6,4 +6,5 @@ urlpatterns = [
     path("api/auth/",include("apps.authentication.urls")),
     path("api/departments/",include("apps.departments.urls")),
     path("api/semesters/",include("apps.semester.urls")),
+    path("api/courses/",include("apps.course.urls")),
 ]
