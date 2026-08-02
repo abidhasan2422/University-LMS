@@ -27,7 +27,7 @@ class Course(BaseModel):
         unique=True,
     )
 
-    title = models.CharField(
+    course_title = models.CharField(
         max_length=255,
     )
 
