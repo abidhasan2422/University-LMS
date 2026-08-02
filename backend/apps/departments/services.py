@@ -15,38 +15,38 @@ class DepartmentService:
         """
         return serializer.save()
 
-@staticmethod
-def get_all_departments(
-    search=None,
-    ordering=None,
-    is_active=None,
-):
-    """
-    Return departments with search, ordering, and filtering.
-    """
+    @staticmethod
+    def get_all_departments(
+        search=None,
+        ordering=None,
+        is_active=None,
+    ):
+        """
+        Return departments with search, ordering, and filtering.
+        """
 
-    queryset = Department.objects.all()
+        queryset = Department.objects.all()
 
-    return QueryService.apply(
-        queryset=queryset,
-        search=search,
-        search_fields=[
-            "name",
-            "code",
-        ],
-        ordering=ordering,
-        allowed_ordering=[
-            "name",
-            "-name",
-            "code",
-            "-code",
-            "created_at",
-            "-created_at",
-        ],
-        filters={
-            "is_active": is_active,
-        },
-    )
+        return QueryService.apply(
+            queryset=queryset,
+            search=search,
+            search_fields=[
+                "name",
+                "code",
+            ],
+            ordering=ordering,
+            allowed_ordering=[
+                "name",
+                "-name",
+                "code",
+                "-code",
+                "created_at",
+                "-created_at",
+            ],
+            filters={
+                "is_active": is_active,
+            },
+        )
 
     @staticmethod
     def get_department_by_id(department_id):
