@@ -43,7 +43,7 @@ class Course(BaseModel):
 
     class Meta:
         db_table = "courses"
-        ordering = ["course_code"]
+        ordering = ["department__name","semester__year","course_code",]
         verbose_name = "Course"
         verbose_name_plural = "Courses"
 
@@ -55,4 +55,4 @@ class Course(BaseModel):
         ]
 
     def __str__(self):
-        return f"{self.course_code} - {self.title}"
+        return f"{self.course_code} - {self. course_title}"
