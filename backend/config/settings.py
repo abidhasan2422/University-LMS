@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     "apps.common",
     "apps.semester",
     "apps.course",
+    "apps.student",
 ]
 
 
