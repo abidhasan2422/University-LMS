@@ -10,7 +10,10 @@ class Student(BaseModel):
     """
     Student model.
     """
-
+    class AdmissionStatus(models.TextChoices):
+        PENDING = "PENDING", "Pending"
+        APPROVED = "APPROVED", "Approved"
+        REJECTED = "REJECTED", "Rejected"
     class Gender(models.TextChoices):
         MALE = "MALE", "Male"
         FEMALE = "FEMALE", "Female"
@@ -39,9 +42,11 @@ class Student(BaseModel):
     )
 
     student_id = models.CharField(
-        max_length=20,
-        unique=True,
-    )
+    max_length=20,
+    unique=True,
+    blank=True,
+    null=True,
+)
 
     department = models.ForeignKey(
         Department,
@@ -98,6 +103,11 @@ class Student(BaseModel):
         choices=Status.choices,
         default=Status.ACTIVE,
     )
+    admission_status = models.CharField(
+    max_length=20,
+    choices=AdmissionStatus.choices,
+    default=AdmissionStatus.PENDING,
+)
 
     class Meta:
         db_table = "students"
