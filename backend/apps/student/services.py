@@ -60,7 +60,7 @@ class StudentService:
     Service layer for Student business logic.
     """
     @staticmethod
-    def register_student(serializer):
+    def register_student(serializer,user):
         """
         Register a student.
 
@@ -69,6 +69,7 @@ class StudentService:
         """
 
         return serializer.save(
+             user=user,
             admission_status=Student.AdmissionStatus.PENDING
         )
     @staticmethod
@@ -200,7 +201,7 @@ class StudentService:
         Update student information.
         """
 
-        return serializer.save()
+        return serializer.save(user=request.user)
     @staticmethod
     def delete_student(student):
         """

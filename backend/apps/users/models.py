@@ -65,7 +65,11 @@ class User(AbstractBaseUser, PermissionsMixin):
         "phone_number",
     ]
 
+    def get_full_name(self):
+        return f"{self.first_name} {self.last_name}".strip()
 
+    def get_short_name(self):
+        return self.first_name
     class Meta:
         ordering = ["-created_at"]
         verbose_name = "User"

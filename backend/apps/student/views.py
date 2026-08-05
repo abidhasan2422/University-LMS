@@ -64,7 +64,8 @@ class StudentListCreateView(APIView):
         if serializer.is_valid():
 
             student = StudentService.register_student(
-                serializer
+                serializer,
+                request.user,
             )
 
             return Response(

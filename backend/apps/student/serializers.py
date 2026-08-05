@@ -2,7 +2,8 @@ from datetime import date
 
 from rest_framework import serializers
 
-from apps.authentication.models import User
+from django.contrib.auth import get_user_model
+
 from apps.departments.models import Department
 from apps.semester.models import Semester
 
@@ -13,10 +14,10 @@ class StudentSerializer(serializers.ModelSerializer):
     """
     Serializer for Student model.
     """
-
-    user = serializers.PrimaryKeyRelatedField(
-        queryset=User.objects.all()
-    )
+    # User = get_user_model()
+    # user = serializers.PrimaryKeyRelatedField(
+    #     queryset=User.objects.all()
+    # )
 
     department = serializers.PrimaryKeyRelatedField(
         queryset=Department.objects.all()
@@ -43,7 +44,6 @@ class StudentSerializer(serializers.ModelSerializer):
 
         fields = (
             "id",
-            "user",
             "full_name",
             "student_id",
             "department",

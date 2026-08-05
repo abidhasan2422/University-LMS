@@ -1,14 +1,15 @@
 from rest_framework import serializers
-from rest_framework import serializers
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.exceptions import TokenError
+
 from django.conf import settings
 from django.core.mail import send_mail
-from django.utils.encoding import force_bytes,force_str
-from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
+from django.utils.encoding import force_bytes, force_str
+from django.utils.http import (
+    urlsafe_base64_decode,
+    urlsafe_base64_encode,
+)
 from django.contrib.auth.tokens import default_token_generator
-
-
 
 from apps.users.models import (
     User,
@@ -21,36 +22,22 @@ class AuthenticationService:
     @staticmethod
     def register_user(validated_data):
         """
-        Register a new user based on role.
+        Register a new student account.
         """
 
         # Remove confirm_password because it is not a model field
         validated_data.pop("confirm_password")
 
-        role = validated_data.get("role")
+        # Every registered user is a Student
+        validated_data["role"] = UserRole.STUDENT
 
-        # Admin registration is not allowed
-        if role == UserRole.ADMIN:
-            raise serializers.ValidationError(
-                {
-                    "role": "Admin registration is not allowed."
-                }
-            )
-
-        # Student registration
-        if role == UserRole.STUDENT:
-            validated_data["status"] = AccountStatus.ACTIVE
-
-        # Instructor registration
-        elif role == UserRole.INSTRUCTOR:
-            validated_data["status"] = AccountStatus.PENDING
+        # Student account is active immediately
+        validated_data["status"] = AccountStatus.ACTIVE
 
         user = User.objects.create_user(**validated_data)
 
         return user
-    
-   
-    
+
     @staticmethod
     def login_user(user):
         """
@@ -62,24 +49,35 @@ class AuthenticationService:
             user.role == UserRole.INSTRUCTOR
             and user.status == AccountStatus.PENDING
         ):
-            raise serializers.ValidationError({
-                "detail": "Your instructor account is pending administrator approval."
-            })
+            raise serializers.ValidationError(
+                {
+                    "detail": (
+                        "Your instructor account is pending "
+                        "administrator approval."
+                    )
+                }
+            )
 
         if user.status == AccountStatus.REJECTED:
-            raise serializers.ValidationError({
-                "detail": "Your account has been rejected."
-            })
+            raise serializers.ValidationError(
+                {
+                    "detail": "Your account has been rejected."
+                }
+            )
 
         if user.status == AccountStatus.SUSPENDED:
-            raise serializers.ValidationError({
-                "detail": "Your account has been suspended."
-            })
+            raise serializers.ValidationError(
+                {
+                    "detail": "Your account has been suspended."
+                }
+            )
 
         if not user.is_active:
-            raise serializers.ValidationError({
-                "detail": "Your account has been deactivated."
-            })
+            raise serializers.ValidationError(
+                {
+                    "detail": "Your account has been deactivated."
+                }
+            )
 
         refresh = RefreshToken.for_user(user)
 
@@ -98,18 +96,25 @@ class AuthenticationService:
             },
         }
 
-
-
     @staticmethod
     def logout_user(refresh_token):
-            try:
-                token = RefreshToken(refresh_token)
-                token.blacklist()
-                return {"message": "Logout successful."}
-            except TokenError:
-                raise serializers.ValidationError({
+        """
+        Logout user.
+        """
+        try:
+            token = RefreshToken(refresh_token)
+            token.blacklist()
+
+            return {
+                "message": "Logout successful."
+            }
+
+        except TokenError:
+            raise serializers.ValidationError(
+                {
                     "refresh": "Invalid or expired refresh token."
-                })
+                }
+            )
 
     @staticmethod
     def change_password(user, validated_data):
@@ -120,7 +125,6 @@ class AuthenticationService:
         old_password = validated_data.get("old_password")
         new_password = validated_data.get("new_password")
 
-        # Check old password
         if not user.check_password(old_password):
             raise serializers.ValidationError(
                 {
@@ -130,16 +134,13 @@ class AuthenticationService:
                 }
             )
 
-        # Set new password
         user.set_password(new_password)
-
-        # Save user
         user.save()
 
         return {
             "message": "Password changed successfully."
         }
-    
+
     @staticmethod
     def forgot_password(validated_data):
         """
@@ -163,24 +164,22 @@ class AuthenticationService:
 
         send_mail(
             subject="Password Reset Request",
-
             message=(
                 f"Hello {user.first_name},\n\n"
-                f"Click the link below to reset your password:\n\n"
+                "Click the link below to reset your password:\n\n"
                 f"{reset_link}"
             ),
-
             from_email=settings.DEFAULT_FROM_EMAIL,
-
             recipient_list=[user.email],
-
             fail_silently=False,
         )
 
         return {
-            "message":
+            "message": (
                 "Password reset link has been sent to your email."
-        } 
+            )
+        }
+
     @staticmethod
     def reset_password(validated_data):
         """
@@ -192,10 +191,18 @@ class AuthenticationService:
         new_password = validated_data.get("new_password")
 
         try:
-            user_id = force_str(urlsafe_base64_decode(uid))
+            user_id = force_str(
+                urlsafe_base64_decode(uid)
+            )
+
             user = User.objects.get(pk=user_id)
 
-        except (TypeError, ValueError, OverflowError, User.DoesNotExist):
+        except (
+            TypeError,
+            ValueError,
+            OverflowError,
+            User.DoesNotExist,
+        ):
             raise serializers.ValidationError(
                 {
                     "uid": [
@@ -204,7 +211,10 @@ class AuthenticationService:
                 }
             )
 
-        if not default_token_generator.check_token(user, token):
+        if not default_token_generator.check_token(
+            user,
+            token,
+        ):
             raise serializers.ValidationError(
                 {
                     "token": [

@@ -18,9 +18,9 @@ class RegisterSerializer(serializers.Serializer):
         validators=[validate_phone_number]
     )
 
-    role = serializers.ChoiceField(
-        choices=UserRole.choices
-    )
+    # role = serializers.ChoiceField(
+    #     choices=UserRole.choices
+    # )
 
     password = serializers.CharField(
         write_only=True,
