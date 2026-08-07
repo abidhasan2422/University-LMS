@@ -1,7 +1,7 @@
 from django.db import transaction
 from django.db.models import Max
 from django.shortcuts import get_object_or_404
-
+from rest_framework import serializers
 from apps.common.query_service import QueryService
 
 from .models import Student
@@ -24,7 +24,7 @@ class StudentIDGenerator:
 
         batch = f"{str(student.admission_year)[2:]}1"
 
-        department_code = student.department.code
+        department_code = student.department.student_id_code
 
         latest_student = (
             Student.all_objects.select_for_update()
@@ -157,8 +157,10 @@ class StudentService:
         """
 
         if student.admission_status == Student.AdmissionStatus.APPROVED:
-            raise ValueError(
-                "Student has already been approved."
+            raise serializers.ValidationError(
+                {
+                    "detail": "Student has already been approved."
+                }
             )
 
         # Generate suggested ID
@@ -169,7 +171,7 @@ class StudentService:
         if Student.all_objects.filter(
             student_id=student_id
         ).exists():
-            raise ValueError(
+            raise serializers.ValidationError(
                 "Student ID already exists."
             )
 
