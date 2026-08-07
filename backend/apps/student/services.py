@@ -1,5 +1,4 @@
 from django.db import transaction
-from django.db.models import Max
 from django.shortcuts import get_object_or_404
 from rest_framework import serializers
 from apps.common.query_service import QueryService
@@ -10,24 +9,23 @@ from .models import Student
 class StudentIDGenerator:
     """
     Generate unique student IDs.
+
     Format:
-        221-15-0001
-        221-15-0002
+        261-15-0001
+        261-15-0002
     """
 
     @staticmethod
     @transaction.atomic
     def generate(student):
-        """
-        Generate the next available student ID.
-        """
 
         batch = f"{str(student.admission_year)[2:]}1"
 
-        department_code = student.department.student_id_code
+        department_code = student.department.id_prefix
 
         latest_student = (
-            Student.all_objects.select_for_update()
+            Student.all_objects
+            .select_for_update()
             .filter(
                 admission_year=student.admission_year,
                 department=student.department,
@@ -46,7 +44,6 @@ class StudentIDGenerator:
             next_serial = last_serial + 1
 
         else:
-
             next_serial = 1
 
         student_id = (
@@ -54,7 +51,6 @@ class StudentIDGenerator:
         )
 
         return student_id
-
 class StudentService:
     """
     Service layer for Student business logic.
@@ -203,7 +199,7 @@ class StudentService:
         Update student information.
         """
 
-        return serializer.save(user=request.user)
+        return serializer.save()
     @staticmethod
     def delete_student(student):
         """

@@ -2,8 +2,6 @@ from datetime import date
 
 from rest_framework import serializers
 
-from django.contrib.auth import get_user_model
-
 from apps.departments.models import Department
 from apps.semester.models import Semester
 
@@ -14,10 +12,6 @@ class StudentSerializer(serializers.ModelSerializer):
     """
     Serializer for Student model.
     """
-    # User = get_user_model()
-    # user = serializers.PrimaryKeyRelatedField(
-    #     queryset=User.objects.all()
-    # )
 
     department = serializers.PrimaryKeyRelatedField(
         queryset=Department.objects.all()
@@ -76,15 +70,10 @@ class StudentSerializer(serializers.ModelSerializer):
         )
 
     def get_full_name(self, obj):
-        """
-        Return student's full name.
-        """
         return obj.user.get_full_name()
 
     def validate_admission_year(self, value):
-        """
-        Validate admission year.
-        """
+
         current_year = date.today().year
 
         if value < 2000:
@@ -100,28 +89,10 @@ class StudentSerializer(serializers.ModelSerializer):
         return value
 
     def validate_guardian_phone(self, value):
-        """
-        Validate guardian phone number.
-        """
+
         if len(value) < 11:
             raise serializers.ValidationError(
                 "Guardian phone number is invalid."
             )
 
         return value
-
-    def validate(self, attrs):
-        """
-        Additional business validation.
-        """
-
-        user = attrs.get("user")
-
-        if user and hasattr(user, "student_profile"):
-            raise serializers.ValidationError(
-                {
-                    "user": "This user already has a student profile."
-                }
-            )
-
-        return attrs

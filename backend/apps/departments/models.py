@@ -9,7 +9,7 @@ class Department(BaseModel):
     name = models.CharField( max_length=150, unique=True)
     code = models.CharField(max_length=20,unique=True)
     description = models.TextField(blank=True,null=True)
-    student_id_code = models.CharField(
+    id_prefix= models.CharField(
         max_length=5,
         unique=True,
           blank=True,

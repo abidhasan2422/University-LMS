@@ -84,7 +84,7 @@ class StudentDetailView(APIView):
     DELETE
     """
 
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated,IsAdmin]
 
     def get(self, request, student_id):
 
