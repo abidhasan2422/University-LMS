@@ -2,7 +2,7 @@ from datetime import date
 
 from rest_framework import serializers
 
-from apps.authentication.models import User
+from apps.users.models import User, UserRole
 from apps.departments.models import Department
 
 from .models import Instructor
