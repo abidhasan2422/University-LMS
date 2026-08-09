@@ -37,7 +37,7 @@ class Assessment(BaseModel):
         related_name="assessments",
     )
 
-    title = models.CharField(
+    assessment_type = models.CharField(
         max_length=150,
     )
 

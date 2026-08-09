@@ -7,7 +7,7 @@ from rest_framework.views import APIView
 
 from apps.common.pagination import StandardResultsSetPagination
 from apps.course_offering.models import CourseOffering
-from apps.enrollment.models import Enrollment
+from apps.enrollments.models import Enrollment
 
 from .models import Assessment, AssessmentMark
 from .serializers import (
