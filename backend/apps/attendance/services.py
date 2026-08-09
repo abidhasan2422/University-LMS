@@ -1,8 +1,7 @@
 from django.shortcuts import get_object_or_404
 from rest_framework.exceptions import ValidationError
-
 from apps.common.query_service import QueryService
-
+from django.db.models import Count, Q
 from .models import Attendance
 
 
@@ -216,3 +215,57 @@ class AttendanceService:
                 "enrollment__course_offering__semester",
             )
         )
+    @staticmethod
+    def get_student_attendance_summary(
+        student,
+        course_offering=None,
+    ):
+        """
+        Calculate attendance summary for a student.
+        """
+
+        queryset = Attendance.objects.filter(
+            enrollment__student=student,
+            enrollment__status="ENROLLED",
+            is_active=True,
+        )
+
+        if course_offering:
+            queryset = queryset.filter(
+                enrollment__course_offering_id=course_offering
+            )
+
+        summary = queryset.aggregate(
+            total_classes=Count("id"),
+            present=Count(
+                "id",
+                filter=Q(
+                    status=Attendance.Status.PRESENT
+                ),
+            ),
+            absent=Count(
+                "id",
+                filter=Q(
+                    status=Attendance.Status.ABSENT
+                ),
+            ),
+        )
+
+        total_classes = summary["total_classes"] or 0
+        present = summary["present"] or 0
+        absent = summary["absent"] or 0
+
+        if total_classes > 0:
+            percentage = round(
+                (present / total_classes) * 100,
+                2,
+            )
+        else:
+            percentage = 0.0
+
+        return {
+            "total_classes": total_classes,
+            "present": present,
+            "absent": absent,
+            "attendance_percentage": percentage,
+        }

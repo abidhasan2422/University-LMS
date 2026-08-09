@@ -80,7 +80,7 @@ class AttendanceSerializer(serializers.ModelSerializer):
             "created_at",
             "updated_at",
         )
-
+    
     def get_student_name(self, obj):
         """
         Return student's full name.
@@ -128,3 +128,13 @@ class AttendanceSerializer(serializers.ModelSerializer):
                 )
 
         return attrs
+
+class AttendanceSummarySerializer(serializers.Serializer):
+    """
+    Serializer for attendance summary.
+    """
+
+    total_classes = serializers.IntegerField()
+    present = serializers.IntegerField()
+    absent = serializers.IntegerField()
+    attendance_percentage = serializers.FloatField()

@@ -9,13 +9,20 @@ class Course(BaseModel):
     """
     Course model.
     """
+    class CourseType(models.TextChoices):
+        REGULAR = "REGULAR", "Regular"
+        LAB = "LAB", "Lab"
 
     department = models.ForeignKey(
         Department,
         on_delete=models.PROTECT,
         related_name="courses",
     )
-
+    course_type = models.CharField(
+    max_length=10,
+    choices=CourseType.choices,
+    default=CourseType.REGULAR,
+)
     semester = models.ForeignKey(
         Semester,
         on_delete=models.PROTECT,

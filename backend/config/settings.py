@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     "apps.course_offering",
     "apps.attendance",
     "apps.enrollments",
+    "apps.assessment",
     
 ]
 
