@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     "apps.attendance",
     "apps.enrollments",
     "apps.assessment",
+    "apps.result",
     
 ]
 

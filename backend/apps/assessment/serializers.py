@@ -1,6 +1,5 @@
 from rest_framework import serializers
 
-from apps.course_offering.models import CourseOffering
 from apps.enrollments.models import Enrollment
 
 from .models import Assessment, AssessmentMark
@@ -9,6 +8,10 @@ from .models import Assessment, AssessmentMark
 class AssessmentSerializer(serializers.ModelSerializer):
     """
     Serializer for Assessment.
+
+    An assessment represents a marks component for a
+    course. Students do not submit anything through
+    this module. Instructors only enter marks.
     """
 
     course_code = serializers.CharField(
@@ -50,7 +53,6 @@ class AssessmentSerializer(serializers.ModelSerializer):
             "instructor_name",
             "semester_name",
             "section",
-            "title",
             "assessment_type",
             "maximum_marks",
             "assessment_date",
@@ -86,11 +88,17 @@ class AssessmentSerializer(serializers.ModelSerializer):
 
     def validate(self, attrs):
         """
-        Validate assessment type against course type.
+        Validate assessment type according to
+        the course type.
         """
 
-        course_offering = attrs.get("course_offering")
-        assessment_type = attrs.get("assessment_type")
+        course_offering = attrs.get(
+            "course_offering"
+        )
+
+        assessment_type = attrs.get(
+            "assessment_type"
+        )
 
         if not course_offering or not assessment_type:
             return attrs
@@ -114,6 +122,7 @@ class AssessmentSerializer(serializers.ModelSerializer):
         }
 
         if course_type == "REGULAR":
+
             if assessment_type not in regular_types:
                 raise serializers.ValidationError(
                     {
@@ -125,6 +134,7 @@ class AssessmentSerializer(serializers.ModelSerializer):
                 )
 
         elif course_type == "LAB":
+
             if assessment_type not in lab_types:
                 raise serializers.ValidationError(
                     {
@@ -141,6 +151,10 @@ class AssessmentSerializer(serializers.ModelSerializer):
 class AssessmentMarkSerializer(serializers.ModelSerializer):
     """
     Serializer for marks obtained by a student.
+
+    The instructor only records marks obtained by
+    the student. There is no student submission
+    functionality.
     """
 
     student_id_code = serializers.CharField(
@@ -149,11 +163,6 @@ class AssessmentMarkSerializer(serializers.ModelSerializer):
     )
 
     student_name = serializers.SerializerMethodField()
-
-    assessment_title = serializers.CharField(
-        source="assessment.title",
-        read_only=True,
-    )
 
     assessment_type = serializers.CharField(
         source="assessment.assessment_type",
@@ -183,13 +192,20 @@ class AssessmentMarkSerializer(serializers.ModelSerializer):
         read_only=True,
     )
 
+    course_type = serializers.CharField(
+        source=(
+            "assessment.course_offering"
+            ".course.course_type"
+        ),
+        read_only=True,
+    )
+
     class Meta:
         model = AssessmentMark
 
         fields = (
             "id",
             "assessment",
-            "assessment_title",
             "assessment_type",
             "maximum_marks",
             "enrollment",
@@ -197,6 +213,7 @@ class AssessmentMarkSerializer(serializers.ModelSerializer):
             "student_name",
             "course_code",
             "course_title",
+            "course_type",
             "obtained_marks",
             "remarks",
             "is_active",
@@ -219,7 +236,7 @@ class AssessmentMarkSerializer(serializers.ModelSerializer):
 
     def validate(self, attrs):
         """
-        Validate assessment mark.
+        Validate assessment marks.
         """
 
         assessment = attrs.get(
@@ -277,13 +294,16 @@ class AssessmentMarkSerializer(serializers.ModelSerializer):
                 }
             )
 
-        # Student must still be enrolled.
-        if enrollment.status != Enrollment.Status.ENROLLED:
+        # Student must be enrolled.
+        if (
+            enrollment.status
+            != Enrollment.Status.ENROLLED
+        ):
             raise serializers.ValidationError(
                 {
                     "enrollment": (
-                        "Marks can only be entered for "
-                        "an enrolled student."
+                        "Marks can only be entered "
+                        "for an enrolled student."
                     )
                 }
             )
@@ -304,7 +324,7 @@ class AssessmentMarkSerializer(serializers.ModelSerializer):
                 }
             )
 
-        # Marks cannot exceed maximum marks.
+        # Obtained marks validation.
         if obtained_marks is not None:
 
             if obtained_marks < 0:
@@ -317,11 +337,15 @@ class AssessmentMarkSerializer(serializers.ModelSerializer):
                     }
                 )
 
-            if obtained_marks > assessment.maximum_marks:
+            if (
+                obtained_marks
+                > assessment.maximum_marks
+            ):
                 raise serializers.ValidationError(
                     {
                         "obtained_marks": (
-                            f"Obtained marks cannot exceed "
+                            f"Obtained marks cannot "
+                            f"exceed "
                             f"{assessment.maximum_marks}."
                         )
                     }

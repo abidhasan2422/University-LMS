@@ -1,15 +1,12 @@
-from django.shortcuts import get_object_or_404
-
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from apps.common.pagination import StandardResultsSetPagination
-from apps.course_offering.models import CourseOffering
 from apps.enrollments.models import Enrollment
 
-from .models import Assessment, AssessmentMark
+from .models import Assessment
 from .serializers import (
     AssessmentMarkSerializer,
     AssessmentSerializer,
@@ -22,13 +19,28 @@ class AssessmentListCreateView(APIView):
     GET:
         List assessments.
 
+        Admin:
+            Can see all assessments.
+
+        Instructor:
+            Can see assessments belonging to their
+            own course offerings.
+
+        Student:
+            Can see assessments belonging to courses
+            in which they are currently enrolled.
+
     POST:
         Create an assessment.
 
-    Permissions:
-        Admin       -> All assessments.
-        Instructor  -> Own course offerings.
-        Student     -> View own enrolled courses.
+        Admin:
+            Can create for any course offering.
+
+        Instructor:
+            Can create only for their own course offerings.
+
+        Student:
+            Cannot create assessments.
     """
 
     permission_classes = [IsAuthenticated]
@@ -44,8 +56,17 @@ class AssessmentListCreateView(APIView):
             "assessment_type"
         )
 
-        # Student can only see assessments from
-        # courses they are enrolled in.
+        assessments = AssessmentService.get_all_assessments(
+            search=search,
+            ordering=ordering,
+            course_offering=course_offering,
+            assessment_type=assessment_type,
+        )
+
+        # =====================================================
+        # STUDENT
+        # =====================================================
+
         if (
             request.user.role == "STUDENT"
             and not request.user.is_staff
@@ -72,87 +93,33 @@ class AssessmentListCreateView(APIView):
                 )
             )
 
-            queryset = Assessment.objects.filter(
+            assessments = assessments.filter(
                 course_offering_id__in=(
                     enrolled_course_offerings
-                ),
-                is_active=True,
-            ).select_related(
-                "course_offering",
-                "course_offering__course",
-                "course_offering__instructor",
-                "course_offering__instructor__user",
-                "course_offering__semester",
-            )
-
-            if course_offering:
-                queryset = queryset.filter(
-                    course_offering_id=course_offering
                 )
-
-            if assessment_type:
-                queryset = queryset.filter(
-                    assessment_type=assessment_type
-                )
-
-            if search:
-                queryset = queryset.filter(
-                    title__icontains=search
-                )
-
-            if ordering:
-                allowed_ordering = [
-                    "title",
-                    "-title",
-                    "assessment_type",
-                    "-assessment_type",
-                    "maximum_marks",
-                    "-maximum_marks",
-                    "assessment_date",
-                    "-assessment_date",
-                    "created_at",
-                    "-created_at",
-                ]
-
-                if ordering in allowed_ordering:
-                    queryset = queryset.order_by(
-                        ordering
-                    )
-
-            paginator = StandardResultsSetPagination()
-
-            result = paginator.paginate_queryset(
-                queryset,
-                request,
             )
 
-            serializer = AssessmentSerializer(
-                result,
-                many=True,
-            )
+        # =====================================================
+        # INSTRUCTOR
+        # =====================================================
 
-            return paginator.get_paginated_response(
-                serializer.data
-            )
-
-        # Admin / Instructor
-        assessments = (
-            AssessmentService.get_all_assessments(
-                search=search,
-                ordering=ordering,
-                course_offering=course_offering,
-                assessment_type=assessment_type,
-            )
-        )
-
-        # Instructor can only see their own offerings.
-        if (
+        elif (
             request.user.role == "INSTRUCTOR"
             and not request.user.is_staff
         ):
             assessments = assessments.filter(
                 course_offering__instructor__user=request.user
             )
+
+        # =====================================================
+        # ADMIN
+        # =====================================================
+
+        # Admin does not need additional filtering.
+
+        # =====================================================
+        # PAGINATION
+        # =====================================================
 
         paginator = StandardResultsSetPagination()
 
@@ -172,6 +139,10 @@ class AssessmentListCreateView(APIView):
 
     def post(self, request):
 
+        # -----------------------------------------------------
+        # Permission
+        # -----------------------------------------------------
+
         if not (
             request.user.is_staff
             or request.user.role in [
@@ -188,6 +159,10 @@ class AssessmentListCreateView(APIView):
                 },
                 status=status.HTTP_403_FORBIDDEN,
             )
+
+        # -----------------------------------------------------
+        # Validate request
+        # -----------------------------------------------------
 
         serializer = AssessmentSerializer(
             data=request.data
@@ -206,8 +181,10 @@ class AssessmentListCreateView(APIView):
             ]
         )
 
-        # Instructor can only create assessments
-        # for their own course offering.
+        # -----------------------------------------------------
+        # Instructor ownership
+        # -----------------------------------------------------
+
         if (
             request.user.role == "INSTRUCTOR"
             and not request.user.is_staff
@@ -226,6 +203,10 @@ class AssessmentListCreateView(APIView):
                     },
                     status=status.HTTP_403_FORBIDDEN,
                 )
+
+        # -----------------------------------------------------
+        # Create assessment
+        # -----------------------------------------------------
 
         assessment = (
             AssessmentService.create_assessment(
@@ -246,11 +227,24 @@ class AssessmentDetailView(APIView):
     GET:
         Retrieve an assessment.
 
-    PUT/PATCH:
+    PUT:
         Update an assessment.
+
+    PATCH:
+        Partially update an assessment.
 
     DELETE:
         Soft delete an assessment.
+
+    Admin:
+        Full access.
+
+    Instructor:
+        Can access only their own course offerings.
+
+    Student:
+        Can only view assessments from courses
+        they are enrolled in.
     """
 
     permission_classes = [IsAuthenticated]
@@ -263,12 +257,25 @@ class AssessmentDetailView(APIView):
             )
         )
 
-        # Students can only view assessments
-        # for their enrolled courses.
+        # =====================================================
+        # STUDENT
+        # =====================================================
+
         if (
             request.user.role == "STUDENT"
             and not request.user.is_staff
         ):
+            if not hasattr(
+                request.user,
+                "student_profile",
+            ):
+                return Response(
+                    {
+                        "detail": "Student profile not found."
+                    },
+                    status=status.HTTP_404_NOT_FOUND,
+                )
+
             is_enrolled = Enrollment.objects.filter(
                 student=request.user.student_profile,
                 course_offering=(
@@ -289,7 +296,10 @@ class AssessmentDetailView(APIView):
                     status=status.HTTP_403_FORBIDDEN,
                 )
 
-        # Instructor can only view own assessment.
+        # =====================================================
+        # INSTRUCTOR
+        # =====================================================
+
         if (
             request.user.role == "INSTRUCTOR"
             and not request.user.is_staff
@@ -340,6 +350,10 @@ class AssessmentDetailView(APIView):
         partial=False,
     ):
 
+        # -----------------------------------------------------
+        # Permission
+        # -----------------------------------------------------
+
         if not (
             request.user.is_staff
             or request.user.role in [
@@ -357,13 +371,20 @@ class AssessmentDetailView(APIView):
                 status=status.HTTP_403_FORBIDDEN,
             )
 
+        # -----------------------------------------------------
+        # Get assessment
+        # -----------------------------------------------------
+
         assessment = (
             AssessmentService.get_assessment_by_id(
                 assessment_id
             )
         )
 
-        # Instructor ownership check.
+        # -----------------------------------------------------
+        # Instructor ownership
+        # -----------------------------------------------------
+
         if (
             request.user.role == "INSTRUCTOR"
             and not request.user.is_staff
@@ -382,6 +403,10 @@ class AssessmentDetailView(APIView):
                     status=status.HTTP_403_FORBIDDEN,
                 )
 
+        # -----------------------------------------------------
+        # Validate
+        # -----------------------------------------------------
+
         serializer = AssessmentSerializer(
             assessment,
             data=request.data,
@@ -395,9 +420,11 @@ class AssessmentDetailView(APIView):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-        # If instructor changes the course offering,
-        # make sure the new offering also belongs
-        # to that instructor.
+        # -----------------------------------------------------
+        # If instructor changes course offering,
+        # verify ownership of the new offering.
+        # -----------------------------------------------------
+
         new_course_offering = (
             serializer.validated_data.get(
                 "course_offering"
@@ -424,6 +451,10 @@ class AssessmentDetailView(APIView):
                     status=status.HTTP_403_FORBIDDEN,
                 )
 
+        # -----------------------------------------------------
+        # Update
+        # -----------------------------------------------------
+
         assessment = (
             AssessmentService.update_assessment(
                 serializer
@@ -439,6 +470,7 @@ class AssessmentDetailView(APIView):
 
     def delete(self, request, assessment_id):
 
+        # Only Admin can delete assessment.
         if not (
             request.user.is_staff
             or request.user.role == "ADMIN"
@@ -473,9 +505,9 @@ class AssessmentDetailView(APIView):
         )
 
 
-# =========================================================
+# ==========================================================
 # Assessment Marks
-# =========================================================
+# ==========================================================
 
 
 class AssessmentMarkListCreateView(APIView):
@@ -483,13 +515,26 @@ class AssessmentMarkListCreateView(APIView):
     GET:
         List assessment marks.
 
-    POST:
-        Create a student's assessment mark.
+        Admin:
+            Can see all marks.
 
-    Permissions:
-        Admin       -> All marks.
-        Instructor  -> Own course marks.
-        Student     -> Own marks only.
+        Instructor:
+            Can see marks for their own courses.
+
+        Student:
+            Can see only their own marks.
+
+    POST:
+        Create a student's mark.
+
+        Admin:
+            Can enter marks for any course.
+
+        Instructor:
+            Can enter marks only for their own courses.
+
+        Student:
+            Cannot enter marks.
     """
 
     permission_classes = [IsAuthenticated]
@@ -498,26 +543,52 @@ class AssessmentMarkListCreateView(APIView):
 
         search = request.query_params.get("search")
         ordering = request.query_params.get("ordering")
+
         assessment = request.query_params.get(
             "assessment"
         )
+
         enrollment = request.query_params.get(
             "enrollment"
         )
-        student = request.query_params.get("student")
+
+        student = request.query_params.get(
+            "student"
+        )
+
         course_offering = request.query_params.get(
             "course_offering"
         )
+
         assessment_type = request.query_params.get(
             "assessment_type"
         )
 
-        # Student sees only their own marks.
+        # =====================================================
+        # STUDENT
+        # =====================================================
+
         if (
             request.user.role == "STUDENT"
             and not request.user.is_staff
         ):
+            if not hasattr(
+                request.user,
+                "student_profile",
+            ):
+                return Response(
+                    {
+                        "detail": "Student profile not found."
+                    },
+                    status=status.HTTP_404_NOT_FOUND,
+                )
+
+            # Force student filter to logged-in student.
             student = request.user.student_profile.id
+
+        # =====================================================
+        # Get marks
+        # =====================================================
 
         marks = (
             AssessmentService.get_all_assessment_marks(
@@ -531,8 +602,10 @@ class AssessmentMarkListCreateView(APIView):
             )
         )
 
-        # Instructor sees only marks from
-        # their own course offerings.
+        # =====================================================
+        # INSTRUCTOR
+        # =====================================================
+
         if (
             request.user.role == "INSTRUCTOR"
             and not request.user.is_staff
@@ -542,6 +615,10 @@ class AssessmentMarkListCreateView(APIView):
                     request.user
                 )
             )
+
+        # =====================================================
+        # PAGINATION
+        # =====================================================
 
         paginator = StandardResultsSetPagination()
 
@@ -561,6 +638,10 @@ class AssessmentMarkListCreateView(APIView):
 
     def post(self, request):
 
+        # -----------------------------------------------------
+        # Permission
+        # -----------------------------------------------------
+
         if not (
             request.user.is_staff
             or request.user.role in [
@@ -577,6 +658,10 @@ class AssessmentMarkListCreateView(APIView):
                 },
                 status=status.HTTP_403_FORBIDDEN,
             )
+
+        # -----------------------------------------------------
+        # Validate
+        # -----------------------------------------------------
 
         serializer = AssessmentMarkSerializer(
             data=request.data
@@ -595,7 +680,10 @@ class AssessmentMarkListCreateView(APIView):
             ]
         )
 
-        # Instructor ownership check.
+        # -----------------------------------------------------
+        # Instructor ownership
+        # -----------------------------------------------------
+
         if (
             request.user.role == "INSTRUCTOR"
             and not request.user.is_staff
@@ -616,6 +704,10 @@ class AssessmentMarkListCreateView(APIView):
                     status=status.HTTP_403_FORBIDDEN,
                 )
 
+        # -----------------------------------------------------
+        # Create mark
+        # -----------------------------------------------------
+
         mark = (
             AssessmentService.create_assessment_mark(
                 serializer
@@ -633,13 +725,25 @@ class AssessmentMarkListCreateView(APIView):
 class AssessmentMarkDetailView(APIView):
     """
     GET:
-        Retrieve a mark.
+        Retrieve a student's assessment mark.
 
-    PUT/PATCH:
+    PUT:
         Update a mark.
+
+    PATCH:
+        Partially update a mark.
 
     DELETE:
         Soft delete a mark.
+
+    Admin:
+        Full access.
+
+    Instructor:
+        Can manage marks for their own courses.
+
+    Student:
+        Can only view their own marks.
     """
 
     permission_classes = [IsAuthenticated]
@@ -651,7 +755,10 @@ class AssessmentMarkDetailView(APIView):
             .get_assessment_mark_by_id(mark_id)
         )
 
-        # Student can only view own mark.
+        # =====================================================
+        # STUDENT
+        # =====================================================
+
         if (
             request.user.role == "STUDENT"
             and not request.user.is_staff
@@ -670,7 +777,10 @@ class AssessmentMarkDetailView(APIView):
                     status=status.HTTP_403_FORBIDDEN,
                 )
 
-        # Instructor can only view own course marks.
+        # =====================================================
+        # INSTRUCTOR
+        # =====================================================
+
         if (
             request.user.role == "INSTRUCTOR"
             and not request.user.is_staff
@@ -724,6 +834,10 @@ class AssessmentMarkDetailView(APIView):
         partial=False,
     ):
 
+        # -----------------------------------------------------
+        # Permission
+        # -----------------------------------------------------
+
         if not (
             request.user.is_staff
             or request.user.role in [
@@ -741,12 +855,19 @@ class AssessmentMarkDetailView(APIView):
                 status=status.HTTP_403_FORBIDDEN,
             )
 
+        # -----------------------------------------------------
+        # Get mark
+        # -----------------------------------------------------
+
         mark = (
             AssessmentService
             .get_assessment_mark_by_id(mark_id)
         )
 
-        # Instructor ownership check.
+        # -----------------------------------------------------
+        # Instructor ownership
+        # -----------------------------------------------------
+
         if (
             request.user.role == "INSTRUCTOR"
             and not request.user.is_staff
@@ -768,6 +889,10 @@ class AssessmentMarkDetailView(APIView):
                     status=status.HTTP_403_FORBIDDEN,
                 )
 
+        # -----------------------------------------------------
+        # Validate
+        # -----------------------------------------------------
+
         serializer = AssessmentMarkSerializer(
             mark,
             data=request.data,
@@ -781,8 +906,11 @@ class AssessmentMarkDetailView(APIView):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-        # If assessment is changed during update,
-        # verify instructor owns the new assessment.
+        # -----------------------------------------------------
+        # If assessment is changed, make sure the
+        # instructor owns the new assessment.
+        # -----------------------------------------------------
+
         new_assessment = (
             serializer.validated_data.get(
                 "assessment"
@@ -812,6 +940,10 @@ class AssessmentMarkDetailView(APIView):
                     status=status.HTTP_403_FORBIDDEN,
                 )
 
+        # -----------------------------------------------------
+        # Update
+        # -----------------------------------------------------
+
         mark = (
             AssessmentService.update_assessment_mark(
                 serializer
@@ -827,6 +959,7 @@ class AssessmentMarkDetailView(APIView):
 
     def delete(self, request, mark_id):
 
+        # Only Admin can delete marks.
         if not (
             request.user.is_staff
             or request.user.role == "ADMIN"

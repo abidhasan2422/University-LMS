@@ -11,14 +11,14 @@ class AssessmentService:
     Service layer for Assessment business logic.
     """
 
-    # ---------------------------------------------------------
+    # =========================================================
     # Assessment
-    # ---------------------------------------------------------
+    # =========================================================
 
     @staticmethod
     def create_assessment(serializer):
         """
-        Create a new assessment.
+        Create a new assessment component.
         """
 
         return serializer.save()
@@ -48,7 +48,6 @@ class AssessmentService:
             queryset=queryset,
             search=search,
             search_fields=[
-                "title",
                 "course_offering__course__course_code",
                 "course_offering__course__course_title",
                 "course_offering__instructor__employee_id",
@@ -57,8 +56,6 @@ class AssessmentService:
             ],
             ordering=ordering,
             allowed_ordering=[
-                "title",
-                "-title",
                 "assessment_type",
                 "-assessment_type",
                 "maximum_marks",
@@ -139,18 +136,17 @@ class AssessmentService:
             )
         )
 
-    # ---------------------------------------------------------
+    # =========================================================
     # Assessment Marks
-    # ---------------------------------------------------------
+    # =========================================================
 
     @staticmethod
     def create_assessment_mark(serializer):
         """
         Create a student's assessment mark.
 
-        Duplicate assessment marks are prevented by
-        the database constraint and checked here
-        for a cleaner API response.
+        One student can have only one active mark
+        for one assessment.
         """
 
         data = serializer.validated_data
@@ -211,7 +207,6 @@ class AssessmentService:
                 "enrollment__student__user__first_name",
                 "enrollment__student__user__last_name",
                 "enrollment__student__user__email",
-                "assessment__title",
                 "assessment__course_offering__course__course_code",
                 "assessment__course_offering__course__course_title",
             ],
@@ -223,6 +218,8 @@ class AssessmentService:
                 "-created_at",
                 "assessment__assessment_date",
                 "-assessment__assessment_date",
+                "assessment__assessment_type",
+                "-assessment__assessment_type",
             ],
             filters={
                 "assessment_id": assessment,
