@@ -1,0 +1,30 @@
+from django.urls import path
+
+from .views import (
+    ResultListCreateView,
+    ResultDetailView,
+    ResultPublishView,
+)
+
+urlpatterns = [
+    # List and generate results
+    path(
+        "",
+        ResultListCreateView.as_view(),
+        name="result-list-create",
+    ),
+
+    # Single result
+    path(
+        "<int:result_id>/",
+        ResultDetailView.as_view(),
+        name="result-detail",
+    ),
+
+    # Publish / unpublish result
+    path(
+        "<int:result_id>/publish/",
+        ResultPublishView.as_view(),
+        name="result-publish",
+    ),
+]

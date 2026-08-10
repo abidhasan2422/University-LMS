@@ -6,7 +6,7 @@ from rest_framework.exceptions import ValidationError
 
 from apps.assessment.models import AssessmentMark
 from apps.attendance.models import Attendance
-from apps.enrollment.models import Enrollment
+from apps.enrollments.models import Enrollment
 
 from .models import Result
 
