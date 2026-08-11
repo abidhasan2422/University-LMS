@@ -2,9 +2,7 @@ from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
-
 from apps.enrollments.models import Enrollment
-
 from .models import Result
 from .serializers import ResultSerializer
 from .services import ResultService
@@ -446,5 +444,158 @@ class ResultPublishView(APIView):
                     result
                 ).data,
             },
+            status=status.HTTP_200_OK,
+        )
+
+class SemesterGPAView(APIView):
+    """
+    Return semester GPA for a student.
+
+    Students can only view their own GPA.
+    Admins can view any student's GPA.
+    """
+
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+
+        student_id = request.query_params.get(
+            "student"
+        )
+
+        semester_id = request.query_params.get(
+            "semester"
+        )
+
+        academic_year = request.query_params.get(
+            "academic_year"
+        )
+
+        # -----------------------------------------------------
+        # Student
+        # -----------------------------------------------------
+
+        if (
+            request.user.role == "STUDENT"
+            and not request.user.is_staff
+        ):
+            if not hasattr(
+                request.user,
+                "student_profile",
+            ):
+                return Response(
+                    {
+                        "detail": (
+                            "Student profile not found."
+                        )
+                    },
+                    status=status.HTTP_404_NOT_FOUND,
+                )
+
+            student_id = request.user.student_profile.id
+
+        # -----------------------------------------------------
+        # Validation
+        # -----------------------------------------------------
+
+        if not student_id:
+            return Response(
+                {
+                    "student": (
+                        "Student ID is required."
+                    )
+                },
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        if not semester_id:
+            return Response(
+                {
+                    "semester": (
+                        "Semester ID is required."
+                    )
+                },
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        # -----------------------------------------------------
+        # Calculate GPA
+        # -----------------------------------------------------
+
+        data = ResultService.calculate_semester_gpa(
+            student_id=student_id,
+            semester_id=semester_id,
+            academic_year=academic_year,
+        )
+
+        return Response(
+            data,
+            status=status.HTTP_200_OK,
+        )
+
+
+class CGPAView(APIView):
+    """
+    Return cumulative GPA for a student.
+
+    Students can only view their own CGPA.
+    Admins can view any student's CGPA.
+    """
+
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+
+        student_id = request.query_params.get(
+            "student"
+        )
+
+        # -----------------------------------------------------
+        # Student
+        # -----------------------------------------------------
+
+        if (
+            request.user.role == "STUDENT"
+            and not request.user.is_staff
+        ):
+            if not hasattr(
+                request.user,
+                "student_profile",
+            ):
+                return Response(
+                    {
+                        "detail": (
+                            "Student profile not found."
+                        )
+                    },
+                    status=status.HTTP_404_NOT_FOUND,
+                )
+
+            student_id = request.user.student_profile.id
+
+        # -----------------------------------------------------
+        # Validation
+        # -----------------------------------------------------
+
+        if not student_id:
+            return Response(
+                {
+                    "student": (
+                        "Student ID is required."
+                    )
+                },
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        # -----------------------------------------------------
+        # Calculate CGPA
+        # -----------------------------------------------------
+
+        data = ResultService.calculate_cgpa(
+            student_id
+        )
+
+        return Response(
+            data,
             status=status.HTTP_200_OK,
         )

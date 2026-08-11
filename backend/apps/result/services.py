@@ -1,5 +1,4 @@
 from decimal import Decimal, ROUND_HALF_UP
-
 from django.db import transaction
 from django.shortcuts import get_object_or_404
 from rest_framework.exceptions import ValidationError
@@ -456,3 +455,168 @@ class ResultService:
         )
 
         return result
+        # ---------------------------------------------------------
+    # Semester GPA
+    # ---------------------------------------------------------
+
+    @staticmethod
+    def calculate_semester_gpa(
+        student_id,
+        semester_id,
+        academic_year=None,
+    ):
+        """
+        Calculate credit-weighted GPA for a student
+        in a specific semester.
+        """
+
+        filters = {
+            "enrollment__student_id": student_id,
+            "enrollment__course_offering__semester_id": semester_id,
+            "is_published": True,
+        }
+
+        if academic_year:
+            filters[
+                "enrollment__course_offering__academic_year"
+            ] = academic_year
+
+        results = Result.objects.filter(
+            **filters
+        ).select_related(
+            "enrollment__course_offering__course",
+        )
+
+        if not results.exists():
+            return {
+                "semester_gpa": Decimal("0.00"),
+                "total_credits": Decimal("0.00"),
+                "courses": [],
+            }
+
+        total_quality_points = Decimal("0.00")
+        total_credits = Decimal("0.00")
+
+        courses = []
+
+        for result in results:
+
+            course = (
+                result.enrollment
+                .course_offering
+                .course
+            )
+
+            # Change `credit` to `credits` here if
+            # your Course model uses `credits`.
+            credit = Decimal(str(course.credit))
+
+            grade_point = Decimal(
+                result.grade_point
+            )
+
+            quality_points = (
+                grade_point * credit
+            )
+
+            total_quality_points += (
+                quality_points
+            )
+
+            total_credits += credit
+
+            courses.append(
+                {
+                    "course_code": (
+                        course.course_code
+                    ),
+                    "course_title": (
+                        course.course_title
+                    ),
+                    "credit": credit,
+                    "grade": result.letter_grade,
+                    "grade_point": grade_point,
+                    "total_marks": result.total_marks,
+                }
+            )
+
+        if total_credits == 0:
+            semester_gpa = Decimal("0.00")
+        else:
+            semester_gpa = (
+                total_quality_points
+                / total_credits
+            ).quantize(
+                Decimal("0.01"),
+                rounding=ROUND_HALF_UP,
+            )
+
+        return {
+            "semester_gpa": semester_gpa,
+            "total_credits": total_credits,
+            "courses": courses,
+        }
+
+    # ---------------------------------------------------------
+    # CGPA
+    # ---------------------------------------------------------
+
+    @staticmethod
+    def calculate_cgpa(student_id):
+        """
+        Calculate cumulative GPA across all published
+        course results.
+        """
+
+        results = Result.objects.filter(
+            enrollment__student_id=student_id,
+            is_published=True,
+        ).select_related(
+            "enrollment__course_offering__course",
+        )
+
+        total_quality_points = Decimal("0.00")
+        total_credits = Decimal("0.00")
+
+        if not results.exists():
+            return {
+                "cgpa": Decimal("0.00"),
+                "total_credits": Decimal("0.00"),
+            }
+
+        for result in results:
+
+            course = (
+                result.enrollment
+                .course_offering
+                .course
+            )
+
+            # Change `credit` to `credits` if necessary.
+            credit = Decimal(str(course.credit))
+
+            grade_point = Decimal(
+                result.grade_point
+            )
+
+            total_quality_points += (
+                grade_point * credit
+            )
+
+            total_credits += credit
+
+        if total_credits == 0:
+            cgpa = Decimal("0.00")
+        else:
+            cgpa = (
+                total_quality_points
+                / total_credits
+            ).quantize(
+                Decimal("0.01"),
+                rounding=ROUND_HALF_UP,
+            )
+
+        return {
+            "cgpa": cgpa,
+            "total_credits": total_credits,
+        }

@@ -111,3 +111,36 @@ class ResultSerializer(serializers.ModelSerializer):
             )
 
         return value
+
+class SemesterGPASerializer(serializers.Serializer):
+    """
+    Serializer for semester GPA.
+    """
+
+    semester_gpa = serializers.DecimalField(
+        max_digits=3,
+        decimal_places=2,
+    )
+
+    total_credits = serializers.DecimalField(
+        max_digits=6,
+        decimal_places=2,
+    )
+
+    courses = serializers.ListField()
+
+
+class CGPASerializer(serializers.Serializer):
+    """
+    Serializer for cumulative GPA.
+    """
+
+    cgpa = serializers.DecimalField(
+        max_digits=3,
+        decimal_places=2,
+    )
+
+    total_credits = serializers.DecimalField(
+        max_digits=6,
+        decimal_places=2,
+    )

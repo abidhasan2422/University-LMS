@@ -4,6 +4,8 @@ from .views import (
     ResultListCreateView,
     ResultDetailView,
     ResultPublishView,
+    CGPAView,
+    SemesterGPAView,
 )
 
 urlpatterns = [
@@ -26,5 +28,16 @@ urlpatterns = [
         "<int:result_id>/publish/",
         ResultPublishView.as_view(),
         name="result-publish",
+    ),
+    # GPA
+    path(
+        "gpa/semester/",
+        SemesterGPAView.as_view(),
+        name="semester-gpa",
+    ),
+       path(
+        "gpa/cgpa/",
+        CGPAView.as_view(),
+        name="cgpa",
     ),
 ]
