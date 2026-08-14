@@ -107,33 +107,55 @@ class LogoutView(APIView):
             serializer.errors,
             status=status.HTTP_400_BAD_REQUEST
         )
+
 class ChangePasswordView(APIView):
     """
-    Change Password API
+    Change password for the currently authenticated user.
+
+    Works for:
+        Student
+        Instructor
+        Admin
     """
 
     permission_classes = [IsAuthenticated]
 
     def post(self, request):
+
         serializer = ChangePasswordSerializer(
-            data=request.data
+            data=request.data,
+            context={
+                "request": request,
+            },
         )
 
-        if serializer.is_valid():
-
-            response = AuthenticationService.change_password(
-                request.user,
-                serializer.validated_data,
-            )
-
+        if not serializer.is_valid():
             return Response(
-                response,
-                status=status.HTTP_200_OK,
+                serializer.errors,
+                status=status.HTTP_400_BAD_REQUEST,
             )
+
+        user = request.user
+
+        user.set_password(
+            serializer.validated_data[
+                "new_password"
+            ]
+        )
+
+        user.save(
+            update_fields=[
+                "password",
+            ]
+        )
 
         return Response(
-            serializer.errors,
-            status=status.HTTP_400_BAD_REQUEST,
+            {
+                "message": (
+                    "Password changed successfully."
+                )
+            },
+            status=status.HTTP_200_OK,
         )
 class ForgotPasswordView(APIView):
     """
