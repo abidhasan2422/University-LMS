@@ -5,7 +5,17 @@ from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
 from .serializers import RegisterSerializer,LoginSerializer,ProfileSerializer,LogoutSerializer,ChangePasswordSerializer,ForgotPasswordSerializer, ResetPasswordSerializer
 from .services import AuthenticationService
-
+from django.contrib.auth import get_user_model
+from django.contrib.auth.tokens import (
+    default_token_generator,
+)
+from django.core.mail import send_mail
+from django.utils.encoding import (
+    force_bytes,
+)
+from django.utils.http import (
+    urlsafe_base64_encode,
+)
 
 class RegisterView(APIView):
     """
@@ -156,11 +166,16 @@ class ChangePasswordView(APIView):
                 )
             },
             status=status.HTTP_200_OK,
+ 
         )
+
+User = get_user_model()
 class ForgotPasswordView(APIView):
     """
-    Forgot Password API
+    Send password reset link to the user's email.
     """
+   
+    permission_classes = []
 
     def post(self, request):
 
@@ -168,20 +183,77 @@ class ForgotPasswordView(APIView):
             data=request.data
         )
 
-        if serializer.is_valid():
+        serializer.is_valid(
+            raise_exception=True
+        )
 
-            response = AuthenticationService.forgot_password(
-                serializer.validated_data
+        email = serializer.validated_data["email"]
+
+        try:
+            user = User.objects.get(
+                email__iexact=email
             )
+        except User.DoesNotExist:
 
+            # Don't reveal whether the email exists.
             return Response(
-                response,
+                {
+                    "message": (
+                        "If an account exists with "
+                        "this email, a password reset "
+                        "link has been sent."
+                    )
+                },
                 status=status.HTTP_200_OK,
             )
 
+       
+        # Generate UID
+
+        uid = urlsafe_base64_encode(
+            force_bytes(user.pk)
+        )
+
+        # Generate secure token
+
+        token = default_token_generator.make_token(
+            user
+        )
+
+        # Frontend reset URL
+
+        reset_url = (
+            f"http://localhost:3000/"
+            f"reset-password/{uid}/{token}/"
+        )
+
+        # Email
+
+        send_mail(
+            subject="Reset Your LMS Password",
+            message=(
+                "You requested a password reset.\n\n"
+                f"Reset your password here:\n"
+                f"{reset_url}\n\n"
+                "If you did not request this, "
+                "you can ignore this email."
+            ),
+            from_email=None,
+            recipient_list=[
+                user.email
+            ],
+            fail_silently=False,
+        )
+
         return Response(
-            serializer.errors,
-            status=status.HTTP_400_BAD_REQUEST,
+            {
+                "message": (
+                    "If an account exists with "
+                    "this email, a password reset "
+                    "link has been sent."
+                )
+            },
+            status=status.HTTP_200_OK,
         )
 class ResetPasswordView(APIView):
     """
