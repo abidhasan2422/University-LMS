@@ -205,3 +205,7 @@ EMAIL_USE_TLS = config("EMAIL_USE_TLS", cast=bool)
 DEFAULT_FROM_EMAIL = config("DEFAULT_FROM_EMAIL")
 
 FRONTEND_URL = config("FRONTEND_URL")
+
+EMAIL_BACKEND = (
+    "django.core.mail.backends.console.EmailBackend"
+)

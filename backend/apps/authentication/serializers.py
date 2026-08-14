@@ -2,12 +2,11 @@ from rest_framework import serializers
 from django.contrib.auth import authenticate
 from apps.users.models import User, UserRole
 from django.contrib.auth import password_validation
-from .validators import (
-    validate_phone_number,
-    validate_password_strength,
-)
-
-
+from .validators import (validate_phone_number,validate_password_strength,)
+from django.contrib.auth import (get_user_model)
+from django.contrib.auth.tokens import ( default_token_generator)
+from django.utils.encoding import (force_str)
+from django.utils.http import (urlsafe_base64_decode)
 class RegisterSerializer(serializers.Serializer):
     first_name = serializers.CharField(max_length=100)
     last_name = serializers.CharField(max_length=100)
@@ -198,27 +197,93 @@ class ForgotPasswordSerializer(serializers.Serializer):
 
         return value
 
+User = get_user_model()
+
+
 class ResetPasswordSerializer(serializers.Serializer):
+    """
+    Serializer for setting a new password using
+    a password reset token.
+    """
+
     uid = serializers.CharField()
 
     token = serializers.CharField()
 
     new_password = serializers.CharField(
         write_only=True,
-        validators=[validate_password_strength],
     )
 
     confirm_password = serializers.CharField(
-        write_only=True
+        write_only=True,
     )
 
     def validate(self, attrs):
-        if attrs["new_password"] != attrs["confirm_password"]:
+
+        # Decode user ID
+
+        try:
+            user_id = force_str(
+                urlsafe_base64_decode(
+                    attrs["uid"]
+                )
+            )
+
+            user = User.objects.get(
+                pk=user_id
+            )
+
+        except (
+            TypeError,
+            ValueError,
+            OverflowError,
+            User.DoesNotExist,
+        ):
             raise serializers.ValidationError(
                 {
-                    "confirm_password":
-                        "Passwords do not match."
+                    "uid": (
+                        "Invalid password reset link."
+                    )
                 }
             )
+
+        # Validate token
+
+        if not default_token_generator.check_token(
+            user,
+            attrs["token"],
+        ):
+            raise serializers.ValidationError(
+                {
+                    "token": (
+                        "Invalid or expired "
+                        "password reset link."
+                    )
+                }
+            )
+
+        # Confirm password
+        
+
+        if (
+            attrs["new_password"]
+            != attrs["confirm_password"]
+        ):
+            raise serializers.ValidationError(
+                {
+                    "confirm_password": (
+                        "Passwords do not match."
+                    )
+                }
+            )
+
+        # Password validation
+
+        password_validation.validate_password(
+            attrs["new_password"],
+            user,
+        )
+
+        attrs["user"] = user
 
         return attrs

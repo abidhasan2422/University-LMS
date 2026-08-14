@@ -257,8 +257,10 @@ class ForgotPasswordView(APIView):
         )
 class ResetPasswordView(APIView):
     """
-    Reset Password API
+    Reset password using a valid reset token.
     """
+
+    permission_classes = []
 
     def post(self, request):
 
@@ -266,22 +268,36 @@ class ResetPasswordView(APIView):
             data=request.data
         )
 
-        if serializer.is_valid():
-
-            response = AuthenticationService.reset_password(
-                serializer.validated_data
-            )
-
+        if not serializer.is_valid():
             return Response(
-                response,
-                status=status.HTTP_200_OK,
+                serializer.errors,
+                status=status.HTTP_400_BAD_REQUEST,
             )
 
-        return Response(
-            serializer.errors,
-            status=status.HTTP_400_BAD_REQUEST,
+        user = serializer.validated_data[
+            "user"
+        ]
+
+        user.set_password(
+            serializer.validated_data[
+                "new_password"
+            ]
         )
 
+        user.save(
+            update_fields=[
+                "password",
+            ]
+        )
+
+        return Response(
+            {
+                "message": (
+                    "Password reset successfully."
+                )
+            },
+            status=status.HTTP_200_OK,
+        )
 from rest_framework.permissions import IsAuthenticated
 from .permissions import IsAdmin
 
