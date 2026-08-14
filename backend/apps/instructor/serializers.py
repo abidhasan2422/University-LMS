@@ -136,7 +136,7 @@ class InstructorSerializer(serializers.ModelSerializer):
                 }
             )
 
-        if user and user.role != User.Role.INSTRUCTOR:
+        if user and user.role != UserRole.INSTRUCTOR:
             raise serializers.ValidationError(
                 {
                     "user": (

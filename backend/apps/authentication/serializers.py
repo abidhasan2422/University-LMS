@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from django.contrib.auth import authenticate
 from apps.users.models import User, UserRole
+from django.contrib.auth import password_validation
 from .validators import (
     validate_phone_number,
     validate_password_strength,
@@ -18,9 +19,7 @@ class RegisterSerializer(serializers.Serializer):
         validators=[validate_phone_number]
     )
 
-    # role = serializers.ChoiceField(
-    #     choices=UserRole.choices
-    # )
+
 
     password = serializers.CharField(
         write_only=True,
@@ -108,32 +107,84 @@ class ProfileSerializer(serializers.ModelSerializer):
 class LogoutSerializer(serializers.Serializer):
     refresh = serializers.CharField()
 
+
+
+
 class ChangePasswordSerializer(serializers.Serializer):
+    """
+    Serializer for changing the password of
+    the currently authenticated user.
+    """
+
     old_password = serializers.CharField(
-        write_only=True
+        write_only=True,
+        required=True,
     )
 
     new_password = serializers.CharField(
         write_only=True,
-        validators=[validate_password_strength]
+        required=True,
     )
 
     confirm_password = serializers.CharField(
-        write_only=True
+        write_only=True,
+        required=True,
     )
 
     def validate(self, attrs):
-        """
-        Validate password confirmation.
-        """
 
-        if attrs["new_password"] != attrs["confirm_password"]:
+        user = self.context["request"].user
+
+    
+        # Check old password
+     
+
+        if not user.check_password(
+            attrs["old_password"]
+        ):
             raise serializers.ValidationError(
                 {
-                    "confirm_password":
-                        "Passwords do not match."
+                    "old_password": (
+                        "Old password is incorrect."
+                    )
                 }
             )
+
+        # Check new password confirmation
+     
+        if (
+            attrs["new_password"]
+            != attrs["confirm_password"]
+        ):
+            raise serializers.ValidationError(
+                {
+                    "confirm_password": (
+                        "New passwords do not match."
+                    )
+                }
+            )
+
+        # Prevent same password
+       
+        if (
+            attrs["old_password"]
+            == attrs["new_password"]
+        ):
+            raise serializers.ValidationError(
+                {
+                    "new_password": (
+                        "New password must be different "
+                        "from the old password."
+                    )
+                }
+            )
+
+        
+        # Django password validation
+        password_validation.validate_password(
+            attrs["new_password"],
+            user,
+        )
 
         return attrs
 class ForgotPasswordSerializer(serializers.Serializer):
