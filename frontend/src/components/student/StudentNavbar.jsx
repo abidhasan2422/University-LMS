@@ -1,4 +1,5 @@
 import { FaBars, FaBell, FaUserCircle } from "react-icons/fa";
+import { Link } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 
 const StudentNavbar = ({ onToggleSidebar }) => {
@@ -10,7 +11,7 @@ const StudentNavbar = ({ onToggleSidebar }) => {
 
   return (
     <nav className="student-navbar">
-
+      {/* Left */}
       <div className="navbar-left">
         <button
           type="button"
@@ -31,6 +32,7 @@ const StudentNavbar = ({ onToggleSidebar }) => {
         </div>
       </div>
 
+      {/* Right */}
       <div className="navbar-right">
 
         {/* Notification */}
@@ -45,9 +47,10 @@ const StudentNavbar = ({ onToggleSidebar }) => {
         {/* User */}
         <div className="dropdown">
           <button
-            className="user-menu dropdown-toggle"
             type="button"
+            className="user-menu dropdown-toggle"
             data-bs-toggle="dropdown"
+            aria-expanded="false"
           >
             <FaUserCircle className="user-icon" />
 
@@ -59,10 +62,12 @@ const StudentNavbar = ({ onToggleSidebar }) => {
           <ul className="dropdown-menu dropdown-menu-end">
 
             <li>
-              <NavItem
-                label="Profile"
-                path="/student/profile"
-              />
+              <Link
+                to="/student/profile"
+                className="dropdown-item"
+              >
+                Profile
+              </Link>
             </li>
 
             <li>
@@ -71,6 +76,7 @@ const StudentNavbar = ({ onToggleSidebar }) => {
 
             <li>
               <button
+                type="button"
                 className="dropdown-item text-danger"
                 onClick={handleLogout}
               >
@@ -83,17 +89,6 @@ const StudentNavbar = ({ onToggleSidebar }) => {
 
       </div>
     </nav>
-  );
-};
-
-const NavItem = ({ label, path }) => {
-  return (
-    <a
-      href={path}
-      className="dropdown-item"
-    >
-      {label}
-    </a>
   );
 };
 
