@@ -5,6 +5,7 @@ import StudentLayout from "./layouts/StudentLayout";
 import StudentDashboard from "./pages/student/StudentDashboard";
 import StudentCourses from "./pages/student/StudentCourses";
 import StudentAttendance from "./pages/student/StudentAttendance";
+import StudentAssessments from "./pages/student/StudentAssessments";
 
 function App() {
   return (
@@ -16,6 +17,7 @@ function App() {
             <Route path="profile" element={<StudentProfile />} />
             <Route path="courses" element={<StudentCourses />} />
             <Route path="attendance" element={<StudentAttendance />} />
+            <Route path="assessments" element={<StudentAssessments />} />
           </Route>
         </Routes>
       </AuthProvider>
