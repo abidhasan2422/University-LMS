@@ -1,10 +1,9 @@
 
-
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "./context/AuthContext";
-
+import StudentProfile from "./components/student/StudentProfile";
 import StudentLayout from "./layouts/StudentLayout";
-import StudentDashboard from "./components/student/StudentDashboard";
+import StudentDashboard from "./pages/student/StudentDashboard";
 
 function App() {
   return (
@@ -16,6 +15,10 @@ function App() {
               path="dashboard"
               element={<StudentDashboard />}
             />
+            <Route
+  path="profile"
+  element={<StudentProfile />}
+/>
           </Route>
         </Routes>
       </AuthProvider>
