@@ -4,6 +4,7 @@ import StudentProfile from "./pages/student/StudentProfile";
 import StudentLayout from "./layouts/StudentLayout";
 import StudentDashboard from "./pages/student/StudentDashboard";
 import StudentCourses from "./pages/student/StudentCourses";
+import StudentAttendance from "./pages/student/StudentAttendance";
 
 function App() {
   return (
@@ -14,6 +15,7 @@ function App() {
             <Route path="dashboard" element={<StudentDashboard />} />
             <Route path="profile" element={<StudentProfile />} />
             <Route path="courses" element={<StudentCourses />} />
+            <Route path="attendance" element={<StudentAttendance />} />
           </Route>
         </Routes>
       </AuthProvider>
