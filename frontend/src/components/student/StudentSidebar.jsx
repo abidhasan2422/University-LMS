@@ -43,7 +43,7 @@ const StudentSidebar = ({ collapsed, onToggle }) => {
     },
     {
       name: "GPA / CGPA",
-      path: "/student/academic",
+      path: "/student/gpa",
       icon: <FaGraduationCap />,
     },
     {
