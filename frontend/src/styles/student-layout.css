@@ -1578,3 +1578,374 @@
     font-size: 22px;
   }
 }
+
+
+/* =========================================
+   STUDENT RESULTS
+========================================= */
+
+.student-results {
+  max-width: 1600px;
+  margin: 0 auto;
+}
+
+.results-page-header h2 {
+  margin: 5px 0;
+  font-size: 26px;
+  font-weight: 700;
+  color: #212529;
+}
+
+.results-page-header p {
+  margin: 0;
+  color: #8b95a1;
+  font-size: 13px;
+}
+
+.results-label {
+  color: #0d6efd;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+
+/* =========================================
+   SEMESTER CARD
+========================================= */
+
+.result-semester-card {
+  background: #ffffff;
+  border: 1px solid #e9ecef;
+  border-radius: 14px;
+  padding: 20px 22px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.result-semester-label {
+  display: block;
+  color: #0d6efd;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+  margin-bottom: 5px;
+}
+
+.result-semester-card h5 {
+  margin: 0 0 3px;
+  font-size: 17px;
+  font-weight: 700;
+  color: #212529;
+}
+
+.result-semester-card p {
+  margin: 0;
+  color: #8b95a1;
+  font-size: 11px;
+}
+
+.result-semester-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 11px;
+
+  background: #eaf2ff;
+  color: #0d6efd;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 20px;
+}
+
+/* =========================================
+   SUMMARY CARDS
+========================================= */
+
+.result-summary-card {
+  background: #ffffff;
+  border: 1px solid #e9ecef;
+  border-radius: 14px;
+
+  padding: 20px;
+
+  height: 100%;
+}
+
+.result-summary-icon {
+  width: 42px;
+  height: 42px;
+
+  border-radius: 10px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  margin-bottom: 13px;
+
+  font-size: 17px;
+}
+
+.result-summary-icon.blue {
+  background: #eaf2ff;
+  color: #0d6efd;
+}
+
+.result-summary-icon.purple {
+  background: #f0eaff;
+  color: #6f42c1;
+}
+
+.result-summary-icon.green {
+  background: #e9f8ef;
+  color: #198754;
+}
+
+.result-summary-icon.red {
+  background: #fdecec;
+  color: #dc3545;
+}
+
+.result-summary-card > span {
+  display: block;
+  color: #7b8794;
+  font-size: 11px;
+  margin-bottom: 4px;
+}
+
+.result-summary-card > strong {
+  display: block;
+  color: #212529;
+  font-size: 24px;
+  font-weight: 700;
+}
+
+.result-summary-card > small {
+  color: #adb5bd;
+  font-size: 10px;
+}
+
+/* =========================================
+   RESULTS SECTION
+========================================= */
+
+.results-section {
+  background: #ffffff;
+  border: 1px solid #e9ecef;
+  border-radius: 14px;
+  overflow: hidden;
+}
+
+.results-section-header {
+  padding: 20px 22px;
+  border-bottom: 1px solid #edf0f2;
+}
+
+.results-section-header h5 {
+  margin: 0 0 3px;
+  font-size: 17px;
+  font-weight: 700;
+  color: #212529;
+}
+
+.results-section-header p {
+  margin: 0;
+  color: #8b95a1;
+  font-size: 12px;
+}
+
+/* =========================================
+   RESULTS TABLE
+========================================= */
+
+.results-table {
+  font-size: 12px;
+}
+
+.results-table thead th {
+  background: #fafbfc;
+  border-bottom: 1px solid #edf0f2;
+
+  color: #7b8794;
+  font-size: 10px;
+  font-weight: 700;
+
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+
+  padding: 13px 16px;
+
+  white-space: nowrap;
+}
+
+.results-table tbody td {
+  padding: 16px;
+  vertical-align: middle;
+
+  border-color: #f1f3f5;
+
+  color: #5c6670;
+  white-space: nowrap;
+}
+
+/* =========================================
+   COURSE
+========================================= */
+
+.result-course {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+
+  min-width: 250px;
+}
+
+.result-course-icon {
+  width: 40px;
+  height: 40px;
+  min-width: 40px;
+
+  border-radius: 9px;
+
+  background: #eaf2ff;
+  color: #0d6efd;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.result-course strong {
+  display: block;
+  color: #212529;
+  font-size: 12px;
+  margin-bottom: 3px;
+}
+
+.result-course span {
+  display: block;
+  color: #8b95a1;
+  font-size: 11px;
+}
+
+/* =========================================
+   MARKS / GRADE
+========================================= */
+
+.result-marks {
+  color: #0d6efd;
+  font-size: 13px;
+}
+
+.result-percentage {
+  color: #343a40;
+  font-size: 12px;
+}
+
+.letter-grade {
+  display: inline-flex;
+
+  min-width: 38px;
+  height: 30px;
+
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 7px;
+
+  background: #eaf2ff;
+  color: #0d6efd;
+
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.grade-point {
+  color: #6f42c1;
+  font-size: 13px;
+}
+
+/* =========================================
+   RESULT STATUS
+========================================= */
+
+.result-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+
+  padding: 5px 9px;
+
+  border-radius: 20px;
+
+  font-size: 10px;
+  font-weight: 600;
+}
+
+.result-status.pass {
+  background: #e9f8ef;
+  color: #198754;
+}
+
+.result-status.fail {
+  background: #fdecec;
+  color: #dc3545;
+}
+
+/* =========================================
+   INFORMATION BOX
+========================================= */
+
+.result-info-box {
+  background: #f8faff;
+  border: 1px solid #dce9ff;
+  border-radius: 12px;
+
+  padding: 16px 20px;
+
+  display: flex;
+  align-items: flex-start;
+  gap: 13px;
+
+  color: #0d6efd;
+}
+
+.result-info-box > svg {
+  margin-top: 3px;
+}
+
+.result-info-box strong {
+  display: block;
+  color: #343a40;
+  font-size: 12px;
+  margin-bottom: 4px;
+}
+
+.result-info-box p {
+  margin: 0;
+  color: #7b8794;
+  font-size: 11px;
+  line-height: 1.6;
+}
+
+/* =========================================
+   RESPONSIVE
+========================================= */
+
+@media (max-width: 768px) {
+  .results-page-header h2 {
+    font-size: 22px;
+  }
+
+  .result-semester-card {
+    padding: 17px;
+  }
+
+  .result-summary-card {
+    padding: 17px;
+  }
+}
