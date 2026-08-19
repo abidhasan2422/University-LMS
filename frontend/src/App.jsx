@@ -8,6 +8,7 @@ import StudentAttendance from "./pages/student/StudentAttendance";
 import StudentAssessments from "./pages/student/StudentAssessments";
 import StudentResults from "./pages/student/StudentResults";
 import StudentGPA from "./pages/student/StudentGPA";
+import StudentChangePassword from "./pages/student/StudentChangePassword";
 function App() {
   return (
     <BrowserRouter>
@@ -21,6 +22,7 @@ function App() {
             <Route path="assessments" element={<StudentAssessments />} />
             <Route path="results" element={<StudentResults />} />
             <Route path="gpa" element={<StudentGPA />} />
+            <Route path="change-password" element={<StudentChangePassword />} />
           </Route>
         </Routes>
       </AuthProvider>
