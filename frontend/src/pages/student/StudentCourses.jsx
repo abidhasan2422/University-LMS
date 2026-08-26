@@ -1,209 +1,173 @@
-import {
-  FaBookOpen,
-  FaFlask,
-  FaUserTie,
-  FaCalendarAlt,
-  FaCreditCard,
-  FaArrowRight,
-} from "react-icons/fa";
+import { useEffect, useState } from "react";
+import axios from "axios";
+import { FaBookOpen, FaCalendarAlt, FaUserGraduate } from "react-icons/fa";
+
+import "../../styles/student-layout.css";
 
 const StudentCourses = () => {
-  // Temporary data.
-  // We will connect this to the Enrollment API later.
-  const courses = [
-    {
-      code: "CSE101",
-      title: "Introduction to Computer Science",
-      credit: "3.0",
-      type: "REGULAR",
-      semester: "Spring 2026",
-      instructor: "Dr. Rahman",
-    },
-    {
-      code: "CSE203",
-      title: "Data Structures",
-      credit: "3.0",
-      type: "REGULAR",
-      semester: "Spring 2026",
-      instructor: "Mr. Hasan",
-    },
-    {
-      code: "CSE205",
-      title: "Database Management System",
-      credit: "3.0",
-      type: "REGULAR",
-      semester: "Spring 2026",
-      instructor: "Ms. Akter",
-    },
-    {
-      code: "CSE207",
-      title: "Web Engineering",
-      credit: "3.0",
-      type: "REGULAR",
-      semester: "Spring 2026",
-      instructor: "Dr. Karim",
-    },
-    {
-      code: "CSE208",
-      title: "Web Engineering Lab",
-      credit: "1.5",
-      type: "LAB",
-      semester: "Spring 2026",
-      instructor: "Dr. Karim",
-    },
-  ];
+  const [courses, setCourses] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  const fetchCourses = async () => {
+    try {
+      setLoading(true);
+      setError("");
+
+      const token = localStorage.getItem("access_token");
+
+      const response = await axios.get(
+        "http://127.0.0.1:8000/api/enrollments/",
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      setCourses(response.data.results || []);
+    } catch (err) {
+      console.error("Failed to fetch courses:", err);
+
+      setError(
+        err.response?.data?.detail ||
+          "Unable to load your courses."
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchCourses();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="student-courses">
+        <div className="courses-loading">
+          Loading your courses...
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="student-courses">
+        <div className="courses-error">
+          {error}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="student-courses">
 
-      {/* Page Header */}
-      <div className="courses-page-header mb-4">
+      {/* Header */}
+
+      <div className="courses-page-header">
         <span className="courses-label">
-          STUDENT PORTAL
+          ACADEMIC
         </span>
 
         <h2>My Courses</h2>
 
         <p>
           View your currently enrolled courses and
-          course information.
+          academic information.
         </p>
       </div>
 
-      {/* Course Summary */}
-      <div className="row g-4 mb-4">
+      {/* Summary */}
 
-        <div className="col-md-4">
-          <div className="course-summary-card">
-            <div className="course-summary-icon blue">
-              <FaBookOpen />
-            </div>
+      <div className="courses-summary">
 
-            <div>
-              <span>Total Courses</span>
-              <strong>{courses.length}</strong>
-            </div>
+        <div className="courses-summary-card">
+
+          <div className="courses-summary-icon">
+            <FaBookOpen />
           </div>
-        </div>
 
-        <div className="col-md-4">
-          <div className="course-summary-card">
-            <div className="course-summary-icon purple">
-              <FaCreditCard />
-            </div>
-
-            <div>
-              <span>Total Credits</span>
-              <strong>
-                {courses
-                  .reduce(
-                    (total, course) =>
-                      total + Number(course.credit),
-                    0
-                  )
-                  .toFixed(1)}
-              </strong>
-            </div>
+          <div>
+            <span>Total Courses</span>
+            <strong>{courses.length}</strong>
           </div>
-        </div>
 
-        <div className="col-md-4">
-          <div className="course-summary-card">
-            <div className="course-summary-icon green">
-              <FaCalendarAlt />
-            </div>
-
-            <div>
-              <span>Current Semester</span>
-              <strong>Spring 2026</strong>
-            </div>
-          </div>
         </div>
 
       </div>
 
       {/* Courses */}
-      <div className="courses-section">
 
-        <div className="courses-section-header">
+      {courses.length === 0 ? (
+        <div className="courses-empty">
 
-          <div>
-            <h5>Enrolled Courses</h5>
+          <FaBookOpen />
 
-            <p>
-              Courses registered for the current semester
-            </p>
-          </div>
+          <h5>No Courses Found</h5>
+
+          <p>
+            You are not currently enrolled in any courses.
+          </p>
 
         </div>
+      ) : (
+        <div className="row g-4">
 
-        <div className="row g-4 p-4">
-
-          {courses.map((course) => (
+          {courses.map((enrollment) => (
 
             <div
               className="col-md-6 col-xl-4"
-              key={course.code}
+              key={enrollment.id}
             >
 
               <div className="course-card">
 
-                <div className="course-card-top">
+                {/* Course Header */}
 
-                  <div className="course-code-box">
-                    {course.code}
+                <div className="course-card-header">
+
+                  <div className="course-icon">
+                    <FaBookOpen />
                   </div>
 
-                  <span
-                    className={`course-type ${
-                      course.type === "LAB"
-                        ? "lab"
-                        : "regular"
-                    }`}
-                  >
-                    {course.type === "LAB"
-                      ? "Lab"
-                      : "Regular"}
+                  <span className="course-status">
+                    {enrollment.status}
                   </span>
 
                 </div>
+
+                {/* Course Information */}
 
                 <div className="course-card-body">
 
-                  <h5>
-                    {course.title}
-                  </h5>
-
-                  <div className="course-detail">
-                    <FaUserTie />
-                    <span>
-                      {course.instructor}
-                    </span>
-                  </div>
-
-                  <div className="course-detail">
-                    <FaCreditCard />
-                    <span>
-                      {course.credit} Credits
-                    </span>
-                  </div>
-
-                  <div className="course-detail">
-                    <FaCalendarAlt />
-                    <span>
-                      {course.semester}
-                    </span>
-                  </div>
-
-                </div>
-
-                <div className="course-card-footer">
-
-                  <span>
-                    Course Details
+                  <span className="course-code">
+                    {enrollment.course_code}
                   </span>
 
-                  <FaArrowRight />
+                  <h5>
+                    {enrollment.course_title}
+                  </h5>
+
+                  <div className="course-info">
+
+                    <div>
+                      <FaCalendarAlt />
+                      <span>
+                        {enrollment.semester_name}
+                      </span>
+                    </div>
+
+                    <div>
+                      <FaUserGraduate />
+                      <span>
+                        Section {enrollment.section}
+                      </span>
+                    </div>
+
+                  </div>
 
                 </div>
 
@@ -214,8 +178,7 @@ const StudentCourses = () => {
           ))}
 
         </div>
-
-      </div>
+      )}
 
     </div>
   );
