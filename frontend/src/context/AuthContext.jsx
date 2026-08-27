@@ -29,7 +29,7 @@ export const AuthProvider = ({ children }) => {
 
     try {
       const response = await api.post(
-        "login/",
+        "auth/login/",
         {
           email,
           password,
