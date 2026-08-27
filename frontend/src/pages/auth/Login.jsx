@@ -1,6 +1,9 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { FaGraduationCap, FaLock, FaEnvelope } from "react-icons/fa";
 import { useAuth } from "../../context/AuthContext";
+
+import "../../styles/auth/login.css";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -35,48 +38,164 @@ const Login = () => {
   };
 
   return (
-    <div style={{ maxWidth: "400px", margin: "100px auto" }}>
-      <h2>Student Login</h2>
+    <div className="login-page">
 
-      <form onSubmit={handleSubmit}>
+      <div className="login-container">
 
-        <div>
-          <label>Email</label>
+        {/* Left Side */}
 
-          <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          />
-        </div>
+        <div className="login-brand">
 
-        <br />
+          <div className="brand-icon">
+            <FaGraduationCap />
+          </div>
 
-        <div>
-          <label>Password</label>
+          <h1>University LMS</h1>
 
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
-        </div>
-
-        <br />
-
-        {error && (
-          <p style={{ color: "red" }}>
-            {error}
+          <p>
+            Your complete academic management
+            platform.
           </p>
-        )}
 
-        <button type="submit" disabled={loading}>
-          {loading ? "Logging in..." : "Login"}
-        </button>
+          <div className="brand-features">
+            <div>
+              <span>✓</span>
+              <p>Access your courses</p>
+            </div>
 
-      </form>
+            <div>
+              <span>✓</span>
+              <p>Track your academic progress</p>
+            </div>
+
+            <div>
+              <span>✓</span>
+              <p>View results and GPA</p>
+            </div>
+          </div>
+
+        </div>
+
+        {/* Login Card */}
+
+        <div className="login-card">
+
+          <div className="login-header">
+
+            <div className="mobile-brand-icon">
+              <FaGraduationCap />
+            </div>
+
+            <span>STUDENT PORTAL</span>
+
+            <h2>Welcome back</h2>
+
+            <p>
+              Sign in to access your academic portal.
+            </p>
+
+          </div>
+
+          <form onSubmit={handleSubmit}>
+
+            {/* Email */}
+
+            <div className="login-field">
+
+              <label htmlFor="email">
+                Email Address
+              </label>
+
+              <div className="input-wrapper">
+
+                <FaEnvelope />
+
+                <input
+                  id="email"
+                  type="email"
+                  value={email}
+                  onChange={(e) =>
+                    setEmail(e.target.value)
+                  }
+                  placeholder="Enter your university email"
+                  autoComplete="email"
+                  required
+                />
+
+              </div>
+
+            </div>
+
+            {/* Password */}
+
+            <div className="login-field">
+
+              <div className="password-label">
+
+                <label htmlFor="password">
+                  Password
+                </label>
+
+                <button
+                  type="button"
+                  className="forgot-password"
+                  onClick={() =>
+                    navigate("/forgot-password")
+                  }
+                >
+                  Forgot password?
+                </button>
+
+              </div>
+
+              <div className="input-wrapper">
+
+                <FaLock />
+
+                <input
+                  id="password"
+                  type="password"
+                  value={password}
+                  onChange={(e) =>
+                    setPassword(e.target.value)
+                  }
+                  placeholder="Enter your password"
+                  autoComplete="current-password"
+                  required
+                />
+
+              </div>
+
+            </div>
+
+            {/* Error */}
+
+            {error && (
+              <div className="login-error">
+                {error}
+              </div>
+            )}
+
+            {/* Submit */}
+
+            <button
+              type="submit"
+              className="login-button"
+              disabled={loading}
+            >
+              {loading ? "Signing in..." : "Sign In"}
+            </button>
+
+          </form>
+
+          <div className="login-footer">
+            <span>University Learning Management System</span>
+          </div>
+
+        </div>
+
+      </div>
+
     </div>
   );
 };
