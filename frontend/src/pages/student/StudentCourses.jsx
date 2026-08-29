@@ -1,8 +1,13 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
-import { FaBookOpen, FaCalendarAlt, FaUserGraduate } from "react-icons/fa";
+import api from "../../api/axios";
 
-import "../../styles/student-layout.css";
+import {
+  FaBookOpen,
+  FaCalendarAlt,
+  FaUserGraduate,
+} from "react-icons/fa";
+
+import "../../styles/student/student-courses.css";
 
 const StudentCourses = () => {
   const [courses, setCourses] = useState([]);
@@ -14,16 +19,7 @@ const StudentCourses = () => {
       setLoading(true);
       setError("");
 
-      const token = localStorage.getItem("access_token");
-
-      const response = await axios.get(
-        "http://127.0.0.1:8000/api/enrollments/",
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const response = await api.get("enrollments/");
 
       setCourses(response.data.results || []);
     } catch (err) {
@@ -65,8 +61,7 @@ const StudentCourses = () => {
   return (
     <div className="student-courses">
 
-      {/* Header */}
-
+      {/* Page Header */}
       <div className="courses-page-header">
         <span className="courses-label">
           ACADEMIC
@@ -81,7 +76,6 @@ const StudentCourses = () => {
       </div>
 
       {/* Summary */}
-
       <div className="courses-summary">
 
         <div className="courses-summary-card">
@@ -90,7 +84,7 @@ const StudentCourses = () => {
             <FaBookOpen />
           </div>
 
-          <div>
+          <div className="courses-summary-content">
             <span>Total Courses</span>
             <strong>{courses.length}</strong>
           </div>
@@ -100,11 +94,12 @@ const StudentCourses = () => {
       </div>
 
       {/* Courses */}
-
       {courses.length === 0 ? (
         <div className="courses-empty">
 
-          <FaBookOpen />
+          <div className="empty-icon">
+            <FaBookOpen />
+          </div>
 
           <h5>No Courses Found</h5>
 
@@ -114,59 +109,53 @@ const StudentCourses = () => {
 
         </div>
       ) : (
-        <div className="row g-4">
+        <div className="courses-grid">
 
           {courses.map((enrollment) => (
 
             <div
-              className="col-md-6 col-xl-4"
+              className="course-card"
               key={enrollment.id}
             >
 
-              <div className="course-card">
+              {/* Card Header */}
+              <div className="course-card-header">
 
-                {/* Course Header */}
-
-                <div className="course-card-header">
-
-                  <div className="course-icon">
-                    <FaBookOpen />
-                  </div>
-
-                  <span className="course-status">
-                    {enrollment.status}
-                  </span>
-
+                <div className="course-icon">
+                  <FaBookOpen />
                 </div>
 
-                {/* Course Information */}
+                <span className="course-status">
+                  {enrollment.status}
+                </span>
 
-                <div className="course-card-body">
+              </div>
 
-                  <span className="course-code">
-                    {enrollment.course_code}
-                  </span>
+              {/* Card Body */}
+              <div className="course-card-body">
 
-                  <h5>
-                    {enrollment.course_title}
-                  </h5>
+                <span className="course-code">
+                  {enrollment.course_code}
+                </span>
 
-                  <div className="course-info">
+                <h5>
+                  {enrollment.course_title}
+                </h5>
 
-                    <div>
-                      <FaCalendarAlt />
-                      <span>
-                        {enrollment.semester_name}
-                      </span>
-                    </div>
+                <div className="course-info">
 
-                    <div>
-                      <FaUserGraduate />
-                      <span>
-                        Section {enrollment.section}
-                      </span>
-                    </div>
+                  <div className="course-info-item">
+                    <FaCalendarAlt />
+                    <span>
+                      {enrollment.semester_name}
+                    </span>
+                  </div>
 
+                  <div className="course-info-item">
+                    <FaUserGraduate />
+                    <span>
+                      Section {enrollment.section}
+                    </span>
                   </div>
 
                 </div>
