@@ -1,502 +1,197 @@
+import { useEffect, useState } from "react";
 import {
-  FaClipboardCheck,
   FaCheckCircle,
   FaTimesCircle,
-  FaExclamationTriangle,
-  FaBookOpen,
-  FaFlask,
-  FaArrowRight,
+  FaCalendarAlt,
+  FaChartPie,
 } from "react-icons/fa";
 
+import api from "../../api/axios";
+import "../../styles/student/student-attendance.css";
+
 const StudentAttendance = () => {
-  // Temporary data.
-  // Later this will come from the Django Attendance API.
-  const courses = [
-    {
-      code: "CSE101",
-      title: "Introduction to Computer Science",
-      type: "REGULAR",
-      total: 20,
-      present: 18,
-      absent: 2,
-    },
-    {
-      code: "CSE203",
-      title: "Data Structures",
-      type: "REGULAR",
-      total: 18,
-      present: 16,
-      absent: 2,
-    },
-    {
-      code: "CSE205",
-      title: "Database Management System",
-      type: "REGULAR",
-      total: 22,
-      present: 18,
-      absent: 4,
-    },
-    {
-      code: "CSE208",
-      title: "Web Engineering Lab",
-      type: "LAB",
-      total: 15,
-      present: 12,
-      absent: 3,
-    },
-  ];
+  const [attendance, setAttendance] = useState([]);
+  const [summary, setSummary] = useState({
+    total_classes: 0,
+    present: 0,
+    absent: 0,
+    attendance_percentage: 0,
+  });
 
-  // Calculate course attendance.
-  const coursesWithPercentage = courses.map((course) => ({
-    ...course,
-    percentage:
-      course.total > 0
-        ? ((course.present / course.total) * 100).toFixed(1)
-        : "0.0",
-  }));
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
-  // Overall attendance.
-  const totalClasses = courses.reduce(
-    (total, course) => total + course.total,
-    0
-  );
+  useEffect(() => {
+    fetchAttendance();
+  }, []);
 
-  const totalPresent = courses.reduce(
-    (total, course) => total + course.present,
-    0
-  );
+  const fetchAttendance = async () => {
+    try {
+      setLoading(true);
+      setError("");
 
-  const totalAbsent = courses.reduce(
-    (total, course) => total + course.absent,
-    0
-  );
+      const [attendanceResponse, summaryResponse] = await Promise.all([
+        api.get("attendance/"),
+        api.get("attendance/summary/"),
+      ]);
 
-  const overallPercentage =
-    totalClasses > 0
-      ? ((totalPresent / totalClasses) * 100).toFixed(1)
-      : "0.0";
+      setAttendance(attendanceResponse.data.results || []);
 
-  // Attendance status.
-  const getAttendanceStatus = (percentage) => {
-    const value = Number(percentage);
-
-    if (value >= 80) {
-      return {
-        label: "Good",
-        className: "good",
-        icon: <FaCheckCircle />,
-      };
+      setSummary(
+        summaryResponse.data || {
+          total_classes: 0,
+          present: 0,
+          absent: 0,
+          attendance_percentage: 0,
+        }
+      );
+    } catch (err) {
+      console.error("Attendance loading error:", err);
+      setError(
+        err.response?.data?.detail || "Unable to load attendance information."
+      );
+    } finally {
+      setLoading(false);
     }
-
-    if (value >= 70) {
-      return {
-        label: "Warning",
-        className: "warning",
-        icon: <FaExclamationTriangle />,
-      };
-    }
-
-    return {
-      label: "Critical",
-      className: "critical",
-      icon: <FaTimesCircle />,
-    };
   };
 
-  const overallStatus = getAttendanceStatus(
-    overallPercentage
-  );
+  if (loading) {
+    return (
+      <div className="student-page">
+        <div className="attendance-loading">Loading attendance...</div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="student-page">
+        <div className="attendance-error">{error}</div>
+      </div>
+    );
+  }
 
   return (
-    <div className="student-attendance">
-
-      {/* =========================================
-          PAGE HEADER
-      ========================================= */}
-
-      <div className="attendance-page-header mb-4">
-
-        <span className="attendance-label">
-          STUDENT PORTAL
-        </span>
-
-        <h2>Attendance</h2>
-
-        <p>
-          Track your attendance across all enrolled
-          courses.
-        </p>
-
+    <div className="student-page">
+      <div className="page-header">
+        <div>
+          <h1>Attendance</h1>
+          <p>Track your class attendance and academic participation.</p>
+        </div>
       </div>
 
-      {/* =========================================
-          SUMMARY CARDS
-      ========================================= */}
-
-      <div className="row g-4 mb-4">
-
-        {/* Overall Attendance */}
-
-        <div className="col-md-4">
-
-          <div className="attendance-summary-card">
-
-            <div className="attendance-summary-icon blue">
-              <FaClipboardCheck />
-            </div>
-
-            <div className="attendance-summary-content">
-
-              <span>
-                Overall Attendance
-              </span>
-
-              <div className="attendance-percentage">
-                {overallPercentage}%
-              </div>
-
-              <div
-                className={`attendance-status ${overallStatus.className}`}
-              >
-                {overallStatus.icon}
-                {overallStatus.label}
-              </div>
-
-            </div>
-
+      {/* Summary Cards */}
+      <div className="attendance-summary-grid">
+        <div className="attendance-card">
+          <div className="attendance-card-icon">
+            <FaCalendarAlt />
           </div>
-
-        </div>
-
-        {/* Present */}
-
-        <div className="col-md-4">
-
-          <div className="attendance-summary-card">
-
-            <div className="attendance-summary-icon green">
-              <FaCheckCircle />
-            </div>
-
-            <div className="attendance-summary-content">
-
-              <span>
-                Classes Attended
-              </span>
-
-              <div className="attendance-number">
-                {totalPresent}
-              </div>
-
-              <small>
-                Out of {totalClasses} classes
-              </small>
-
-            </div>
-
-          </div>
-
-        </div>
-
-        {/* Absent */}
-
-        <div className="col-md-4">
-
-          <div className="attendance-summary-card">
-
-            <div className="attendance-summary-icon red">
-              <FaTimesCircle />
-            </div>
-
-            <div className="attendance-summary-content">
-
-              <span>
-                Classes Missed
-              </span>
-
-              <div className="attendance-number">
-                {totalAbsent}
-              </div>
-
-              <small>
-                Total absent classes
-              </small>
-
-            </div>
-
-          </div>
-
-        </div>
-
-      </div>
-
-      {/* =========================================
-          COURSE-WISE ATTENDANCE
-      ========================================= */}
-
-      <div className="attendance-section mb-4">
-
-        <div className="attendance-section-header">
-
           <div>
-
-            <h5>
-              Course-wise Attendance
-            </h5>
-
-            <p>
-              Attendance summary for your current
-              semester courses.
-            </p>
-
+            <span>Total Classes</span>
+            <strong>{summary.total_classes}</strong>
           </div>
-
         </div>
 
-        <div className="table-responsive">
+        <div className="attendance-card">
+          <div className="attendance-card-icon" style={{ color: "#047857" }}>
+            <FaCheckCircle />
+          </div>
+          <div>
+            <span>Present</span>
+            <strong>{summary.present}</strong>
+          </div>
+        </div>
 
-          <table className="table attendance-table mb-0">
+        <div className="attendance-card">
+          <div className="attendance-card-icon" style={{ color: "#dc2626" }}>
+            <FaTimesCircle />
+          </div>
+          <div>
+            <span>Absent</span>
+            <strong>{summary.absent}</strong>
+          </div>
+        </div>
 
-            <thead>
+        <div className="attendance-card">
+          <div className="attendance-card-icon" style={{ color: "#2563eb" }}>
+            <FaChartPie />
+          </div>
+          <div>
+            <span>Attendance Rate</span>
+            <strong>{summary.attendance_percentage}%</strong>
+          </div>
+        </div>
+      </div>
 
-              <tr>
-                <th>Course</th>
-                <th>Type</th>
-                <th>Total Classes</th>
-                <th>Present</th>
-                <th>Absent</th>
-                <th>Attendance</th>
-                <th>Status</th>
-                <th></th>
-              </tr>
+      {/* Attendance Table */}
+      <div className="attendance-section">
+        <div className="attendance-section-header">
+          <div>
+            <h2>Attendance History</h2>
+            <p>Your recorded attendance by class date.</p>
+          </div>
+        </div>
 
-            </thead>
-
-            <tbody>
-
-              {coursesWithPercentage.map((course) => {
-
-                const status = getAttendanceStatus(
-                  course.percentage
-                );
-
-                return (
-                  <tr key={course.code}>
-
-                    {/* Course */}
-
+        {attendance.length === 0 ? (
+          <div className="attendance-empty">
+            <FaCalendarAlt />
+            <h3>No Attendance Records</h3>
+            <p>
+              Attendance records will appear here once your instructor records
+              them.
+            </p>
+          </div>
+        ) : (
+          <div className="attendance-table-wrapper">
+            <table className="attendance-table">
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th>Course</th>
+                  <th>Semester</th>
+                  <th>Section</th>
+                  <th>Status</th>
+                  <th>Remarks</th>
+                </tr>
+              </thead>
+              <tbody>
+                {attendance.map((record) => (
+                  <tr key={record.id}>
+                    <td>{new Date(record.date).toLocaleDateString()}</td>
                     <td>
-
-                      <div className="attendance-course">
-
-                        <div className="attendance-course-icon">
-
-                          {course.type === "LAB" ? (
-                            <FaFlask />
-                          ) : (
-                            <FaBookOpen />
-                          )}
-
-                        </div>
-
-                        <div>
-
-                          <strong>
-                            {course.code}
-                          </strong>
-
-                          <span>
-                            {course.title}
-                          </span>
-
-                        </div>
-
+                      <div className="course-info">
+                        <strong>{record.course_code}</strong>
+                        <span>{record.course_title}</span>
                       </div>
-
                     </td>
-
-                    {/* Type */}
-
+                    <td>{record.semester_name}</td>
+                    <td>{record.section}</td>
                     <td>
-
+                      {/* FIXED SYNTAX ERROR HERE */}
                       <span
-                        className={`attendance-course-type ${
-                          course.type === "LAB"
-                            ? "lab"
-                            : "regular"
+                        className={`attendance-status ${
+                          record.status === "PRESENT" ? "present" : "absent"
                         }`}
                       >
-                        {course.type === "LAB"
-                          ? "Lab"
-                          : "Regular"}
+                        {record.status === "PRESENT" ? (
+                          <>
+                            <FaCheckCircle /> Present
+                          </>
+                        ) : (
+                          <>
+                            <FaTimesCircle /> Absent
+                          </>
+                        )}
                       </span>
-
                     </td>
-
-                    {/* Total */}
-
-                    <td>
-                      {course.total}
-                    </td>
-
-                    {/* Present */}
-
-                    <td>
-
-                      <span className="present-count">
-                        <FaCheckCircle />
-                        {course.present}
-                      </span>
-
-                    </td>
-
-                    {/* Absent */}
-
-                    <td>
-
-                      <span className="absent-count">
-                        <FaTimesCircle />
-                        {course.absent}
-                      </span>
-
-                    </td>
-
-                    {/* Percentage */}
-
-                    <td>
-
-                      <div className="course-attendance-progress">
-
-                        <div className="course-attendance-value">
-                          {course.percentage}%
-                        </div>
-
-                        <div className="progress">
-
-                          <div
-                            className={`progress-bar ${status.className}`}
-                            style={{
-                              width: `${course.percentage}%`,
-                            }}
-                          ></div>
-
-                        </div>
-
-                      </div>
-
-                    </td>
-
-                    {/* Status */}
-
-                    <td>
-
-                      <span
-                        className={`attendance-status ${status.className}`}
-                      >
-                        {status.icon}
-                        {status.label}
-                      </span>
-
-                    </td>
-
-                    {/* Details */}
-
-                    <td>
-
-                      <button
-                        type="button"
-                        className="attendance-details-btn"
-                      >
-                        <FaArrowRight />
-                      </button>
-
-                    </td>
-
+                    <td>{record.remarks || "—"}</td>
                   </tr>
-                );
-              })}
-
-            </tbody>
-
-          </table>
-
-        </div>
-
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
       </div>
-
-      {/* =========================================
-          ATTENDANCE STATUS GUIDE
-      ========================================= */}
-
-      <div className="attendance-section">
-
-        <div className="attendance-section-header">
-
-          <div>
-
-            <h5>
-              Attendance Status
-            </h5>
-
-            <p>
-              Understand your attendance status.
-            </p>
-
-          </div>
-
-        </div>
-
-        <div className="attendance-status-guide">
-
-          <div className="status-guide-item">
-
-            <span className="status-guide-icon good">
-              <FaCheckCircle />
-            </span>
-
-            <div>
-              <strong>Good</strong>
-              <span>
-                Attendance is 80% or above.
-              </span>
-            </div>
-
-          </div>
-
-          <div className="status-guide-item">
-
-            <span className="status-guide-icon warning">
-              <FaExclamationTriangle />
-            </span>
-
-            <div>
-              <strong>Warning</strong>
-              <span>
-                Attendance is between 70% and 79%.
-              </span>
-            </div>
-
-          </div>
-
-          <div className="status-guide-item">
-
-            <span className="status-guide-icon critical">
-              <FaTimesCircle />
-            </span>
-
-            <div>
-              <strong>Critical</strong>
-              <span>
-                Attendance is below 70%.
-              </span>
-            </div>
-
-          </div>
-
-        </div>
-
-      </div>
-
     </div>
   );
 };
