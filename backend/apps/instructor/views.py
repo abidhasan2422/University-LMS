@@ -144,3 +144,21 @@ class InstructorDetailView(APIView):
             },
             status=status.HTTP_200_OK,
         )
+class InstructorDashboardView(APIView):
+    """
+    Return dashboard information for the
+    currently authenticated instructor.
+    """
+
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+
+        dashboard = InstructorService.get_instructor_dashboard(
+            request.user
+        )
+
+        return Response(
+            dashboard,
+            status=status.HTTP_200_OK,
+        )

@@ -1,8 +1,8 @@
-from django.db import transaction
+from django.db import models, transaction
 from django.shortcuts import get_object_or_404
 
 from apps.common.query_service import QueryService
-
+from django.db.models import Count
 from .models import Instructor
 
 
@@ -154,3 +154,84 @@ class InstructorService:
             "user",
             "department",
         )
+    @staticmethod
+    def get_instructor_dashboard(user):
+        """
+        Return dashboard data for the logged-in instructor.
+        """
+
+        instructor = get_object_or_404(
+            Instructor.objects.select_related(
+                "user",
+                "department",
+            ),
+            user=user,
+            is_active=True,
+        )
+
+        course_offerings = (
+            instructor.course_offerings
+            .filter(is_active=True)
+            .select_related(
+                "course",
+                "semester",
+            )
+            .annotate(
+                student_count=Count(
+                    "enrollments",
+                    filter=models.Q(
+                        enrollments__status="ENROLLED",
+                        enrollments__is_active=True,
+                    ),
+                )
+            )
+        )
+
+        total_courses = course_offerings.count()
+
+        total_students = sum(
+            offering.student_count
+            for offering in course_offerings
+        )
+
+        active_courses = course_offerings.filter(
+            status="OPEN"
+        ).count()
+
+        courses = []
+
+        for offering in course_offerings:
+            courses.append(
+                {
+                    "id": offering.id,
+                    "course_code": offering.course.course_code,
+                    "course_title": offering.course.course_title,
+                    "semester": offering.semester.name,
+                    "academic_year": offering.academic_year,
+                    "section": offering.section,
+                    "room": offering.room,
+                    "day": offering.day,
+                    "start_time": offering.start_time,
+                    "end_time": offering.end_time,
+                    "status": offering.status,
+                    "student_count": offering.student_count,
+                }
+            )
+
+        return {
+            "instructor": {
+                "id": instructor.id,
+                "full_name": instructor.user.get_full_name(),
+                "employee_id": instructor.employee_id,
+                "email": instructor.user.email,
+                "department": instructor.department.name,
+                "designation": instructor.designation,
+                "employment_status": instructor.employment_status,
+            },
+            "statistics": {
+                "total_courses": total_courses,
+                "total_students": total_students,
+                "active_courses": active_courses,
+            },
+            "courses": courses,
+        }

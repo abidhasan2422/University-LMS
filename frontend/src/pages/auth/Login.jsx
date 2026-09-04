@@ -1,6 +1,10 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { FaGraduationCap, FaLock, FaEnvelope } from "react-icons/fa";
+import {
+  FaGraduationCap,
+  FaLock,
+  FaEnvelope,
+} from "react-icons/fa";
 import { useAuth } from "../../context/AuthContext";
 
 import "../../styles/auth/login.css";
@@ -21,13 +25,34 @@ const Login = () => {
     try {
       const data = await login(email, password);
 
-      if (data.user?.role === "STUDENT") {
+      console.log("LOGIN RESPONSE:", data);
+      console.log("USER ROLE:", data?.user?.role);
+
+      const role = data?.user?.role?.toUpperCase();
+
+      // =========================
+      // STUDENT
+      // =========================
+      if (role === "STUDENT") {
         navigate("/student/dashboard");
-      } else {
-        setError("This account is not a student account.");
+        return;
       }
+
+      // =========================
+      // INSTRUCTOR
+      // =========================
+      if (role === "INSTRUCTOR") {
+        navigate("/instructor/dashboard");
+        return;
+      }
+
+      // =========================
+      // UNKNOWN ROLE
+      // =========================
+      setError("Your account role is not recognized.");
+
     } catch (err) {
-      console.error(err);
+      console.error("LOGIN ERROR:", err);
 
       setError(
         err.response?.data?.detail ||
@@ -43,7 +68,6 @@ const Login = () => {
       <div className="login-container">
 
         {/* Left Side */}
-
         <div className="login-brand">
 
           <div className="brand-icon">
@@ -58,6 +82,7 @@ const Login = () => {
           </p>
 
           <div className="brand-features">
+
             <div>
               <span>✓</span>
               <p>Access your courses</p>
@@ -72,12 +97,12 @@ const Login = () => {
               <span>✓</span>
               <p>View results and GPA</p>
             </div>
+
           </div>
 
         </div>
 
         {/* Login Card */}
-
         <div className="login-card">
 
           <div className="login-header">
@@ -86,7 +111,7 @@ const Login = () => {
               <FaGraduationCap />
             </div>
 
-            <span>STUDENT PORTAL</span>
+            <span>UNIVERSITY PORTAL</span>
 
             <h2>Welcome back</h2>
 
@@ -99,7 +124,6 @@ const Login = () => {
           <form onSubmit={handleSubmit}>
 
             {/* Email */}
-
             <div className="login-field">
 
               <label htmlFor="email">
@@ -127,7 +151,6 @@ const Login = () => {
             </div>
 
             {/* Password */}
-
             <div className="login-field">
 
               <div className="password-label">
@@ -169,7 +192,6 @@ const Login = () => {
             </div>
 
             {/* Error */}
-
             {error && (
               <div className="login-error">
                 {error}
@@ -177,19 +199,22 @@ const Login = () => {
             )}
 
             {/* Submit */}
-
             <button
               type="submit"
               className="login-button"
               disabled={loading}
             >
-              {loading ? "Signing in..." : "Sign In"}
+              {loading
+                ? "Signing in..."
+                : "Sign In"}
             </button>
 
           </form>
 
           <div className="login-footer">
-            <span>University Learning Management System</span>
+            <span>
+              University Learning Management System
+            </span>
           </div>
 
         </div>

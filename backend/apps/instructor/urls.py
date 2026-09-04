@@ -3,6 +3,7 @@ from django.urls import path
 from .views import (
     InstructorListCreateView,
     InstructorDetailView,
+    InstructorDashboardView,
 )
 
 urlpatterns = [
@@ -17,4 +18,9 @@ urlpatterns = [
         InstructorDetailView.as_view(),
         name="instructor-detail",
     ),
+    path(
+    "dashboard/",
+    InstructorDashboardView.as_view(),
+    name="instructor-dashboard",
+),
 ]

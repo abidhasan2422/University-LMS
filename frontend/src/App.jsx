@@ -1,8 +1,6 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "./context/AuthContext";
-
 import Login from "./pages/auth/Login";
-
 import StudentProfile from "./pages/student/StudentProfile";
 import StudentLayout from "./layouts/StudentLayout";
 import StudentDashboard from "./pages/student/StudentDashboard";
@@ -12,6 +10,7 @@ import StudentAssessments from "./pages/student/StudentAssessments";
 import StudentResults from "./pages/student/StudentResults";
 import StudentGPA from "./pages/student/StudentGPA";
 import StudentChangePassword from "./pages/student/StudentChangePassword";
+import InstructorDashboard from "./pages/instructor/InstructorDashboard";
 
 function App() {
   return (
@@ -69,6 +68,10 @@ function App() {
             />
 
           </Route>
+          <Route
+  path="/instructor/dashboard"
+  element={<InstructorDashboard />}
+/>
 
         </Routes>
 
