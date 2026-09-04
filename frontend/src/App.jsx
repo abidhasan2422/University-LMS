@@ -11,14 +11,13 @@ import StudentResults from "./pages/student/StudentResults";
 import StudentGPA from "./pages/student/StudentGPA";
 import StudentChangePassword from "./pages/student/StudentChangePassword";
 import InstructorDashboard from "./pages/instructor/InstructorDashboard";
+import InstructorLayout from "./layouts/InstructorLayout";
 
 function App() {
   return (
     <BrowserRouter>
       <AuthProvider>
-
         <Routes>
-
           {/* Login */}
 
           <Route path="/" element={<Login />} />
@@ -26,55 +25,27 @@ function App() {
           {/* Student Portal */}
 
           <Route path="/student" element={<StudentLayout />}>
+            <Route path="dashboard" element={<StudentDashboard />} />
 
-            <Route
-              path="dashboard"
-              element={<StudentDashboard />}
-            />
+            <Route path="profile" element={<StudentProfile />} />
 
-            <Route
-              path="profile"
-              element={<StudentProfile />}
-            />
+            <Route path="courses" element={<StudentCourses />} />
 
-            <Route
-              path="courses"
-              element={<StudentCourses />}
-            />
+            <Route path="attendance" element={<StudentAttendance />} />
 
-            <Route
-              path="attendance"
-              element={<StudentAttendance />}
-            />
+            <Route path="assessments" element={<StudentAssessments />} />
 
-            <Route
-              path="assessments"
-              element={<StudentAssessments />}
-            />
+            <Route path="results" element={<StudentResults />} />
 
-            <Route
-              path="results"
-              element={<StudentResults />}
-            />
+            <Route path="gpa" element={<StudentGPA />} />
 
-            <Route
-              path="gpa"
-              element={<StudentGPA />}
-            />
-
-            <Route
-              path="change-password"
-              element={<StudentChangePassword />}
-            />
-
+            <Route path="change-password" element={<StudentChangePassword />} />
           </Route>
-          <Route
-  path="/instructor/dashboard"
-  element={<InstructorDashboard />}
-/>
 
+          <Route path="/instructor" element={<InstructorLayout />}>
+            <Route path="dashboard" element={<InstructorDashboard />} />
+          </Route>
         </Routes>
-
       </AuthProvider>
     </BrowserRouter>
   );
