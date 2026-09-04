@@ -322,7 +322,56 @@
     font-size: 13px;
   }
 }
+/* =========================================================
+   LOGOUT BUTTON
+========================================================= */
 
+.logout-button {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+
+  width: 100%;
+  min-height: 46px;
+
+  margin: auto 0 20px;
+  padding: 0 15px;
+
+  border: none;
+  outline: none;
+  border-radius: 9px;
+
+  background: transparent;
+  color: #cbd5e1;
+
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 500;
+
+  cursor: pointer;
+  text-align: left;
+  box-sizing: border-box;
+
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease;
+}
+
+.logout-button svg {
+  width: 17px;
+  min-width: 17px;
+  height: 17px;
+  color: #94a3b8;
+}
+
+.logout-button:hover {
+  background: #1e293b;
+  color: #f87171;
+}
+
+.logout-button:hover svg {
+  color: #f87171;
+}
 
 /* =========================================================
    SMALL MOBILE

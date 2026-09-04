@@ -7,6 +7,7 @@ import {
   FaChartBar,
   FaUser,
   FaKey,
+  FaSignOutAlt,
   FaChalkboardTeacher,
 } from "react-icons/fa";
 
@@ -67,6 +68,10 @@ function InstructorLayout() {
             <FaKey />
             <span>Change Password</span>
           </NavLink>
+          <button className="logout-button">
+  <FaSignOutAlt />
+  <span>Logout</span>
+</button>
 
         </nav>
 
