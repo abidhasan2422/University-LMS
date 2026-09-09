@@ -84,36 +84,45 @@ class EnrollmentService:
         return serializer.save(status=Enrollment.Status.ENROLLED)
 
     @staticmethod
-    def get_all_enrollments(search=None, ordering=None, student=None, course_offering=None, status=None):
-        queryset = Enrollment.objects.select_related(
-            "student",
-            "student__user",
-            "course_offering",
-            "course_offering__course",
-            "course_offering__semester",
-        )
-        return QueryService.apply(
-            queryset=queryset,
-            search=search,
-            search_fields=[
-                "student__student_id",
-                "student__user__first_name",
-                "student__user__last_name",
-                "course_offering__course__course_code",
-                "course_offering__course__course_title",
-            ],
-            ordering=ordering,
-            allowed_ordering=[
-                "-enrollment_date",
-                "enrollment_date",
-                "status",
-            ],
-            filters={
-                "student_id": student,
-                "course_offering_id": course_offering,
-                "status": status,
-            },
-        )
+    def get_all_enrollments(
+    search=None,
+    ordering=None,
+    student=None,
+    course_offering=None,
+    status=None,
+    instructor=None,
+):
+     queryset = Enrollment.objects.select_related(
+        "student",
+        "student__user",
+        "course_offering",
+        "course_offering__course",
+        "course_offering__semester",
+    )
+
+     return QueryService.apply(
+        queryset=queryset,
+        search=search,
+        search_fields=[
+            "student__student_id",
+            "student__user__first_name",
+            "student__user__last_name",
+            "course_offering__course__course_code",
+            "course_offering__course__course_title",
+        ],
+        ordering=ordering,
+        allowed_ordering=[
+            "-enrollment_date",
+            "enrollment_date",
+            "status",
+        ],
+        filters={
+            "student_id": student,
+            "course_offering_id": course_offering,
+            "course_offering__instructor_id": instructor,
+            "status": status,
+        },
+    )
 
     @staticmethod
     def drop_enrollment(enrollment):

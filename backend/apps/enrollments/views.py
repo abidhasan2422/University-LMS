@@ -24,6 +24,11 @@ class EnrollmentListCreateView(APIView):
         student = request.query_params.get("student")
         course_offering = request.query_params.get("course_offering")
         enrollment_status = request.query_params.get("status")
+        instructor = None
+        if (
+         hasattr(request.user, "instructor_profile")
+         and request.user.role == "INSTRUCTOR"):
+         instructor = request.user.instructor_profile.id
 
         # If the user is a student (not an admin/instructor), restrict them to viewing only their own enrollments
         if hasattr(request.user, "student_profile") and not request.user.is_staff and request.user.role == "STUDENT":
@@ -35,6 +40,8 @@ class EnrollmentListCreateView(APIView):
             student=student,
             course_offering=course_offering,
             status=enrollment_status,
+            instructor=instructor,
+
         )
 
         paginator = StandardResultsSetPagination()
