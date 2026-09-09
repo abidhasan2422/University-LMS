@@ -9,11 +9,12 @@ import {
 
 import api from "../../api/axios";
 import "../../styles/instructor/instructor-courses.css";
-
+import { useNavigate } from "react-router-dom";
 function InstructorCourses() {
   const [courses, setCourses] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchCourses();
@@ -192,6 +193,14 @@ function InstructorCourses() {
                   </div>
                 </div>
 
+<button
+  className="view-course-button"
+  onClick={() =>
+    navigate(`/instructor/courses/${course.id}`)
+  }
+>
+  View Course
+</button>
               </div>
 
             </div>
