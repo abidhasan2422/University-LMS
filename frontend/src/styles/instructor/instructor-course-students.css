@@ -1,0 +1,500 @@
+/* =========================================
+   Instructor Course Students Page
+========================================= */
+
+.instructor-course-students-page {
+  padding: 30px;
+  min-height: 100%;
+  background: #f8fafc;
+  box-sizing: border-box;
+}
+
+/* =========================================
+   Page Header
+========================================= */
+
+.students-page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  margin-bottom: 28px;
+}
+
+.students-page-header h1 {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 0 0 7px;
+  color: #0f172a;
+  font-size: 26px;
+  font-weight: 700;
+}
+
+.students-page-header h1 svg {
+  width: 24px;
+  height: 24px;
+  color: #2563eb;
+}
+
+.students-page-header p {
+  margin: 0;
+  color: #64748b;
+  font-size: 14px;
+}
+
+/* =========================================
+   Back Button
+========================================= */
+
+.back-to-course-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  min-height: 42px;
+  padding: 0 17px;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  background: #ffffff;
+  color: #334155;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.back-to-course-button svg {
+  width: 14px;
+  height: 14px;
+}
+
+.back-to-course-button:hover {
+  background: #f8fafc;
+  border-color: #cbd5e1;
+  color: #2563eb;
+  box-shadow: 0 3px 8px rgba(15, 23, 42, 0.06);
+}
+
+.back-to-course-button:focus {
+  outline: none;
+}
+
+/* =========================================
+   Summary Card
+========================================= */
+
+.students-summary-card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  width: 240px;
+  min-height: 90px;
+  margin-bottom: 24px;
+  padding: 18px 20px;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  background: #ffffff;
+  box-sizing: border-box;
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
+}
+
+.summary-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  min-width: 48px;
+  height: 48px;
+  border-radius: 10px;
+  background: #eff6ff;
+  color: #2563eb;
+}
+
+.summary-icon svg {
+  width: 21px;
+  height: 21px;
+}
+
+.students-summary-card span {
+  display: block;
+  margin-bottom: 5px;
+  color: #64748b;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.students-summary-card strong {
+  display: block;
+  color: #0f172a;
+  font-size: 23px;
+  font-weight: 700;
+}
+
+/* =========================================
+   Table Card
+========================================= */
+
+.students-table-card {
+  overflow: hidden;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  background: #ffffff;
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
+}
+
+.students-table-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 78px;
+  padding: 18px 22px;
+  border-bottom: 1px solid #e2e8f0;
+  box-sizing: border-box;
+}
+
+.students-table-header h2 {
+  margin: 0 0 5px;
+  color: #0f172a;
+  font-size: 17px;
+  font-weight: 650;
+}
+
+.students-table-header p {
+  margin: 0;
+  color: #64748b;
+  font-size: 12px;
+}
+
+/* =========================================
+   Table Wrapper
+========================================= */
+
+.students-table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+}
+
+/* =========================================
+   Students Table
+========================================= */
+
+.students-table {
+  width: 100%;
+  min-width: 850px;
+  border-collapse: collapse;
+}
+
+.students-table thead {
+  background: #f8fafc;
+}
+
+.students-table th {
+  height: 48px;
+  padding: 0 18px;
+  border-bottom: 1px solid #e2e8f0;
+  color: #64748b;
+  font-size: 11px;
+  font-weight: 650;
+  letter-spacing: 0.03em;
+  text-align: left;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.students-table td {
+  height: 65px;
+  padding: 10px 18px;
+  border-bottom: 1px solid #f1f5f9;
+  color: #334155;
+  font-size: 13px;
+  vertical-align: middle;
+}
+
+.students-table tbody tr {
+  transition: background-color 0.15s ease;
+}
+
+.students-table tbody tr:hover {
+  background: #f8fafc;
+}
+
+.students-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+/* =========================================
+   Student ID
+========================================= */
+
+.student-id {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #475569;
+  font-weight: 550;
+  white-space: nowrap;
+}
+
+.student-id svg {
+  width: 14px;
+  min-width: 14px;
+  color: #94a3b8;
+}
+
+/* =========================================
+   Student Name
+========================================= */
+
+.student-name {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  color: #0f172a;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.student-name svg {
+  width: 15px;
+  min-width: 15px;
+  color: #64748b;
+}
+
+/* =========================================
+   Course Information
+========================================= */
+
+.course-info {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 160px;
+}
+
+.course-info strong {
+  color: #0f172a;
+  font-size: 13px;
+  font-weight: 650;
+}
+
+.course-info span {
+  max-width: 220px;
+  overflow: hidden;
+  color: #64748b;
+  font-size: 11px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* =========================================
+   Section
+========================================= */
+
+.section-info {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  color: #475569;
+  font-weight: 550;
+}
+
+.section-info svg {
+  width: 13px;
+  color: #94a3b8;
+}
+
+/* =========================================
+   Status
+========================================= */
+
+.student-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 28px;
+  padding: 0 10px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 650;
+  white-space: nowrap;
+}
+
+.student-status svg {
+  width: 12px;
+  height: 12px;
+}
+
+.student-status.enrolled {
+  background: #ecfdf5;
+  color: #047857;
+}
+
+.student-status.dropped {
+  background: #fef2f2;
+  color: #dc2626;
+}
+
+.student-status.completed {
+  background: #eff6ff;
+  color: #2563eb;
+}
+
+/* =========================================
+   Loading / Error Card
+========================================= */
+
+.students-state-card {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  min-height: 180px;
+  padding: 30px;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  background: #ffffff;
+  color: #64748b;
+  box-sizing: border-box;
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
+}
+
+.students-state-card p {
+  margin: 0;
+  font-size: 14px;
+}
+
+.students-state-card.error {
+  color: #dc2626;
+}
+
+.students-state-card.error p {
+  margin-bottom: 15px;
+}
+
+/* =========================================
+   Retry Button
+========================================= */
+
+.retry-button {
+  min-height: 38px;
+  padding: 0 17px;
+  border: 1px solid #2563eb;
+  border-radius: 8px;
+  background: #2563eb;
+  color: #ffffff;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.retry-button:hover {
+  background: #1d4ed8;
+  border-color: #1d4ed8;
+}
+
+.retry-button:focus {
+  outline: none;
+}
+
+/* =========================================
+   Empty State
+========================================= */
+
+.empty-students {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  min-height: 250px;
+  padding: 30px;
+  text-align: center;
+}
+
+.empty-students > svg {
+  width: 38px;
+  height: 38px;
+  margin-bottom: 14px;
+  color: #94a3b8;
+}
+
+.empty-students h3 {
+  margin: 0 0 7px;
+  color: #334155;
+  font-size: 16px;
+  font-weight: 650;
+}
+
+.empty-students p {
+  max-width: 400px;
+  margin: 0;
+  color: #64748b;
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+/* =========================================
+   Responsive Design
+========================================= */
+
+@media (max-width: 768px) {
+  .instructor-course-students-page {
+    padding: 20px;
+  }
+
+  .students-page-header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .back-to-course-button {
+    width: 100%;
+  }
+
+  .students-summary-card {
+    width: 100%;
+  }
+
+  .students-table-header {
+    padding: 16px;
+  }
+
+  .students-table th,
+  .students-table td {
+    padding-left: 14px;
+    padding-right: 14px;
+  }
+}
+
+@media (max-width: 480px) {
+  .instructor-course-students-page {
+    padding: 15px;
+  }
+
+  .students-page-header h1 {
+    font-size: 22px;
+  }
+
+  .students-page-header p {
+    font-size: 13px;
+  }
+
+  .students-summary-card {
+    min-height: 80px;
+  }
+
+  .summary-icon {
+    width: 42px;
+    min-width: 42px;
+    height: 42px;
+  }
+}

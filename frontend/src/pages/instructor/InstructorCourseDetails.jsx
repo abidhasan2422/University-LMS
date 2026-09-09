@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
 import {
   FaBookOpen,
   FaUsers,
@@ -13,13 +12,14 @@ import {
 
 import api from "../../api/axios";
 import "../../styles/instructor/instructor-course-details.css";
-
+import { useNavigate, useParams } from "react-router-dom";
 function InstructorCourseDetails() {
   const { courseOfferingId } = useParams();
 
   const [course, setCourse] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+const navigate = useNavigate();
 
   useEffect(() => {
     fetchCourse();
@@ -189,7 +189,11 @@ function InstructorCourseDetails() {
 
         <div className="course-management-grid">
 
-          <button className="course-management-item">
+          <button className="course-management-item"
+          onClick={() =>
+    navigate(`/instructor/courses/${courseOfferingId}/students`)
+  }
+          >
             <FaUsers />
             <div>
               <strong>Students</strong>
