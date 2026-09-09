@@ -12,6 +12,7 @@ import StudentGPA from "./pages/student/StudentGPA";
 import StudentChangePassword from "./pages/student/StudentChangePassword";
 import InstructorDashboard from "./pages/instructor/InstructorDashboard";
 import InstructorLayout from "./layouts/InstructorLayout";
+import InstructorCourses from "./pages/instructor/InstructorCourses";
 
 function App() {
   return (
@@ -44,6 +45,7 @@ function App() {
 
           <Route path="/instructor" element={<InstructorLayout />}>
             <Route path="dashboard" element={<InstructorDashboard />} />
+              <Route path="courses" element={<InstructorCourses />} />
           </Route>
         </Routes>
       </AuthProvider>
