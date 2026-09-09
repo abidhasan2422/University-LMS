@@ -8,7 +8,7 @@ import {
 } from "react-icons/fa";
 
 import api from "../../api/axios";
-//import "../../styles/instructor/instructor-courses.css";
+import "../../styles/instructor/instructor-courses.css";
 
 function InstructorCourses() {
   const [courses, setCourses] = useState([]);
