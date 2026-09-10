@@ -367,7 +367,6 @@ const InstructorCourseAssessments = () => {
       setSuccess("Marks saved successfully.");
 
       // Reload marks after saving
-      await handleEnterMarks(selectedAssessment);
     } catch (error) {
       console.error("Failed to save marks:", error);
 
