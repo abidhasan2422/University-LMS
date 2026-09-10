@@ -10,9 +10,9 @@ class AssessmentAdmin(admin.ModelAdmin):
     """
 
     list_display = (
+        "title",
         "course_code",
         "course_title",
-        "assessment_type",
         "assessment_type",
         "maximum_marks",
         "assessment_date",
@@ -21,7 +21,7 @@ class AssessmentAdmin(admin.ModelAdmin):
     )
 
     search_fields = (
-   
+        "title",
         "course_offering__course__course_code",
         "course_offering__course__course_title",
         "course_offering__instructor__user__first_name",
@@ -60,6 +60,7 @@ class AssessmentAdmin(admin.ModelAdmin):
             "Assessment Information",
             {
                 "fields": (
+                    "title",
                     "course_offering",
                     "assessment_type",
                     "maximum_marks",

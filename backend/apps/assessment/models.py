@@ -11,6 +11,10 @@ class Assessment(BaseModel):
     Represents an assessment component for a course offering.
     """
 
+    title = models.CharField(
+        max_length=150,
+    )
+
     class AssessmentType(models.TextChoices):
         ASSIGNMENT = "ASSIGNMENT", "Assignment"
         QUIZ = "QUIZ", "Quiz"
@@ -38,10 +42,6 @@ class Assessment(BaseModel):
     )
 
     assessment_type = models.CharField(
-        max_length=150,
-    )
-
-    assessment_type = models.CharField(
         max_length=30,
         choices=AssessmentType.choices,
     )
@@ -58,23 +58,6 @@ class Assessment(BaseModel):
         null=True,
         blank=True,
     )
-
-    class Meta:
-        db_table = "assessments"
-
-        ordering = [
-            "assessment_date",
-            "created_at",
-        ]
-
-        verbose_name = "Assessment"
-        verbose_name_plural = "Assessments"
-
-    def __str__(self):
-        return (
-            f"{self.course_offering.course.course_code} - "
-            f"{self.title}"
-        )
 
 
 class AssessmentMark(BaseModel):
