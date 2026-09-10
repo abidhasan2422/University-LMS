@@ -15,6 +15,7 @@ import InstructorLayout from "./layouts/InstructorLayout";
 import InstructorCourses from "./pages/instructor/InstructorCourses";
 import InstructorCourseDetails from "./pages/instructor/InstructorCourseDetails";
 import InstructorCourseStudents from "./pages/instructor/InstructorCourseStudents";
+import InstructorCourseAttendance from "./pages/instructor/InstructorCourseAttendance";
 function App() {
   return (
     <BrowserRouter>
@@ -50,13 +51,19 @@ function App() {
             <Route
               path="courses/:courseOfferingId"
               element={<InstructorCourseDetails />}
-
             />
             <Route
-  path="courses/:courseOfferingId/students"
-  element={<InstructorCourseStudents />}
-/>
+              path="courses/:courseOfferingId/students"
+              element={<InstructorCourseStudents />}
+            />
+             <Route
+            path="courses/:courseOfferingId/attendance"
+            element={<InstructorCourseAttendance />}
+          />
           </Route>
+
+         
+         
         </Routes>
       </AuthProvider>
     </BrowserRouter>

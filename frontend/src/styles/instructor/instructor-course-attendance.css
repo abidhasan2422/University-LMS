@@ -1,19 +1,19 @@
 /* =========================================
-   Instructor Course Attendance
+   Instructor Course Students Page
 ========================================= */
 
-.instructor-course-attendance-page {
-  min-height: 100%;
+.instructor-course-students-page {
   padding: 30px;
+  min-height: 100%;
   background: #f8fafc;
   box-sizing: border-box;
 }
 
 /* =========================================
-   Header
+   Page Header
 ========================================= */
 
-.attendance-page-header {
+.students-page-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -21,7 +21,7 @@
   margin-bottom: 28px;
 }
 
-.attendance-page-header h1 {
+.students-page-header h1 {
   display: flex;
   align-items: center;
   gap: 12px;
@@ -31,13 +31,13 @@
   font-weight: 700;
 }
 
-.attendance-page-header h1 svg {
+.students-page-header h1 svg {
   width: 24px;
   height: 24px;
   color: #2563eb;
 }
 
-.attendance-page-header p {
+.students-page-header p {
   margin: 0;
   color: #64748b;
   font-size: 14px;
@@ -62,7 +62,11 @@
   font-size: 13px;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
 .back-to-course-button svg {
@@ -71,117 +75,72 @@
 }
 
 .back-to-course-button:hover {
+  background: #f8fafc;
   border-color: #cbd5e1;
   color: #2563eb;
-  background: #f8fafc;
+  box-shadow: 0 3px 8px rgba(15, 23, 42, 0.06);
 }
 
-/* =========================================
-   Controls Card
-========================================= */
-
-.attendance-controls-card {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 25px;
-  margin-bottom: 20px;
-  padding: 20px 22px;
-  border: 1px solid #e2e8f0;
-  border-radius: 12px;
-  background: #ffffff;
-  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
-}
-
-.attendance-date-group {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-}
-
-.attendance-date-group label {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  color: #334155;
-  font-size: 13px;
-  font-weight: 600;
-}
-
-.attendance-date-group label svg {
-  color: #2563eb;
-}
-
-.attendance-date-group input {
-  height: 40px;
-  padding: 0 12px;
-  border: 1px solid #cbd5e1;
-  border-radius: 8px;
-  background: #ffffff;
-  color: #334155;
-  font-family: inherit;
-  font-size: 13px;
+.back-to-course-button:focus {
   outline: none;
 }
 
-.attendance-date-group input:focus {
-  border-color: #2563eb;
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.08);
-}
-
 /* =========================================
-   Student Count
+   Summary Card
 ========================================= */
 
-.attendance-count {
+.students-summary-card {
   display: flex;
   align-items: center;
-  gap: 9px;
-  color: #64748b;
-  font-size: 13px;
+  gap: 16px;
+  width: 240px;
+  min-height: 90px;
+  margin-bottom: 24px;
+  padding: 18px 20px;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  background: #ffffff;
+  box-sizing: border-box;
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
 }
 
-.attendance-count svg {
+.summary-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  min-width: 48px;
+  height: 48px;
+  border-radius: 10px;
+  background: #eff6ff;
   color: #2563eb;
 }
 
-.attendance-count strong {
-  color: #0f172a;
-  font-weight: 700;
+.summary-icon svg {
+  width: 21px;
+  height: 21px;
 }
 
-/* =========================================
-   Messages
-========================================= */
-
-.attendance-message {
-  display: flex;
-  align-items: center;
-  gap: 9px;
-  margin-bottom: 20px;
-  padding: 12px 15px;
-  border-radius: 8px;
-  font-size: 13px;
+.students-summary-card span {
+  display: block;
+  margin-bottom: 5px;
+  color: #64748b;
+  font-size: 12px;
   font-weight: 500;
 }
 
-.attendance-message.error {
-  border: 1px solid #fecaca;
-  background: #fef2f2;
-  color: #dc2626;
-}
-
-.attendance-message.success {
-  border: 1px solid #bbf7d0;
-  background: #f0fdf4;
-  color: #15803d;
+.students-summary-card strong {
+  display: block;
+  color: #0f172a;
+  font-size: 23px;
+  font-weight: 700;
 }
 
 /* =========================================
    Table Card
 ========================================= */
 
-.attendance-table-card {
+.students-table-card {
   overflow: hidden;
   border: 1px solid #e2e8f0;
   border-radius: 12px;
@@ -189,44 +148,53 @@
   box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
 }
 
-.attendance-table-header {
-  padding: 20px 22px;
+.students-table-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 78px;
+  padding: 18px 22px;
   border-bottom: 1px solid #e2e8f0;
+  box-sizing: border-box;
 }
 
-.attendance-table-header h2 {
+.students-table-header h2 {
   margin: 0 0 5px;
   color: #0f172a;
   font-size: 17px;
   font-weight: 650;
 }
 
-.attendance-table-header p {
+.students-table-header p {
   margin: 0;
   color: #64748b;
   font-size: 12px;
 }
 
 /* =========================================
-   Table
+   Table Wrapper
 ========================================= */
 
-.attendance-table-wrapper {
+.students-table-wrapper {
   width: 100%;
   overflow-x: auto;
 }
 
-.attendance-table {
+/* =========================================
+   Students Table
+========================================= */
+
+.students-table {
   width: 100%;
-  min-width: 950px;
+  min-width: 850px;
   border-collapse: collapse;
 }
 
-.attendance-table thead {
+.students-table thead {
   background: #f8fafc;
 }
 
-.attendance-table th {
+.students-table th {
   height: 48px;
   padding: 0 18px;
   border-bottom: 1px solid #e2e8f0;
@@ -239,8 +207,8 @@
   white-space: nowrap;
 }
 
-.attendance-table td {
-  height: 68px;
+.students-table td {
+  height: 65px;
   padding: 10px 18px;
   border-bottom: 1px solid #f1f5f9;
   color: #334155;
@@ -248,15 +216,15 @@
   vertical-align: middle;
 }
 
-.attendance-table tbody tr {
+.students-table tbody tr {
   transition: background-color 0.15s ease;
 }
 
-.attendance-table tbody tr:hover {
+.students-table tbody tr:hover {
   background: #f8fafc;
 }
 
-.attendance-table tbody tr:last-child td {
+.students-table tbody tr:last-child td {
   border-bottom: none;
 }
 
@@ -264,16 +232,26 @@
    Student ID
 ========================================= */
 
-.attendance-student-id {
+.student-id {
+  display: flex;
+  align-items: center;
+  gap: 8px;
   color: #475569;
   font-weight: 550;
+  white-space: nowrap;
+}
+
+.student-id svg {
+  width: 14px;
+  min-width: 14px;
+  color: #94a3b8;
 }
 
 /* =========================================
    Student Name
 ========================================= */
 
-.attendance-student-name {
+.student-name {
   display: flex;
   align-items: center;
   gap: 9px;
@@ -282,28 +260,30 @@
   white-space: nowrap;
 }
 
-.attendance-student-name svg {
+.student-name svg {
   width: 15px;
+  min-width: 15px;
   color: #64748b;
 }
 
 /* =========================================
-   Course
+   Course Information
 ========================================= */
 
-.attendance-course {
+.course-info {
   display: flex;
   flex-direction: column;
   gap: 3px;
-  min-width: 170px;
+  min-width: 160px;
 }
 
-.attendance-course strong {
+.course-info strong {
   color: #0f172a;
   font-size: 13px;
+  font-weight: 650;
 }
 
-.attendance-course span {
+.course-info span {
   max-width: 220px;
   overflow: hidden;
   color: #64748b;
@@ -316,132 +296,65 @@
    Section
 ========================================= */
 
-.attendance-section {
-  display: inline-flex;
+.section-info {
+  display: flex;
   align-items: center;
-  justify-content: center;
-  min-width: 30px;
-  min-height: 28px;
-  padding: 0 8px;
-  border-radius: 6px;
-  background: #f1f5f9;
+  gap: 7px;
   color: #475569;
-  font-size: 12px;
-  font-weight: 650;
+  font-weight: 550;
+}
+
+.section-info svg {
+  width: 13px;
+  color: #94a3b8;
 }
 
 /* =========================================
-   Attendance Status Buttons
+   Status
 ========================================= */
 
-.attendance-status-buttons {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.status-button {
+.student-status {
   display: inline-flex;
   align-items: center;
-  justify-content: center;
   gap: 6px;
-  min-width: 88px;
-  height: 34px;
-  padding: 0 11px;
-  border: 1px solid #e2e8f0;
-  border-radius: 7px;
-  background: #ffffff;
-  color: #64748b;
-  font-family: inherit;
+  min-height: 28px;
+  padding: 0 10px;
+  border-radius: 20px;
   font-size: 11px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s ease;
+  font-weight: 650;
+  white-space: nowrap;
 }
 
-.status-button svg {
-  width: 13px;
-  height: 13px;
+.student-status svg {
+  width: 12px;
+  height: 12px;
 }
 
-.status-button.present:hover,
-.status-button.present.active {
-  border-color: #86efac;
-  background: #f0fdf4;
-  color: #15803d;
+.student-status.enrolled {
+  background: #ecfdf5;
+  color: #047857;
 }
 
-.status-button.absent:hover,
-.status-button.absent.active {
-  border-color: #fca5a5;
+.student-status.dropped {
   background: #fef2f2;
   color: #dc2626;
 }
 
-.status-button:focus {
-  outline: none;
+.student-status.completed {
+  background: #eff6ff;
+  color: #2563eb;
 }
 
 /* =========================================
-   Footer
+   Loading / Error Card
 ========================================= */
 
-.attendance-footer {
-  display: flex;
-  justify-content: flex-end;
-  padding: 18px 22px;
-  border-top: 1px solid #e2e8f0;
-}
-
-/* =========================================
-   Save Button
-========================================= */
-
-.save-attendance-button {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  min-width: 155px;
-  height: 42px;
-  padding: 0 18px;
-  border: 1px solid #2563eb;
-  border-radius: 8px;
-  background: #2563eb;
-  color: #ffffff;
-  font-family: inherit;
-  font-size: 13px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.save-attendance-button svg {
-  width: 14px;
-}
-
-.save-attendance-button:hover {
-  border-color: #1d4ed8;
-  background: #1d4ed8;
-  box-shadow: 0 4px 10px rgba(37, 99, 235, 0.18);
-}
-
-.save-attendance-button:disabled {
-  opacity: 0.65;
-  cursor: not-allowed;
-  box-shadow: none;
-}
-
-/* =========================================
-   Loading / Empty State
-========================================= */
-
-.attendance-state-card {
+.students-state-card {
   display: flex;
   align-items: center;
   justify-content: center;
   flex-direction: column;
-  min-height: 220px;
+  min-height: 180px;
   padding: 30px;
   border: 1px solid #e2e8f0;
   border-radius: 12px;
@@ -451,39 +364,94 @@
   box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
 }
 
-.attendance-state-card p {
+.students-state-card p {
   margin: 0;
   font-size: 14px;
 }
 
-.attendance-state-card.empty svg {
+.students-state-card.error {
+  color: #dc2626;
+}
+
+.students-state-card.error p {
+  margin-bottom: 15px;
+}
+
+/* =========================================
+   Retry Button
+========================================= */
+
+.retry-button {
+  min-height: 38px;
+  padding: 0 17px;
+  border: 1px solid #2563eb;
+  border-radius: 8px;
+  background: #2563eb;
+  color: #ffffff;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.retry-button:hover {
+  background: #1d4ed8;
+  border-color: #1d4ed8;
+}
+
+.retry-button:focus {
+  outline: none;
+}
+
+/* =========================================
+   Empty State
+========================================= */
+
+.empty-students {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  min-height: 250px;
+  padding: 30px;
+  text-align: center;
+}
+
+.empty-students > svg {
   width: 38px;
   height: 38px;
   margin-bottom: 14px;
   color: #94a3b8;
 }
 
-.attendance-state-card.empty h3 {
+.empty-students h3 {
   margin: 0 0 7px;
   color: #334155;
   font-size: 16px;
+  font-weight: 650;
 }
 
-.attendance-state-card.empty p {
+.empty-students p {
+  max-width: 400px;
+  margin: 0;
   color: #64748b;
   font-size: 12px;
+  line-height: 1.6;
 }
 
 /* =========================================
-   Responsive
+   Responsive Design
 ========================================= */
 
 @media (max-width: 768px) {
-  .instructor-course-attendance-page {
+  .instructor-course-students-page {
     padding: 20px;
   }
 
-  .attendance-page-header {
+  .students-page-header {
     align-items: flex-start;
     flex-direction: column;
   }
@@ -492,40 +460,41 @@
     width: 100%;
   }
 
-  .attendance-controls-card {
-    align-items: flex-start;
-    flex-direction: column;
-  }
-
-  .attendance-date-group {
-    align-items: flex-start;
-    flex-direction: column;
-  }
-
-  .attendance-date-group input {
+  .students-summary-card {
     width: 100%;
-    box-sizing: border-box;
   }
 
-  .attendance-footer {
-    justify-content: center;
+  .students-table-header {
+    padding: 16px;
   }
 
-  .save-attendance-button {
-    width: 100%;
+  .students-table th,
+  .students-table td {
+    padding-left: 14px;
+    padding-right: 14px;
   }
 }
 
 @media (max-width: 480px) {
-  .instructor-course-attendance-page {
+  .instructor-course-students-page {
     padding: 15px;
   }
 
-  .attendance-page-header h1 {
+  .students-page-header h1 {
     font-size: 22px;
   }
 
-  .attendance-page-header p {
+  .students-page-header p {
     font-size: 13px;
+  }
+
+  .students-summary-card {
+    min-height: 80px;
+  }
+
+  .summary-icon {
+    width: 42px;
+    min-width: 42px;
+    height: 42px;
   }
 }

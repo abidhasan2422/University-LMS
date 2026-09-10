@@ -201,7 +201,11 @@ const navigate = useNavigate();
             </div>
           </button>
 
-          <button className="course-management-item">
+          <button className="course-management-item"
+             onClick={() =>
+    navigate(`/instructor/courses/${courseOfferingId}/attendance`)
+  }
+          >
             <FaClipboardCheck />
             <div>
               <strong>Attendance</strong>
