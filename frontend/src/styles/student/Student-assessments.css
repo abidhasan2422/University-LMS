@@ -1,0 +1,975 @@
+/* =========================================================
+   Student Assessments Page
+   ========================================================= */
+
+.student-assessments {
+  width: 100%;
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 32px;
+  box-sizing: border-box;
+}
+
+/* =========================================================
+   Page Header
+   ========================================================= */
+
+.student-assessments .assessments-page-header {
+  margin-bottom: 28px;
+}
+
+.student-assessments .assessments-label {
+  display: block;
+  margin-bottom: 8px;
+
+  color: #64748b;
+
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+}
+
+.student-assessments .assessments-page-header h2 {
+  margin: 0 0 8px;
+
+  color: #0f172a;
+
+  font-size: 30px;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.student-assessments .assessments-page-header p {
+  margin: 0;
+
+  color: #64748b;
+
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+/* =========================================================
+   Summary Cards
+   ========================================================= */
+
+.student-assessments .assessment-summary-card {
+  display: flex;
+  align-items: center;
+
+  min-height: 112px;
+
+  padding: 20px;
+
+  background: #ffffff;
+
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+
+  box-sizing: border-box;
+
+  gap: 16px;
+
+  transition:
+    box-shadow 0.2s ease,
+    transform 0.2s ease;
+}
+
+.student-assessments .assessment-summary-card:hover {
+  box-shadow: 0 5px 16px rgba(15, 23, 42, 0.07);
+
+  transform: translateY(-1px);
+}
+
+/* Summary Icon */
+
+.student-assessments .assessment-summary-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 46px;
+  height: 46px;
+
+  flex-shrink: 0;
+
+  border-radius: 10px;
+
+  font-size: 18px;
+}
+
+.student-assessments .assessment-summary-icon.blue {
+  background: #eff6ff;
+  color: #2563eb;
+}
+
+.student-assessments .assessment-summary-icon.green {
+  background: #ecfdf5;
+  color: #059669;
+}
+
+.student-assessments .assessment-summary-icon.purple {
+  background: #f5f3ff;
+  color: #7c3aed;
+}
+
+/* Summary Content */
+
+.student-assessments .assessment-summary-card > div:last-child {
+  min-width: 0;
+}
+
+.student-assessments .assessment-summary-card span {
+  display: block;
+
+  margin-bottom: 6px;
+
+  color: #64748b;
+
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.student-assessments .assessment-summary-card strong {
+  display: block;
+
+  margin-bottom: 4px;
+
+  color: #0f172a;
+
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 1.1;
+}
+
+.student-assessments .assessment-summary-card small {
+  display: block;
+
+  color: #94a3b8;
+
+  font-size: 11px;
+  line-height: 1.4;
+}
+
+/* =========================================================
+   Assessment Section
+   ========================================================= */
+
+.student-assessments .assessments-section {
+  width: 100%;
+
+  background: #ffffff;
+
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+
+  overflow: hidden;
+}
+
+/* Section Header */
+
+.student-assessments .assessments-section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  padding: 20px 22px;
+
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.student-assessments .assessments-section-header h5 {
+  margin: 0 0 6px;
+
+  color: #0f172a;
+
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.student-assessments .assessments-section-header p {
+  margin: 0;
+
+  color: #64748b;
+
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+/* =========================================================
+   Assessment Table
+   ========================================================= */
+
+.student-assessments .assessments-section .table-responsive {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.student-assessments .assessments-table {
+  width: 100%;
+  min-width: 900px;
+
+  margin: 0;
+
+  border-collapse: collapse;
+
+  background: #ffffff;
+}
+
+.student-assessments .assessments-table thead th {
+  padding: 14px 16px;
+
+  background: #f8fafc;
+
+  border-bottom: 1px solid #e5e7eb;
+
+  color: #64748b;
+
+  font-size: 11px;
+  font-weight: 700;
+
+  text-align: left;
+
+  white-space: nowrap;
+}
+
+.student-assessments .assessments-table tbody td {
+  padding: 17px 16px;
+
+  border-bottom: 1px solid #f1f5f9;
+
+  color: #475569;
+
+  font-size: 13px;
+
+  vertical-align: middle;
+}
+
+.student-assessments .assessments-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.student-assessments .assessments-table tbody tr {
+  transition: background-color 0.15s ease;
+}
+
+.student-assessments .assessments-table tbody tr:hover {
+  background: #f8fafc;
+}
+
+/* =========================================================
+   Course Cell
+   ========================================================= */
+
+.student-assessments .assessment-course {
+  display: flex;
+  align-items: center;
+
+  gap: 11px;
+
+  min-width: 190px;
+}
+
+.student-assessments .assessment-course-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 36px;
+  height: 36px;
+
+  flex-shrink: 0;
+
+  border-radius: 8px;
+
+  background: #eff6ff;
+  color: #2563eb;
+
+  font-size: 14px;
+}
+
+.student-assessments .assessment-course strong {
+  display: block;
+
+  margin-bottom: 3px;
+
+  color: #0f172a;
+
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.student-assessments .assessment-course span {
+  display: block;
+
+  max-width: 180px;
+
+  overflow: hidden;
+
+  color: #64748b;
+
+  font-size: 11px;
+  line-height: 1.4;
+
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* =========================================================
+   Assessment Name
+   ========================================================= */
+
+.student-assessments .assessment-name {
+  display: inline-block;
+
+  color: #334155;
+
+  font-size: 13px;
+  font-weight: 600;
+}
+
+/* =========================================================
+   Marks
+   ========================================================= */
+
+.student-assessments .marks-obtained {
+  color: #0f172a;
+
+  font-size: 14px;
+  font-weight: 700;
+}
+
+/* =========================================================
+   Percentage
+   ========================================================= */
+
+.student-assessments .assessment-percentage {
+  min-width: 100px;
+}
+
+.student-assessments .assessment-percentage strong {
+  display: block;
+
+  margin-bottom: 7px;
+
+  color: #334155;
+
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.student-assessments .assessment-percentage .progress {
+  width: 100px;
+  height: 6px;
+
+  margin: 0;
+
+  overflow: hidden;
+
+  background: #e5e7eb;
+
+  border-radius: 999px;
+}
+
+.student-assessments
+  .assessment-percentage
+  .progress-bar {
+  height: 100%;
+
+  background: #2563eb;
+
+  border-radius: 999px;
+
+  transition: width 0.3s ease;
+}
+
+/* =========================================================
+   Grade
+   ========================================================= */
+
+.student-assessments .assessment-grade {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  min-width: 42px;
+  min-height: 30px;
+
+  padding: 0 9px;
+
+  background: #eff6ff;
+
+  border: 1px solid #dbeafe;
+  border-radius: 7px;
+
+  color: #1d4ed8;
+
+  font-size: 12px;
+  font-weight: 700;
+}
+
+/* =========================================================
+   Status
+   ========================================================= */
+
+.student-assessments .assessment-status {
+  display: inline-flex;
+  align-items: center;
+
+  gap: 6px;
+
+  padding: 6px 9px;
+
+  border-radius: 999px;
+
+  font-size: 11px;
+  font-weight: 600;
+
+  white-space: nowrap;
+}
+
+.student-assessments .assessment-status.published {
+  background: #ecfdf5;
+
+  color: #047857;
+}
+
+.student-assessments .assessment-status.pending {
+  background: #fffbeb;
+
+  color: #b45309;
+}
+
+.student-assessments .assessment-status svg {
+  font-size: 10px;
+}
+
+/* =========================================================
+   Information Box
+   ========================================================= */
+
+.student-assessments .assessment-info-box {
+  display: flex;
+  align-items: flex-start;
+
+  gap: 13px;
+
+  padding: 18px 20px;
+
+  background: #ffffff;
+
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+
+  box-sizing: border-box;
+}
+
+.student-assessments .assessment-info-box > svg {
+  flex-shrink: 0;
+
+  margin-top: 2px;
+
+  color: #2563eb;
+
+  font-size: 17px;
+}
+
+.student-assessments .assessment-info-box strong {
+  display: block;
+
+  margin-bottom: 5px;
+
+  color: #0f172a;
+
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.student-assessments .assessment-info-box p {
+  margin: 0;
+
+  color: #64748b;
+
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+/* =========================================================
+   Loading / Error
+   ========================================================= */
+
+.student-assessments
+  .assessment-info-box
+  + .assessment-info-box {
+  margin-top: 16px;
+}
+
+/* =========================================================
+   Responsive
+   ========================================================= */
+
+@media (max-width: 992px) {
+  .student-assessments {
+    padding: 24px;
+  }
+
+  .student-assessments .assessment-summary-card {
+    min-height: 105px;
+    padding: 17px;
+  }
+}
+
+@media (max-width: 768px) {
+  .student-assessments {
+    padding: 18px;
+  }
+
+  .student-assessments .assessments-page-header h2 {
+    font-size: 26px;
+  }
+
+  .student-assessments .assessment-summary-card {
+    min-height: 100px;
+  }
+
+  .student-assessments .assessments-section-header {
+    padding: 17px;
+  }
+}
+
+@media (max-width: 576px) {
+  .student-assessments {
+    padding: 14px;
+  }
+
+  .student-assessments .assessments-page-header {
+    margin-bottom: 20px;
+  }
+
+  .student-assessments .assessments-page-header h2 {
+    font-size: 23px;
+  }
+
+  .student-assessments .assessment-summary-card {
+    padding: 16px;
+  }
+
+  .student-assessments .assessment-summary-icon {
+    width: 40px;
+    height: 40px;
+  }
+
+  .student-assessments .assessment-summary-card strong {
+    font-size: 21px;
+  }
+}
+/* =========================================================
+   Course Assessment Selection
+   ========================================================= */
+
+.course-assessments-section {
+  width: 100%;
+
+  background: #ffffff;
+
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+
+  overflow: hidden;
+}
+
+.course-assessments-section-header {
+  padding: 20px 22px;
+
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.course-assessments-section-header h5 {
+  margin: 0 0 6px;
+
+  color: #0f172a;
+
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.course-assessments-section-header p {
+  margin: 0;
+
+  color: #64748b;
+
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+/* =========================================================
+   Course Cards
+   ========================================================= */
+
+.course-assessment-grid {
+  display: grid;
+
+  grid-template-columns: repeat(
+    auto-fit,
+    minmax(320px, 1fr)
+  );
+
+  gap: 18px;
+
+  padding: 22px;
+}
+
+.course-assessment-card {
+  display: flex;
+  flex-direction: column;
+
+  padding: 20px;
+
+  background: #ffffff;
+
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    transform 0.2s ease;
+}
+
+.course-assessment-card:hover {
+  border-color: #dbeafe;
+
+  box-shadow: 0 5px 16px rgba(15, 23, 42, 0.07);
+
+  transform: translateY(-2px);
+}
+
+/* =========================================================
+   Course Card Header
+   ========================================================= */
+
+.course-card-top {
+  display: flex;
+  align-items: flex-start;
+
+  gap: 13px;
+
+  margin-bottom: 20px;
+}
+
+.course-card-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 42px;
+  height: 42px;
+
+  flex-shrink: 0;
+
+  border-radius: 9px;
+
+  background: #eff6ff;
+  color: #2563eb;
+
+  font-size: 16px;
+}
+
+.course-card-top h3 {
+  margin: 0 0 5px;
+
+  color: #0f172a;
+
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.course-card-top p {
+  margin: 0;
+
+  color: #64748b;
+
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+/* =========================================================
+   Course Card Statistics
+   ========================================================= */
+
+.course-card-stats {
+  display: grid;
+
+  grid-template-columns: 1fr 1fr;
+
+  gap: 12px;
+
+  margin-bottom: 16px;
+}
+
+.course-card-stats > div {
+  padding: 12px;
+
+  background: #f8fafc;
+
+  border-radius: 8px;
+}
+
+.course-card-stats span {
+  display: block;
+
+  margin-bottom: 5px;
+
+  color: #64748b;
+
+  font-size: 10px;
+  font-weight: 500;
+}
+
+.course-card-stats strong {
+  display: block;
+
+  color: #0f172a;
+
+  font-size: 18px;
+  font-weight: 700;
+}
+
+/* =========================================================
+   Course Card Progress
+   ========================================================= */
+
+.course-card-progress {
+  margin-bottom: 18px;
+}
+
+.course-card-progress .progress {
+  width: 100%;
+  height: 6px;
+
+  overflow: hidden;
+
+  background: #e5e7eb;
+
+  border-radius: 999px;
+}
+
+.course-card-progress .progress-bar {
+  height: 100%;
+
+  background: #2563eb;
+
+  border-radius: 999px;
+
+  transition: width 0.3s ease;
+}
+
+/* =========================================================
+   View Assessments Button
+   ========================================================= */
+
+.view-course-assessments-button {
+  width: 100%;
+
+  min-height: 40px;
+
+  padding: 0 14px;
+
+  border: 1px solid #2563eb;
+  border-radius: 7px;
+
+  background: #2563eb;
+  color: #ffffff;
+
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    transform 0.2s ease;
+}
+
+.view-course-assessments-button:hover {
+  background: #1d4ed8;
+  border-color: #1d4ed8;
+
+  box-shadow: 0 3px 8px rgba(37, 99, 235, 0.18);
+
+  transform: translateY(-1px);
+}
+
+.view-course-assessments-button:active {
+  transform: translateY(0);
+
+  box-shadow: none;
+}
+
+/* =========================================================
+   Course Detail Summary
+   ========================================================= */
+
+.course-detail-summary {
+  display: grid;
+
+  grid-template-columns: 1fr 1fr;
+
+  gap: 18px;
+
+  margin-bottom: 24px;
+}
+
+.course-detail-summary > div {
+  padding: 18px 20px;
+
+  background: #ffffff;
+
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+}
+
+.course-detail-summary span {
+  display: block;
+
+  margin-bottom: 6px;
+
+  color: #64748b;
+
+  font-size: 12px;
+}
+
+.course-detail-summary strong {
+  display: block;
+
+  color: #0f172a;
+
+  font-size: 22px;
+  font-weight: 700;
+}
+
+/* =========================================================
+   Back to Courses Button
+   ========================================================= */
+
+.back-to-courses-button {
+  display: inline-flex;
+  align-items: center;
+
+  gap: 7px;
+
+  margin-bottom: 18px;
+
+  padding: 8px 12px;
+
+  border: 1px solid #d1d5db;
+  border-radius: 7px;
+
+  background: #ffffff;
+  color: #475569;
+
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.back-to-courses-button:hover {
+  background: #f8fafc;
+  border-color: #9ca3af;
+}
+
+/* =========================================================
+   Empty State
+   ========================================================= */
+
+.assessment-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  min-height: 220px;
+
+  padding: 30px;
+
+  text-align: center;
+}
+
+.assessment-empty-state > svg {
+  margin-bottom: 12px;
+
+  color: #94a3b8;
+
+  font-size: 30px;
+}
+
+.assessment-empty-state h3 {
+  margin: 0 0 7px;
+
+  color: #0f172a;
+
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.assessment-empty-state p {
+  margin: 0;
+
+  color: #64748b;
+
+  font-size: 13px;
+}
+
+/* =========================================================
+   Error Information Box
+   ========================================================= */
+
+.student-assessments .assessment-info-box.error {
+  border-color: #fecaca;
+
+  background: #fef2f2;
+}
+
+.student-assessments
+  .assessment-info-box.error
+  > svg {
+  color: #dc2626;
+}
+
+/* =========================================================
+   Responsive
+   ========================================================= */
+
+@media (max-width: 768px) {
+  .course-assessment-grid {
+    grid-template-columns: 1fr;
+
+    padding: 16px;
+  }
+
+  .course-detail-summary {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 576px) {
+  .course-assessment-grid {
+    padding: 14px;
+  }
+
+  .course-assessment-card {
+    padding: 16px;
+  }
+
+  .course-card-stats {
+    grid-template-columns: 1fr 1fr;
+  }
+}

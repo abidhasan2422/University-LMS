@@ -1,23 +1,21 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   FaClipboardList,
   FaBookOpen,
   FaCheckCircle,
-  FaClock,
   FaChartBar,
+  FaArrowLeft,
 } from "react-icons/fa";
 
 import api from "../../api/axios";
+import "../../styles/student/Student-assessments.css";
 
 const StudentAssessments = () => {
-  // =========================================
-  // State
-  // =========================================
-
   const [assessments, setAssessments] = useState([]);
 
-  const [loading, setLoading] = useState(true);
+  const [selectedCourse, setSelectedCourse] = useState(null);
 
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
   // =========================================
@@ -31,9 +29,7 @@ const StudentAssessments = () => {
 
       const response = await api.get("assessments/marks/");
 
-      const marks = response.data.results || [];
-
-      setAssessments(marks);
+      setAssessments(response.data.results || []);
     } catch (error) {
       console.error(
         "Failed to fetch student assessment marks:",
@@ -49,31 +45,9 @@ const StudentAssessments = () => {
     }
   };
 
-  // =========================================
-  // Initial Load
-  // =========================================
-
   useEffect(() => {
     fetchAssessments();
   }, []);
-
-  // =========================================
-  // Grade Calculation
-  // =========================================
-
-  const getGrade = (percentage) => {
-    if (percentage >= 80) return "A+";
-    if (percentage >= 75) return "A";
-    if (percentage >= 70) return "A-";
-    if (percentage >= 65) return "B+";
-    if (percentage >= 60) return "B";
-    if (percentage >= 55) return "B-";
-    if (percentage >= 50) return "C+";
-    if (percentage >= 45) return "C";
-    if (percentage >= 40) return "D";
-
-    return "F";
-  };
 
   // =========================================
   // Calculate Percentage
@@ -91,61 +65,107 @@ const StudentAssessments = () => {
   };
 
   // =========================================
-  // Only Active / Published Marks
+  // Calculate Grade
   // =========================================
 
-  const publishedAssessments = assessments.filter(
-    (assessment) => assessment.is_active !== false
-  );
+  const getGrade = (percentage) => {
+    if (percentage >= 80) return "A+";
+    if (percentage >= 75) return "A";
+    if (percentage >= 70) return "A-";
+    if (percentage >= 65) return "B+";
+    if (percentage >= 60) return "B";
+    if (percentage >= 55) return "B-";
+    if (percentage >= 50) return "C+";
+    if (percentage >= 45) return "C";
+    if (percentage >= 40) return "D";
+
+    return "F";
+  };
 
   // =========================================
-  // Pending Assessments
+  // Group Assessments By Course
   // =========================================
 
-  /*
-   * At the moment, the backend returns AssessmentMark
-   * records only when a mark exists.
-   *
-   * Therefore, assessments without AssessmentMark
-   * records are not returned by this endpoint.
-   *
-   * We keep this empty for now until a separate
-   * assessment-publication workflow is implemented.
-   */
+  const courses = useMemo(() => {
+    const courseMap = {};
 
-  const pendingAssessments = [];
+    assessments.forEach((assessment) => {
+      const courseCode =
+        assessment.course_code || "UNKNOWN";
+
+      if (!courseMap[courseCode]) {
+        courseMap[courseCode] = {
+          courseCode,
+          courseTitle:
+            assessment.course_title || "Course",
+          assessments: [],
+        };
+      }
+
+      courseMap[courseCode].assessments.push(
+        assessment
+      );
+    });
+
+    return Object.values(courseMap);
+  }, [assessments]);
 
   // =========================================
-  // Summary Calculations
+  // Course Performance
   // =========================================
 
-  const totalObtained = publishedAssessments.reduce(
+  const getCoursePerformance = (course) => {
+    const totalObtained = course.assessments.reduce(
+      (total, assessment) =>
+        total +
+        Number(assessment.obtained_marks || 0),
+      0
+    );
+
+    const totalMaximum = course.assessments.reduce(
+      (total, assessment) =>
+        total +
+        Number(assessment.maximum_marks || 0),
+      0
+    );
+
+    return totalMaximum > 0
+      ? (totalObtained / totalMaximum) * 100
+      : 0;
+  };
+
+  // =========================================
+  // Overall Summary
+  // =========================================
+
+  const totalObtained = assessments.reduce(
     (total, assessment) =>
-      total + Number(assessment.obtained_marks || 0),
+      total +
+      Number(assessment.obtained_marks || 0),
     0
   );
 
-  const totalMarks = publishedAssessments.reduce(
+  const totalMaximum = assessments.reduce(
     (total, assessment) =>
-      total + Number(assessment.maximum_marks || 0),
+      total +
+      Number(assessment.maximum_marks || 0),
     0
   );
 
   const overallPercentage =
-    totalMarks > 0
-      ? ((totalObtained / totalMarks) * 100).toFixed(1)
+    totalMaximum > 0
+      ? ((totalObtained / totalMaximum) * 100).toFixed(1)
       : "0.0";
 
   // =========================================
-  // Loading State
+  // Loading
   // =========================================
 
   if (loading) {
     return (
       <div className="student-assessments">
 
-        <div className="assessments-page-header mb-4">
-
+        <div className="assessments-page-header">
           <span className="assessments-label">
             STUDENT PORTAL
           </span>
@@ -156,7 +176,6 @@ const StudentAssessments = () => {
             View your assessment marks and academic
             performance.
           </p>
-
         </div>
 
         <div className="assessment-info-box">
@@ -177,208 +196,137 @@ const StudentAssessments = () => {
   }
 
   // =========================================
-  // Main UI
+  // Error
   // =========================================
 
-  return (
-    <div className="student-assessments">
+  if (error) {
+    return (
+      <div className="student-assessments">
 
-      {/* =========================================
-          PAGE HEADER
-      ========================================= */}
+        <div className="assessments-page-header">
+          <span className="assessments-label">
+            STUDENT PORTAL
+          </span>
 
-      <div className="assessments-page-header mb-4">
+          <h2>Assessments</h2>
 
-        <span className="assessments-label">
-          STUDENT PORTAL
-        </span>
+          <p>
+            View your assessment marks and academic
+            performance.
+          </p>
+        </div>
 
-        <h2>Assessments</h2>
-
-        <p>
-          View your assessment marks and academic
-          performance.
-        </p>
-
-      </div>
-
-      {/* =========================================
-          ERROR
-      ========================================= */}
-
-      {error && (
-        <div className="assessment-info-box">
-
+        <div className="assessment-info-box error">
           <FaClipboardList />
 
           <div>
-            <strong>Unable to Load Assessments</strong>
+            <strong>
+              Unable to Load Assessments
+            </strong>
 
             <p>{error}</p>
           </div>
+        </div>
+
+      </div>
+    );
+  }
+
+  // =========================================
+  // Course Detail View
+  // =========================================
+
+  if (selectedCourse) {
+    return (
+      <div className="student-assessments">
+
+        {/* Header */}
+
+        <div className="assessments-page-header">
+
+          <button
+            type="button"
+            className="back-to-courses-button"
+            onClick={() => setSelectedCourse(null)}
+          >
+            <FaArrowLeft />
+            Back to Courses
+          </button>
+
+          <span className="assessments-label">
+            STUDENT PORTAL
+          </span>
+
+          <h2>
+            {selectedCourse.courseCode}
+          </h2>
+
+          <p>
+            {selectedCourse.courseTitle}
+          </p>
 
         </div>
-      )}
 
-      {/* =========================================
-          SUMMARY
-      ========================================= */}
+        {/* Course Assessment Summary */}
 
-      {!error && (
-        <div className="row g-4 mb-4">
+        <div className="course-detail-summary">
 
-          {/* Total Assessments */}
+          <div>
+            <span>Published Assessments</span>
 
-          <div className="col-md-4">
-
-            <div className="assessment-summary-card">
-
-              <div className="assessment-summary-icon blue">
-                <FaClipboardList />
-              </div>
-
-              <div>
-
-                <span>Total Assessments</span>
-
-                <strong>
-                  {assessments.length}
-                </strong>
-
-                <small>
-                  Marks available
-                </small>
-
-              </div>
-
-            </div>
-
+            <strong>
+              {selectedCourse.assessments.length}
+            </strong>
           </div>
 
-          {/* Published Marks */}
+          <div>
+            <span>Course Performance</span>
 
-          <div className="col-md-4">
-
-            <div className="assessment-summary-card">
-
-              <div className="assessment-summary-icon green">
-                <FaCheckCircle />
-              </div>
-
-              <div>
-
-                <span>Published Marks</span>
-
-                <strong>
-                  {publishedAssessments.length}
-                </strong>
-
-                <small>
-                  Available to view
-                </small>
-
-              </div>
-
-            </div>
-
-          </div>
-
-          {/* Overall Performance */}
-
-          <div className="col-md-4">
-
-            <div className="assessment-summary-card">
-
-              <div className="assessment-summary-icon purple">
-                <FaChartBar />
-              </div>
-
-              <div>
-
-                <span>Overall Performance</span>
-
-                <strong>
-                  {overallPercentage}%
-                </strong>
-
-                <small>
-                  Based on available marks
-                </small>
-
-              </div>
-
-            </div>
-
+            <strong>
+              {getCoursePerformance(
+                selectedCourse
+              ).toFixed(1)}
+              %
+            </strong>
           </div>
 
         </div>
-      )}
 
-      {/* =========================================
-          ASSESSMENT TABLE
-      ========================================= */}
+        {/* Assessment Table */}
 
-      {!error && (
         <div className="assessments-section">
 
           <div className="assessments-section-header">
 
             <div>
-
               <h5>Assessment Marks</h5>
 
               <p>
                 Marks entered by your course instructor.
               </p>
-
             </div>
 
           </div>
 
-          {assessments.length === 0 ? (
+          <div className="table-responsive">
 
-            <div className="assessment-info-box">
+            <table className="table assessments-table mb-0">
 
-              <FaClipboardList />
+              <thead>
+                <tr>
+                  <th>Assessment</th>
+                  <th>Marks Obtained</th>
+                  <th>Total Marks</th>
+                  <th>Percentage</th>
+                  <th>Grade</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
 
-              <div>
+              <tbody>
 
-                <strong>
-                  No Assessment Marks Available
-                </strong>
-
-                <p>
-                  Your instructor has not entered any
-                  assessment marks yet.
-                </p>
-
-              </div>
-
-            </div>
-
-          ) : (
-
-            <div className="table-responsive">
-
-              <table className="table assessments-table mb-0">
-
-                <thead>
-
-                  <tr>
-                    <th>Course</th>
-                    <th>Assessment</th>
-                    <th>Marks Obtained</th>
-                    <th>Total Marks</th>
-                    <th>Percentage</th>
-                    <th>Grade</th>
-                    <th>Status</th>
-                  </tr>
-
-                </thead>
-
-                <tbody>
-
-                  {assessments.map((assessment) => {
+                {selectedCourse.assessments.map(
+                  (assessment) => {
 
                     const obtainedMarks = Number(
                       assessment.obtained_marks || 0
@@ -400,77 +348,24 @@ const StudentAssessments = () => {
                     return (
                       <tr key={assessment.id}>
 
-                        {/* =================================
-                            Course
-                        ================================= */}
-
                         <td>
-
-                          <div className="assessment-course">
-
-                            <div className="assessment-course-icon">
-                              <FaBookOpen />
-                            </div>
-
-                            <div>
-
-                              <strong>
-                                {assessment.course_code ||
-                                  "N/A"}
-                              </strong>
-
-                              <span>
-                                {assessment.course_title ||
-                                  "Course"}
-                              </span>
-
-                            </div>
-
-                          </div>
-
-                        </td>
-
-                        {/* =================================
-                            Assessment
-                        ================================= */}
-
-                        <td>
-
                           <span className="assessment-name">
-
                             {assessment.assessment_type ||
                               "Assessment"}
-
                           </span>
-
                         </td>
 
-                        {/* =================================
-                            Obtained Marks
-                        ================================= */}
-
                         <td>
-
                           <strong className="marks-obtained">
                             {obtainedMarks.toFixed(2)}
                           </strong>
-
                         </td>
-
-                        {/* =================================
-                            Maximum Marks
-                        ================================= */}
 
                         <td>
                           {maximumMarks.toFixed(2)}
                         </td>
 
-                        {/* =================================
-                            Percentage
-                        ================================= */}
-
                         <td>
-
                           <div className="assessment-percentage">
 
                             <strong>
@@ -487,56 +382,301 @@ const StudentAssessments = () => {
                                     100
                                   )}%`,
                                 }}
-                              ></div>
+                              />
 
                             </div>
 
                           </div>
-
                         </td>
 
-                        {/* =================================
-                            Grade
-                        ================================= */}
-
                         <td>
-
                           <strong className="assessment-grade">
                             {grade}
                           </strong>
-
                         </td>
 
-                        {/* =================================
-                            Status
-                        ================================= */}
-
                         <td>
-
                           <span className="assessment-status published">
-
                             <FaCheckCircle />
-
                             Published
-
                           </span>
-
                         </td>
 
                       </tr>
                     );
-                  })}
+                  }
+                )}
 
-                </tbody>
+              </tbody>
 
-              </table>
+            </table>
 
-            </div>
-
-          )}
+          </div>
 
         </div>
-      )}
+
+        {/* Information */}
+
+        <div className="assessment-info-box mt-4">
+
+          <FaClipboardList />
+
+          <div>
+
+            <strong>
+              Assessment Information
+            </strong>
+
+            <p>
+              Assessment marks are entered by your
+              course instructor. You can only view
+              your own assessment marks.
+            </p>
+
+          </div>
+
+        </div>
+
+      </div>
+    );
+  }
+
+  // =========================================
+  // Main Course View
+  // =========================================
+
+  return (
+    <div className="student-assessments">
+
+      {/* =========================================
+          PAGE HEADER
+      ========================================= */}
+
+      <div className="assessments-page-header">
+
+        <span className="assessments-label">
+          STUDENT PORTAL
+        </span>
+
+        <h2>Assessments</h2>
+
+        <p>
+          Select a course to view your assessment
+          marks.
+        </p>
+
+      </div>
+
+      {/* =========================================
+          SUMMARY
+      ========================================= */}
+
+      <div className="row g-4 mb-4">
+
+        <div className="col-md-4">
+
+          <div className="assessment-summary-card">
+
+            <div className="assessment-summary-icon blue">
+              <FaClipboardList />
+            </div>
+
+            <div>
+              <span>Total Assessments</span>
+
+              <strong>
+                {assessments.length}
+              </strong>
+
+              <small>
+                Marks available
+              </small>
+            </div>
+
+          </div>
+
+        </div>
+
+        <div className="col-md-4">
+
+          <div className="assessment-summary-card">
+
+            <div className="assessment-summary-icon green">
+              <FaCheckCircle />
+            </div>
+
+            <div>
+              <span>Courses</span>
+
+              <strong>
+                {courses.length}
+              </strong>
+
+              <small>
+                With assessment marks
+              </small>
+            </div>
+
+          </div>
+
+        </div>
+
+        <div className="col-md-4">
+
+          <div className="assessment-summary-card">
+
+            <div className="assessment-summary-icon purple">
+              <FaChartBar />
+            </div>
+
+            <div>
+              <span>Overall Performance</span>
+
+              <strong>
+                {overallPercentage}%
+              </strong>
+
+              <small>
+                Based on available marks
+              </small>
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+      {/* =========================================
+          COURSE LIST
+      ========================================= */}
+
+      <div className="course-assessments-section">
+
+        <div className="course-assessments-section-header">
+
+          <div>
+            <h5>My Courses</h5>
+
+            <p>
+              Select a course to view its assessment
+              marks.
+            </p>
+          </div>
+
+        </div>
+
+        {courses.length === 0 ? (
+
+          <div className="assessment-empty-state">
+
+            <FaClipboardList />
+
+            <h3>
+              No Assessment Marks Available
+            </h3>
+
+            <p>
+              Your instructors have not entered any
+              assessment marks yet.
+            </p>
+
+          </div>
+
+        ) : (
+
+          <div className="course-assessment-grid">
+
+            {courses.map((course) => {
+
+              const performance =
+                getCoursePerformance(course);
+
+              return (
+                <div
+                  className="course-assessment-card"
+                  key={course.courseCode}
+                >
+
+                  <div className="course-card-top">
+
+                    <div className="course-card-icon">
+                      <FaBookOpen />
+                    </div>
+
+                    <div>
+                      <h3>
+                        {course.courseCode}
+                      </h3>
+
+                      <p>
+                        {course.courseTitle}
+                      </p>
+                    </div>
+
+                  </div>
+
+                  <div className="course-card-stats">
+
+                    <div>
+                      <span>
+                        Published Assessments
+                      </span>
+
+                      <strong>
+                        {course.assessments.length}
+                      </strong>
+                    </div>
+
+                    <div>
+                      <span>
+                        Performance
+                      </span>
+
+                      <strong>
+                        {performance.toFixed(1)}%
+                      </strong>
+                    </div>
+
+                  </div>
+
+                  <div className="course-card-progress">
+
+                    <div className="progress">
+
+                      <div
+                        className="progress-bar"
+                        style={{
+                          width: `${Math.min(
+                            performance,
+                            100
+                          )}%`,
+                        }}
+                      />
+
+                    </div>
+
+                  </div>
+
+                  <button
+                    type="button"
+                    className="view-course-assessments-button"
+                    onClick={() =>
+                      setSelectedCourse(course)
+                    }
+                  >
+                    View Assessments
+                  </button>
+
+                </div>
+              );
+            })}
+
+          </div>
+
+        )}
+
+      </div>
 
       {/* =========================================
           INFORMATION
@@ -554,8 +694,8 @@ const StudentAssessments = () => {
 
           <p>
             Assessment marks are entered by your
-            course instructor. You can only view
-            your own assessment marks.
+            course instructor. Select a course above
+            to view your published marks and grades.
           </p>
 
         </div>
