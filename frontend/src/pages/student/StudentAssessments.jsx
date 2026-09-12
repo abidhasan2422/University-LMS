@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import {
   FaClipboardList,
   FaBookOpen,
@@ -6,73 +7,127 @@ import {
   FaChartBar,
 } from "react-icons/fa";
 
+import api from "../../api/axios";
+
 const StudentAssessments = () => {
- 
-  const assessments = [
-    {
-      id: 1,
-      courseCode: "CSE101",
-      courseTitle: "Introduction to Computer Science",
-      assessment: "Midterm Examination",
-      marksObtained: 82,
-      totalMarks: 100,
-      status: "Published",
-    },
-    {
-      id: 2,
-      courseCode: "CSE203",
-      courseTitle: "Data Structures",
-      assessment: "Midterm Examination",
-      marksObtained: 76,
-      totalMarks: 100,
-      status: "Published",
-    },
-    {
-      id: 3,
-      courseCode: "CSE205",
-      courseTitle: "Database Management System",
-      assessment: "Class Test",
-      marksObtained: 18,
-      totalMarks: 20,
-      status: "Published",
-    },
-    {
-      id: 4,
-      courseCode: "CSE208",
-      courseTitle: "Web Engineering Lab",
-      assessment: "Lab Performance",
-      marksObtained: 27,
-      totalMarks: 30,
-      status: "Published",
-    },
-    {
-      id: 5,
-      courseCode: "CSE208",
-      courseTitle: "Web Engineering Lab",
-      assessment: "Lab Viva",
-      marksObtained: 16,
-      totalMarks: 20,
-      status: "Pending",
-    },
-  ];
+  // =========================================
+  // State
+  // =========================================
+
+  const [assessments, setAssessments] = useState([]);
+
+  const [loading, setLoading] = useState(true);
+
+  const [error, setError] = useState("");
+
+  // =========================================
+  // Fetch Student Assessment Marks
+  // =========================================
+
+  const fetchAssessments = async () => {
+    try {
+      setLoading(true);
+      setError("");
+
+      const response = await api.get("assessments/marks/");
+
+      const marks = response.data.results || [];
+
+      setAssessments(marks);
+    } catch (error) {
+      console.error(
+        "Failed to fetch student assessment marks:",
+        error
+      );
+
+      setError(
+        error.response?.data?.detail ||
+          "Failed to load assessment marks."
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // =========================================
+  // Initial Load
+  // =========================================
+
+  useEffect(() => {
+    fetchAssessments();
+  }, []);
+
+  // =========================================
+  // Grade Calculation
+  // =========================================
+
+  const getGrade = (percentage) => {
+    if (percentage >= 80) return "A+";
+    if (percentage >= 75) return "A";
+    if (percentage >= 70) return "A-";
+    if (percentage >= 65) return "B+";
+    if (percentage >= 60) return "B";
+    if (percentage >= 55) return "B-";
+    if (percentage >= 50) return "C+";
+    if (percentage >= 45) return "C";
+    if (percentage >= 40) return "D";
+
+    return "F";
+  };
+
+  // =========================================
+  // Calculate Percentage
+  // =========================================
+
+  const getPercentage = (obtainedMarks, maximumMarks) => {
+    if (!maximumMarks || Number(maximumMarks) <= 0) {
+      return 0;
+    }
+
+    return (
+      (Number(obtainedMarks) / Number(maximumMarks)) *
+      100
+    );
+  };
+
+  // =========================================
+  // Only Active / Published Marks
+  // =========================================
 
   const publishedAssessments = assessments.filter(
-    (assessment) => assessment.status === "Published"
+    (assessment) => assessment.is_active !== false
   );
 
-  const pendingAssessments = assessments.filter(
-    (assessment) => assessment.status === "Pending"
-  );
+  // =========================================
+  // Pending Assessments
+  // =========================================
+
+  /*
+   * At the moment, the backend returns AssessmentMark
+   * records only when a mark exists.
+   *
+   * Therefore, assessments without AssessmentMark
+   * records are not returned by this endpoint.
+   *
+   * We keep this empty for now until a separate
+   * assessment-publication workflow is implemented.
+   */
+
+  const pendingAssessments = [];
+
+  // =========================================
+  // Summary Calculations
+  // =========================================
 
   const totalObtained = publishedAssessments.reduce(
     (total, assessment) =>
-      total + assessment.marksObtained,
+      total + Number(assessment.obtained_marks || 0),
     0
   );
 
   const totalMarks = publishedAssessments.reduce(
     (total, assessment) =>
-      total + assessment.totalMarks,
+      total + Number(assessment.maximum_marks || 0),
     0
   );
 
@@ -80,6 +135,50 @@ const StudentAssessments = () => {
     totalMarks > 0
       ? ((totalObtained / totalMarks) * 100).toFixed(1)
       : "0.0";
+
+  // =========================================
+  // Loading State
+  // =========================================
+
+  if (loading) {
+    return (
+      <div className="student-assessments">
+
+        <div className="assessments-page-header mb-4">
+
+          <span className="assessments-label">
+            STUDENT PORTAL
+          </span>
+
+          <h2>Assessments</h2>
+
+          <p>
+            View your assessment marks and academic
+            performance.
+          </p>
+
+        </div>
+
+        <div className="assessment-info-box">
+          <FaClipboardList />
+
+          <div>
+            <strong>Loading Assessments...</strong>
+
+            <p>
+              Please wait while your assessment marks
+              are being loaded.
+            </p>
+          </div>
+        </div>
+
+      </div>
+    );
+  }
+
+  // =========================================
+  // Main UI
+  // =========================================
 
   return (
     <div className="student-assessments">
@@ -104,252 +203,340 @@ const StudentAssessments = () => {
       </div>
 
       {/* =========================================
+          ERROR
+      ========================================= */}
+
+      {error && (
+        <div className="assessment-info-box">
+
+          <FaClipboardList />
+
+          <div>
+            <strong>Unable to Load Assessments</strong>
+
+            <p>{error}</p>
+          </div>
+
+        </div>
+      )}
+
+      {/* =========================================
           SUMMARY
       ========================================= */}
 
-      <div className="row g-4 mb-4">
+      {!error && (
+        <div className="row g-4 mb-4">
 
-        {/* Total Assessments */}
+          {/* Total Assessments */}
 
-        <div className="col-md-4">
+          <div className="col-md-4">
 
-          <div className="assessment-summary-card">
+            <div className="assessment-summary-card">
 
-            <div className="assessment-summary-icon blue">
-              <FaClipboardList />
-            </div>
+              <div className="assessment-summary-icon blue">
+                <FaClipboardList />
+              </div>
 
-            <div>
-              <span>Total Assessments</span>
+              <div>
 
-              <strong>
-                {assessments.length}
-              </strong>
+                <span>Total Assessments</span>
 
-              <small>
-                This semester
-              </small>
-            </div>
+                <strong>
+                  {assessments.length}
+                </strong>
 
-          </div>
+                <small>
+                  Marks available
+                </small>
 
-        </div>
-
-        {/* Published */}
-
-        <div className="col-md-4">
-
-          <div className="assessment-summary-card">
-
-            <div className="assessment-summary-icon green">
-              <FaCheckCircle />
-            </div>
-
-            <div>
-              <span>Published Marks</span>
-
-              <strong>
-                {publishedAssessments.length}
-              </strong>
-
-              <small>
-                Available to view
-              </small>
+              </div>
 
             </div>
 
           </div>
 
-        </div>
+          {/* Published Marks */}
 
-        {/* Overall */}
+          <div className="col-md-4">
 
-        <div className="col-md-4">
+            <div className="assessment-summary-card">
 
-          <div className="assessment-summary-card">
+              <div className="assessment-summary-icon green">
+                <FaCheckCircle />
+              </div>
 
-            <div className="assessment-summary-icon purple">
-              <FaChartBar />
+              <div>
+
+                <span>Published Marks</span>
+
+                <strong>
+                  {publishedAssessments.length}
+                </strong>
+
+                <small>
+                  Available to view
+                </small>
+
+              </div>
+
             </div>
 
-            <div>
-              <span>Overall Performance</span>
+          </div>
 
-              <strong>
-                {overallPercentage}%
-              </strong>
+          {/* Overall Performance */}
 
-              <small>
-                Published assessments
-              </small>
+          <div className="col-md-4">
+
+            <div className="assessment-summary-card">
+
+              <div className="assessment-summary-icon purple">
+                <FaChartBar />
+              </div>
+
+              <div>
+
+                <span>Overall Performance</span>
+
+                <strong>
+                  {overallPercentage}%
+                </strong>
+
+                <small>
+                  Based on available marks
+                </small>
+
+              </div>
 
             </div>
 
           </div>
 
         </div>
-
-      </div>
+      )}
 
       {/* =========================================
           ASSESSMENT TABLE
       ========================================= */}
 
-      <div className="assessments-section">
+      {!error && (
+        <div className="assessments-section">
 
-        <div className="assessments-section-header">
+          <div className="assessments-section-header">
 
-          <div>
+            <div>
 
-            <h5>Assessment Marks</h5>
+              <h5>Assessment Marks</h5>
 
-            <p>
-              Marks entered and published by your
-              instructor.
-            </p>
+              <p>
+                Marks entered by your course instructor.
+              </p>
+
+            </div>
 
           </div>
 
-        </div>
+          {assessments.length === 0 ? (
 
-        <div className="table-responsive">
+            <div className="assessment-info-box">
 
-          <table className="table assessments-table mb-0">
+              <FaClipboardList />
 
-            <thead>
+              <div>
 
-              <tr>
-                <th>Course</th>
-                <th>Assessment</th>
-                <th>Marks Obtained</th>
-                <th>Total Marks</th>
-                <th>Percentage</th>
-                <th>Status</th>
-              </tr>
+                <strong>
+                  No Assessment Marks Available
+                </strong>
 
-            </thead>
+                <p>
+                  Your instructor has not entered any
+                  assessment marks yet.
+                </p>
 
-            <tbody>
+              </div>
 
-              {assessments.map((assessment) => {
+            </div>
 
-                const percentage =
-                  assessment.totalMarks > 0
-                    ? (
-                        (assessment.marksObtained /
-                          assessment.totalMarks) *
-                        100
-                      ).toFixed(1)
-                    : "0.0";
+          ) : (
 
-                return (
-                  <tr key={assessment.id}>
+            <div className="table-responsive">
 
-                    {/* Course */}
+              <table className="table assessments-table mb-0">
 
-                    <td>
+                <thead>
 
-                      <div className="assessment-course">
+                  <tr>
+                    <th>Course</th>
+                    <th>Assessment</th>
+                    <th>Marks Obtained</th>
+                    <th>Total Marks</th>
+                    <th>Percentage</th>
+                    <th>Grade</th>
+                    <th>Status</th>
+                  </tr>
 
-                        <div className="assessment-course-icon">
-                          <FaBookOpen />
-                        </div>
+                </thead>
 
-                        <div>
+                <tbody>
 
-                          <strong>
-                            {assessment.courseCode}
-                          </strong>
+                  {assessments.map((assessment) => {
 
-                          <span>
-                            {assessment.courseTitle}
+                    const obtainedMarks = Number(
+                      assessment.obtained_marks || 0
+                    );
+
+                    const maximumMarks = Number(
+                      assessment.maximum_marks || 0
+                    );
+
+                    const percentage =
+                      getPercentage(
+                        obtainedMarks,
+                        maximumMarks
+                      );
+
+                    const grade =
+                      getGrade(percentage);
+
+                    return (
+                      <tr key={assessment.id}>
+
+                        {/* =================================
+                            Course
+                        ================================= */}
+
+                        <td>
+
+                          <div className="assessment-course">
+
+                            <div className="assessment-course-icon">
+                              <FaBookOpen />
+                            </div>
+
+                            <div>
+
+                              <strong>
+                                {assessment.course_code ||
+                                  "N/A"}
+                              </strong>
+
+                              <span>
+                                {assessment.course_title ||
+                                  "Course"}
+                              </span>
+
+                            </div>
+
+                          </div>
+
+                        </td>
+
+                        {/* =================================
+                            Assessment
+                        ================================= */}
+
+                        <td>
+
+                          <span className="assessment-name">
+
+                            {assessment.assessment_type ||
+                              "Assessment"}
+
                           </span>
 
-                        </div>
+                        </td>
 
-                      </div>
+                        {/* =================================
+                            Obtained Marks
+                        ================================= */}
 
-                    </td>
+                        <td>
 
-                    {/* Assessment */}
+                          <strong className="marks-obtained">
+                            {obtainedMarks.toFixed(2)}
+                          </strong>
 
-                    <td>
-                      <span className="assessment-name">
-                        {assessment.assessment}
-                      </span>
-                    </td>
+                        </td>
 
-                    {/* Obtained */}
+                        {/* =================================
+                            Maximum Marks
+                        ================================= */}
 
-                    <td>
+                        <td>
+                          {maximumMarks.toFixed(2)}
+                        </td>
 
-                      <strong className="marks-obtained">
-                        {assessment.marksObtained}
-                      </strong>
+                        {/* =================================
+                            Percentage
+                        ================================= */}
 
-                    </td>
+                        <td>
 
-                    {/* Total */}
+                          <div className="assessment-percentage">
 
-                    <td>
-                      {assessment.totalMarks}
-                    </td>
+                            <strong>
+                              {percentage.toFixed(1)}%
+                            </strong>
 
-                    {/* Percentage */}
+                            <div className="progress">
 
-                    <td>
+                              <div
+                                className="progress-bar"
+                                style={{
+                                  width: `${Math.min(
+                                    percentage,
+                                    100
+                                  )}%`,
+                                }}
+                              ></div>
 
-                      <div className="assessment-percentage">
+                            </div>
 
-                        <strong>
-                          {percentage}%
-                        </strong>
+                          </div>
 
-                        <div className="progress">
+                        </td>
 
-                          <div
-                            className="progress-bar"
-                            style={{
-                              width: `${percentage}%`,
-                            }}
-                          ></div>
+                        {/* =================================
+                            Grade
+                        ================================= */}
 
-                        </div>
+                        <td>
 
-                      </div>
+                          <strong className="assessment-grade">
+                            {grade}
+                          </strong>
 
-                    </td>
+                        </td>
 
-                    {/* Status */}
+                        {/* =================================
+                            Status
+                        ================================= */}
 
-                    <td>
+                        <td>
 
-                      {assessment.status ===
-                      "Published" ? (
-                        <span className="assessment-status published">
-                          <FaCheckCircle />
-                          Published
-                        </span>
-                      ) : (
-                        <span className="assessment-status pending">
-                          <FaClock />
-                          Pending
-                        </span>
-                      )}
+                          <span className="assessment-status published">
 
-                    </td>
+                            <FaCheckCircle />
 
-                  </tr>
-                );
-              })}
+                            Published
 
-            </tbody>
+                          </span>
 
-          </table>
+                        </td>
+
+                      </tr>
+                    );
+                  })}
+
+                </tbody>
+
+              </table>
+
+            </div>
+
+          )}
 
         </div>
-
-      </div>
+      )}
 
       {/* =========================================
           INFORMATION
@@ -366,9 +553,9 @@ const StudentAssessments = () => {
           </strong>
 
           <p>
-            Assessment marks are entered and published
-            by your course instructor. Students can
-            only view their own published marks.
+            Assessment marks are entered by your
+            course instructor. You can only view
+            your own assessment marks.
           </p>
 
         </div>
