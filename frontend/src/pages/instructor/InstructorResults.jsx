@@ -432,8 +432,7 @@ const InstructorResults = () => {
 
                         {/* Attendance */}
                         <td>
-                          {attendance.present} /{" "}
-                          {attendance.total}
+                          {attendance.present} / {attendance.total} classes
 
                           <br />
 
@@ -444,8 +443,7 @@ const InstructorResults = () => {
 
                         {/* Assessment Marks */}
                         <td>
-                          {assessment.totalObtained} /{" "}
-                          {assessment.totalMaximum}
+                          {assessment.totalObtained} / {assessment.totalMaximum} marks
 
                           {assessment.marks.length > 0 && (
                             <div
@@ -462,7 +460,7 @@ const InstructorResults = () => {
                                   >
                                     {mark.assessment_type}:{" "}
                                     {mark.obtained_marks} /{" "}
-                                    {mark.maximum_marks}
+                                    {mark.maximum_marks}marks
                                   </div>
                                 )
                               )}
