@@ -19,6 +19,8 @@ import InstructorCourseAttendance from "./pages/instructor/InstructorCourseAtten
 import InstructorCourseAssessments from "./pages/instructor/InstructorCourseAssessments";
 import InstructorResults from "./pages/instructor/InstructorResults";
 import InstructorProfile from "./pages/instructor/InstructorProfile";
+import InstructorChangePassword
+  from "./pages/instructor/InstructorChangePassword";
 function App() {
   return (
     <BrowserRouter>
@@ -70,6 +72,10 @@ function App() {
 />
 <Route path="results" element={<InstructorResults />} />
 <Route path="profile" element={<InstructorProfile />} />
+<Route
+  path="change-password"
+  element={<InstructorChangePassword />}
+/>
           </Route>
 
          
