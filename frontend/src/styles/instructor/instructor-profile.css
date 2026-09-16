@@ -1,0 +1,164 @@
+.instructor-profile-page {
+  padding: 24px;
+}
+
+.profile-page-header {
+  margin-bottom: 24px;
+}
+
+.profile-page-header h1 {
+  margin: 0;
+  font-size: 28px;
+  font-weight: 700;
+}
+
+.profile-page-header p {
+  margin-top: 6px;
+  color: #64748b;
+}
+
+.profile-content-card {
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 28px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
+}
+
+.profile-header-section {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding-bottom: 28px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.profile-picture-container {
+  width: 100px;
+  height: 100px;
+  flex-shrink: 0;
+}
+
+.profile-picture,
+.profile-picture-placeholder {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+}
+
+.profile-picture {
+  object-fit: cover;
+}
+
+.profile-picture-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #e2e8f0;
+  color: #334155;
+  font-size: 30px;
+  font-weight: 700;
+}
+
+.profile-header-info h2 {
+  margin: 0 0 6px;
+  font-size: 24px;
+}
+
+.profile-designation {
+  margin: 0 0 5px;
+  color: #475569;
+}
+
+.profile-employee-id {
+  margin: 0;
+  color: #64748b;
+  font-size: 14px;
+}
+
+.profile-section {
+  padding: 26px 0;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.profile-section:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.profile-section h3 {
+  margin: 0 0 20px;
+  font-size: 19px;
+  font-weight: 600;
+}
+
+.profile-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 18px 30px;
+}
+
+.profile-field {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.profile-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #64748b;
+}
+
+.profile-value {
+  font-size: 15px;
+  color: #1e293b;
+}
+
+.profile-status-badge {
+  width: fit-content;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.profile-status-active {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.profile-status-other {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.profile-loading {
+  padding: 40px;
+  text-align: center;
+  color: #64748b;
+}
+
+.profile-error {
+  padding: 16px;
+  border-radius: 8px;
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+@media (max-width: 768px) {
+  .instructor-profile-page {
+    padding: 16px;
+  }
+
+  .profile-content-card {
+    padding: 20px;
+  }
+
+  .profile-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .profile-header-section {
+    align-items: flex-start;
+  }
+}
