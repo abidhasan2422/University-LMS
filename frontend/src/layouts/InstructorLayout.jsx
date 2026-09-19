@@ -1,4 +1,5 @@
-import { NavLink, Outlet } from "react-router-dom";
+import { NavLink, Outlet, useNavigate } from "react-router-dom";
+
 import {
   FaTachometerAlt,
   FaBookOpen,
@@ -11,78 +12,207 @@ import {
   FaChalkboardTeacher,
 } from "react-icons/fa";
 
+import { useAuth } from "../context/AuthContext";
+
 import "../styles/instructor/instructor-layout.css";
 
+
 function InstructorLayout() {
+
+  const navigate = useNavigate();
+
+  const { logout } = useAuth();
+
+
+  // =========================================
+  // Logout Handler
+  // =========================================
+
+  const handleLogout = async () => {
+
+    await logout();
+
+    navigate("/", {
+      replace: true,
+    });
+
+  };
+
+
   return (
+
     <div className="instructor-layout">
-      {/* Sidebar */}
+
+
+      {/* =====================================
+          Sidebar
+          ===================================== */}
+
       <aside className="instructor-sidebar">
 
+
         {/* Logo / Header */}
+
         <div className="sidebar-header">
+
           <div className="sidebar-logo">
+
             <FaChalkboardTeacher />
+
           </div>
+
 
           <div>
-            <h2>Instructor Portal</h2>
-            <span>University LMS</span>
+
+            <h2>
+              Instructor Portal
+            </h2>
+
+            <span>
+              University LMS
+            </span>
+
           </div>
+
         </div>
 
-        {/* Navigation */}
+
+        {/* ===================================
+            Navigation
+            =================================== */}
+
         <nav className="sidebar-nav">
 
-          <NavLink to="/instructor/dashboard">
+
+          <NavLink
+            to="/instructor/dashboard"
+          >
+
             <FaTachometerAlt />
-            <span>Dashboard</span>
+
+            <span>
+              Dashboard
+            </span>
+
           </NavLink>
 
-          <NavLink to="/instructor/courses">
+
+          <NavLink
+            to="/instructor/courses"
+          >
+
             <FaBookOpen />
-            <span>My Courses</span>
+
+            <span>
+              My Courses
+            </span>
+
           </NavLink>
 
-          <NavLink to="/instructor/attendance">
+
+          <NavLink
+            to="/instructor/attendance"
+          >
+
             <FaClipboardCheck />
-            <span>Attendance</span>
+
+            <span>
+              Attendance
+            </span>
+
           </NavLink>
 
-          <NavLink to="/instructor/assessments">
+
+          <NavLink
+            to="/instructor/assessments"
+          >
+
             <FaFileAlt />
-            <span>Assessments</span>
+
+            <span>
+              Assessments
+            </span>
+
           </NavLink>
 
-          <NavLink to="/instructor/results">
+
+          <NavLink
+            to="/instructor/results"
+          >
+
             <FaChartBar />
-            <span>Results</span>
+
+            <span>
+              Results
+            </span>
+
           </NavLink>
 
-          <NavLink to="/instructor/profile">
+
+          <NavLink
+            to="/instructor/profile"
+          >
+
             <FaUser />
-            <span>Profile</span>
+
+            <span>
+              Profile
+            </span>
+
           </NavLink>
 
-          <NavLink to="/instructor/change-password">
+
+          <NavLink
+            to="/instructor/change-password"
+          >
+
             <FaKey />
-            <span>Change Password</span>
+
+            <span>
+              Change Password
+            </span>
+
           </NavLink>
-          <button className="logout-button">
-  <FaSignOutAlt />
-  <span>Logout</span>
-</button>
+
+
+          {/* Logout */}
+
+          <button
+            type="button"
+            className="logout-button"
+            onClick={handleLogout}
+          >
+
+            <FaSignOutAlt />
+
+            <span>
+              Logout
+            </span>
+
+          </button>
+
 
         </nav>
 
       </aside>
 
-      {/* Main Content */}
+
+      {/* =====================================
+          Main Content
+          ===================================== */}
+
       <main className="instructor-main">
+
         <Outlet />
+
       </main>
+
+
     </div>
+
   );
+
 }
+
 
 export default InstructorLayout;
