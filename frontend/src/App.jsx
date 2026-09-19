@@ -21,6 +21,8 @@ import InstructorResults from "./pages/instructor/InstructorResults";
 import InstructorProfile from "./pages/instructor/InstructorProfile";
 import InstructorChangePassword from "./pages/instructor/InstructorChangePassword";
 import InstructorAttendance from "./pages/instructor/InstructorAttendance";
+
+import InstructorAssessments from "./pages/instructor/InstructorAssessments";
 function App() {
   return (
     <BrowserRouter>
@@ -65,7 +67,10 @@ function App() {
             path="courses/:courseOfferingId/attendance"
             element={<InstructorCourseAttendance />}
           />
-
+<Route
+  path="assessments"
+  element={<InstructorAssessments />}
+/>
           <Route
   path="courses/:courseOfferingId/assessments"
   element={<InstructorCourseAssessments />}
