@@ -1,85 +1,71 @@
+import { useEffect, useState } from "react";
 import {
-  FaGraduationCap,
   FaChartLine,
+  FaGraduationCap,
   FaBookOpen,
-  FaTrophy,
-  FaCheckCircle,
+  FaCalculator,
 } from "react-icons/fa";
-import "../../styles/student/student-gpa.css";
+import api from "../../api/axios";
+
 const StudentGPA = () => {
-  // Temporary data.
-  // Later this will come from the Django GPA/Result API.
+  // =========================================================
+  // STATE
+  // =========================================================
 
-  const semesterResults = [
-    {
-      semester: "Spring 2026",
-      gpa: 3.67,
-      credits: 10.5,
-    },
-    {
-      semester: "Fall 2025",
-      gpa: 3.58,
-      credits: 12.0,
-    },
-    {
-      semester: "Summer 2025",
-      gpa: 3.42,
-      credits: 9.0,
-    },
-    {
-      semester: "Spring 2025",
-      gpa: 3.50,
-      credits: 12.0,
-    },
-  ];
+  const [cgpaData, setCgpaData] = useState({
+    cgpa: 0,
+    total_credits: 0,
+  });
 
-  const courseResults = [
-    {
-      code: "CSE101",
-      title: "Introduction to Computer Science",
-      credit: 3.0,
-      grade: "A-",
-      gradePoint: 3.7,
-    },
-    {
-      code: "CSE203",
-      title: "Data Structures",
-      credit: 3.0,
-      grade: "B+",
-      gradePoint: 3.3,
-    },
-    {
-      code: "CSE205",
-      title: "Database Management System",
-      credit: 3.0,
-      grade: "A+",
-      gradePoint: 4.0,
-    },
-    {
-      code: "CSE208",
-      title: "Web Engineering Lab",
-      credit: 1.5,
-      grade: "A-",
-      gradePoint: 3.7,
-    },
-  ];
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
-  // Temporary CGPA.
-  // Later this should be calculated by the backend.
-  const cgpa = 3.56;
+  // =========================================================
+  // FETCH CGPA
+  // =========================================================
 
-  const totalCompletedCredits = 43.5;
+  useEffect(() => {
+    const fetchCGPA = async () => {
+      try {
+        setLoading(true);
+        setError("");
 
-  const currentSemesterCredits = 10.5;
+        const response = await api.get("results/gpa/cgpa/");
 
-  const currentSemesterGPA = semesterResults[0].gpa;
+        setCgpaData({
+          cgpa: Number(response.data?.cgpa || 0),
+          total_credits: Number(
+            response.data?.total_credits || 0
+          ),
+        });
+      } catch (err) {
+        console.error("Failed to fetch CGPA:", err);
+
+        setError(
+          err.response?.data?.detail ||
+            "Failed to load CGPA information."
+        );
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchCGPA();
+  }, []);
+
+  // =========================================================
+  // VALUES
+  // =========================================================
+
+  const cgpa = cgpaData.cgpa;
+  const totalCompletedCredits = cgpaData.total_credits;
 
   return (
     <div className="student-gpa">
 
-      {/* =========================================
+      {/* =====================================================
           PAGE HEADER
-      ========================================= */}
+      ===================================================== */}
 
       <div className="gpa-page-header mb-4">
 
@@ -96,13 +82,25 @@ const StudentGPA = () => {
 
       </div>
 
-      {/* =========================================
+      {/* =====================================================
+          ERROR
+      ===================================================== */}
+
+      {error && (
+        <div className="alert alert-danger mb-4">
+          {error}
+        </div>
+      )}
+
+      {/* =====================================================
           GPA SUMMARY
-      ========================================= */}
+      ===================================================== */}
 
       <div className="row g-4 mb-4">
 
-        {/* Semester GPA */}
+        {/* ---------------------------------------------------
+            SEMESTER GPA
+        --------------------------------------------------- */}
 
         <div className="col-md-3">
 
@@ -115,18 +113,20 @@ const StudentGPA = () => {
             <span>Semester GPA</span>
 
             <strong>
-              {currentSemesterGPA.toFixed(2)}
+              --
             </strong>
 
             <small>
-              Spring 2026
+              Select a semester below
             </small>
 
           </div>
 
         </div>
 
-        {/* CGPA */}
+        {/* ---------------------------------------------------
+            CGPA
+        --------------------------------------------------- */}
 
         <div className="col-md-3">
 
@@ -139,7 +139,9 @@ const StudentGPA = () => {
             <span>Overall CGPA</span>
 
             <strong>
-              {cgpa.toFixed(2)}
+              {loading
+                ? "..."
+                : cgpa.toFixed(2)}
             </strong>
 
             <small>
@@ -150,48 +152,58 @@ const StudentGPA = () => {
 
         </div>
 
-        {/* Completed Credits */}
+        {/* ---------------------------------------------------
+            COMPLETED CREDITS
+        --------------------------------------------------- */}
 
         <div className="col-md-3">
 
           <div className="gpa-summary-card">
 
             <div className="gpa-summary-icon green">
-              <FaCheckCircle />
+              <FaBookOpen />
             </div>
 
             <span>Completed Credits</span>
 
             <strong>
-              {totalCompletedCredits.toFixed(1)}
+              {loading
+                ? "..."
+                : totalCompletedCredits.toFixed(2)}
             </strong>
 
             <small>
-              Successfully completed
+              Published courses
             </small>
 
           </div>
 
         </div>
 
-        {/* Current Credits */}
+        {/* ---------------------------------------------------
+            CURRENT CREDITS
+        --------------------------------------------------- */}
 
         <div className="col-md-3">
 
           <div className="gpa-summary-card">
 
             <div className="gpa-summary-icon orange">
-              <FaBookOpen />
+              <FaCalculator />
             </div>
 
-            <span>Current Credits</span>
+            <span>CGPA Status</span>
 
             <strong>
-              {currentSemesterCredits.toFixed(1)}
+              {loading
+                ? "..."
+                : cgpa > 0
+                ? "Available"
+                : "N/A"}
             </strong>
 
             <small>
-              Spring 2026
+              Based on published results
             </small>
 
           </div>
@@ -200,312 +212,256 @@ const StudentGPA = () => {
 
       </div>
 
-      {/* =========================================
-          SEMESTER GPA HISTORY
-      ========================================= */}
+      {/* =====================================================
+          CGPA INFORMATION
+      ===================================================== */}
 
-      <div className="gpa-section mb-4">
-
-        <div className="gpa-section-header">
-
-          <div>
-            <h5>Semester GPA History</h5>
-
-            <p>
-              Your academic performance across completed
-              semesters.
-            </p>
-          </div>
-
-        </div>
-
-        <div className="table-responsive">
-
-          <table className="table gpa-table mb-0">
-
-            <thead>
-
-              <tr>
-                <th>Semester</th>
-                <th>Credits</th>
-                <th>GPA</th>
-                <th>Performance</th>
-              </tr>
-
-            </thead>
-
-            <tbody>
-
-              {semesterResults.map(
-                (semester, index) => {
-
-                  const performance =
-                    semester.gpa >= 3.5
-                      ? "Excellent"
-                      : semester.gpa >= 3.0
-                      ? "Good"
-                      : "Needs Improvement";
-
-                  return (
-                    <tr key={semester.semester}>
-
-                      <td>
-
-                        <div className="semester-name">
-
-                          {index === 0 && (
-                            <span className="current-semester-dot"></span>
-                          )}
-
-                          <strong>
-                            {semester.semester}
-                          </strong>
-
-                          {index === 0 && (
-                            <span className="current-semester-badge">
-                              Current
-                            </span>
-                          )}
-
-                        </div>
-
-                      </td>
-
-                      <td>
-                        {semester.credits.toFixed(1)}
-                      </td>
-
-                      <td>
-
-                        <strong className="semester-gpa-value">
-                          {semester.gpa.toFixed(2)}
-                        </strong>
-
-                      </td>
-
-                      <td>
-
-                        <span
-                          className={`gpa-performance ${
-                            semester.gpa >= 3.5
-                              ? "excellent"
-                              : semester.gpa >= 3.0
-                              ? "good"
-                              : "needs-improvement"
-                          }`}
-                        >
-                          {performance}
-                        </span>
-
-                      </td>
-
-                    </tr>
-                  );
-                }
-              )}
-
-            </tbody>
-
-          </table>
-
-        </div>
-
-      </div>
-
-      {/* =========================================
-          CURRENT SEMESTER COURSE GRADES
-      ========================================= */}
-
-      <div className="gpa-section mb-4">
+      <div className="gpa-section-card mb-4">
 
         <div className="gpa-section-header">
 
           <div>
-
-            <h5>Current Semester Grades</h5>
+            <h5>
+              Cumulative GPA
+            </h5>
 
             <p>
-              Grade and grade point breakdown for
-              Spring 2026.
+              Your CGPA is calculated from all published
+              course results and their credit values.
             </p>
+          </div>
+
+          <div className="gpa-large-value">
+
+            {loading
+              ? "..."
+              : cgpa.toFixed(2)}
 
           </div>
 
-          <div className="current-gpa-display">
+        </div>
 
-            <span>Semester GPA</span>
+        <div className="gpa-info-grid">
+
+          <div className="gpa-info-item">
+
+            <span>
+              Total Quality Points
+            </span>
 
             <strong>
-              {currentSemesterGPA.toFixed(2)}
+              {loading
+                ? "..."
+                : (
+                    cgpa *
+                    totalCompletedCredits
+                  ).toFixed(2)}
+            </strong>
+
+          </div>
+
+          <div className="gpa-info-item">
+
+            <span>
+              Total Credits
+            </span>
+
+            <strong>
+              {loading
+                ? "..."
+                : totalCompletedCredits.toFixed(2)}
+            </strong>
+
+          </div>
+
+          <div className="gpa-info-item">
+
+            <span>
+              CGPA
+            </span>
+
+            <strong>
+              {loading
+                ? "..."
+                : cgpa.toFixed(2)}
             </strong>
 
           </div>
 
         </div>
 
+      </div>
+
+      {/* =====================================================
+          SEMESTER GPA HISTORY
+      ===================================================== */}
+
+      <div className="gpa-section-card mb-4">
+
+        <div className="gpa-section-title">
+
+          <h5>
+            Semester GPA History
+          </h5>
+
+          <p>
+            Semester-wise GPA will appear here when
+            semester GPA data is connected.
+          </p>
+
+        </div>
+
+        <div className="gpa-empty-state">
+
+          <FaChartLine />
+
+          <h6>
+            Semester GPA
+          </h6>
+
+          <p>
+            Semester GPA information will be loaded
+            from the backend.
+          </p>
+
+        </div>
+
+      </div>
+
+      {/* =====================================================
+          CURRENT SEMESTER COURSE GRADES
+      ===================================================== */}
+
+      <div className="gpa-section-card mb-4">
+
+        <div className="gpa-section-title">
+
+          <h5>
+            Course Grades
+          </h5>
+
+          <p>
+            Your published course results are used to
+            calculate your GPA and CGPA.
+          </p>
+
+        </div>
+
+        <div className="gpa-empty-state">
+
+          <FaBookOpen />
+
+          <h6>
+            Course Results
+          </h6>
+
+          <p>
+            Detailed course grades are available from
+            the Results page.
+          </p>
+
+        </div>
+
+      </div>
+
+      {/* =====================================================
+          GRADING SCALE
+      ===================================================== */}
+
+      <div className="gpa-section-card">
+
+        <div className="gpa-section-title">
+
+          <h5>
+            Grading Scale
+          </h5>
+
+          <p>
+            Current grading scale used by the result
+            calculation service.
+          </p>
+
+        </div>
+
         <div className="table-responsive">
 
-          <table className="table gpa-course-table mb-0">
+          <table className="table gpa-grade-table">
 
             <thead>
 
               <tr>
-                <th>Course</th>
-                <th>Credit</th>
                 <th>Grade</th>
+                <th>Marks</th>
                 <th>Grade Point</th>
-                <th>Credit × Point</th>
               </tr>
 
             </thead>
 
             <tbody>
 
-              {courseResults.map((course) => (
+              <tr>
+                <td>A+</td>
+                <td>80 - 100</td>
+                <td>4.00</td>
+              </tr>
 
-                <tr key={course.code}>
+              <tr>
+                <td>A</td>
+                <td>75 - 79</td>
+                <td>3.75</td>
+              </tr>
 
-                  <td>
+              <tr>
+                <td>A-</td>
+                <td>70 - 74</td>
+                <td>3.50</td>
+              </tr>
 
-                    <div className="gpa-course">
+              <tr>
+                <td>B+</td>
+                <td>65 - 69</td>
+                <td>3.25</td>
+              </tr>
 
-                      <div className="gpa-course-icon">
-                        <FaBookOpen />
-                      </div>
+              <tr>
+                <td>B</td>
+                <td>60 - 64</td>
+                <td>3.00</td>
+              </tr>
 
-                      <div>
+              <tr>
+                <td>B-</td>
+                <td>55 - 59</td>
+                <td>2.75</td>
+              </tr>
 
-                        <strong>
-                          {course.code}
-                        </strong>
+              <tr>
+                <td>C+</td>
+                <td>50 - 54</td>
+                <td>2.50</td>
+              </tr>
 
-                        <span>
-                          {course.title}
-                        </span>
+              <tr>
+                <td>C</td>
+                <td>45 - 49</td>
+                <td>2.25</td>
+              </tr>
 
-                      </div>
+              <tr>
+                <td>D</td>
+                <td>40 - 44</td>
+                <td>2.00</td>
+              </tr>
 
-                    </div>
-
-                  </td>
-
-                  <td>
-                    {course.credit.toFixed(1)}
-                  </td>
-
-                  <td>
-
-                    <span className="gpa-grade">
-                      {course.grade}
-                    </span>
-
-                  </td>
-
-                  <td>
-
-                    <strong className="gpa-point">
-                      {course.gradePoint.toFixed(2)}
-                    </strong>
-
-                  </td>
-
-                  <td>
-
-                    <strong>
-                      {(
-                        course.credit *
-                        course.gradePoint
-                      ).toFixed(2)}
-                    </strong>
-
-                  </td>
-
-                </tr>
-
-              ))}
+              <tr>
+                <td>F</td>
+                <td>Below 40</td>
+                <td>0.00</td>
+              </tr>
 
             </tbody>
 
           </table>
-
-        </div>
-
-      </div>
-
-     
-
-      {/* =========================================
-          GRADING SCALE
-      ========================================= */}
-
-      <div className="gpa-section">
-
-        <div className="gpa-section-header">
-
-          <div>
-
-            <h5>Grading Scale</h5>
-
-            <p>
-              Grade point reference used for GPA
-              calculation.
-            </p>
-
-          </div>
-
-        </div>
-
-        <div className="grading-scale">
-
-          <div>
-            <strong>A+</strong>
-            <span>4.00</span>
-          </div>
-
-          <div>
-            <strong>A</strong>
-            <span>3.75</span>
-          </div>
-
-          <div>
-            <strong>A-</strong>
-            <span>3.50</span>
-          </div>
-
-          <div>
-            <strong>B+</strong>
-            <span>3.25</span>
-          </div>
-
-          <div>
-            <strong>B</strong>
-            <span>3.00</span>
-          </div>
-
-          <div>
-            <strong>B-</strong>
-            <span>2.75</span>
-          </div>
-
-          <div>
-            <strong>C+</strong>
-            <span>2.50</span>
-          </div>
-
-          <div>
-            <strong>C</strong>
-            <span>2.25</span>
-          </div>
-
-          <div>
-            <strong>D</strong>
-            <span>2.00</span>
-          </div>
-
-          <div>
-            <strong>F</strong>
-            <span>0.00</span>
-          </div>
 
         </div>
 
