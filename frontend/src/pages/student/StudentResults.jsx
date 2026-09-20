@@ -1,60 +1,106 @@
+import { useEffect, useMemo, useState } from "react";
 import {
   FaGraduationCap,
   FaCheckCircle,
   FaTimesCircle,
   FaChartLine,
   FaBookOpen,
+  FaSearch,
+  FaFilter,
+  FaTimes,
+  FaSpinner,
 } from "react-icons/fa";
 
+import api from "../../api/axios";
+
 const StudentResults = () => {
-  // Temporary data.
-  // Later this will come from the Django Result API.
-  const results = [
-    {
-      id: 1,
-      courseCode: "CSE101",
-      courseTitle: "Introduction to Computer Science",
-      credit: 3.0,
-      totalMarks: 82,
-      percentage: 82.0,
-      letterGrade: "A-",
-      gradePoint: 3.7,
-      status: "PASS",
-    },
-    {
-      id: 2,
-      courseCode: "CSE203",
-      courseTitle: "Data Structures",
-      credit: 3.0,
-      totalMarks: 76,
-      percentage: 76.0,
-      letterGrade: "B+",
-      gradePoint: 3.3,
-      status: "PASS",
-    },
-    {
-      id: 3,
-      courseCode: "CSE205",
-      courseTitle: "Database Management System",
-      credit: 3.0,
-      totalMarks: 90,
-      percentage: 90.0,
-      letterGrade: "A+",
-      gradePoint: 4.0,
-      status: "PASS",
-    },
-    {
-      id: 4,
-      courseCode: "CSE208",
-      courseTitle: "Web Engineering Lab",
-      credit: 1.5,
-      totalMarks: 84,
-      percentage: 84.0,
-      letterGrade: "A-",
-      gradePoint: 3.7,
-      status: "PASS",
-    },
-  ];
+  const [results, setResults] = useState([]);
+
+  const [searchTerm, setSearchTerm] = useState("");
+  const [gradeFilter, setGradeFilter] = useState("ALL");
+  const [statusFilter, setStatusFilter] = useState("ALL");
+
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  /*
+   * =========================================
+   * Fetch Student Results
+   * =========================================
+   */
+
+  useEffect(() => {
+    const fetchResults = async () => {
+      try {
+        setLoading(true);
+        setError("");
+
+        const response = await api.get("results/");
+
+        const resultData =
+          response.data.results || response.data || [];
+
+        setResults(resultData);
+      } catch (error) {
+        console.error("Failed to fetch results:", error);
+
+        setError(
+          error.response?.data?.detail ||
+            "Failed to load your results."
+        );
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchResults();
+  }, []);
+
+  /*
+   * =========================================
+   * Filter Results
+   * =========================================
+   */
+
+  const filteredResults = useMemo(() => {
+    const search = searchTerm.trim().toLowerCase();
+
+    return results.filter((result) => {
+      const matchesSearch =
+        !search ||
+        result.course_code
+          ?.toLowerCase()
+          .includes(search) ||
+        result.course_title
+          ?.toLowerCase()
+          .includes(search);
+
+      const matchesGrade =
+        gradeFilter === "ALL" ||
+        result.letter_grade === gradeFilter;
+
+      const matchesStatus =
+        statusFilter === "ALL" ||
+        result.status === statusFilter;
+
+      return (
+        matchesSearch &&
+        matchesGrade &&
+        matchesStatus
+      );
+    });
+  }, [
+    results,
+    searchTerm,
+    gradeFilter,
+    statusFilter,
+  ]);
+
+  /*
+   * =========================================
+   * Summary Information
+   * =========================================
+   */
 
   const passedCourses = results.filter(
     (result) => result.status === "PASS"
@@ -64,33 +110,99 @@ const StudentResults = () => {
     (result) => result.status === "FAIL"
   );
 
-  const totalCredits = results.reduce(
-    (total, result) => total + Number(result.credit),
-    0
-  );
-
-  const weightedGradePoints = results.reduce(
-    (total, result) =>
-      total +
-      Number(result.credit) * Number(result.gradePoint),
-    0
-  );
-
-  const semesterGPA =
-    totalCredits > 0
-      ? (weightedGradePoints / totalCredits).toFixed(2)
-      : "0.00";
-
   const averagePercentage =
     results.length > 0
       ? (
           results.reduce(
             (total, result) =>
-              total + Number(result.percentage),
+              total + Number(result.percentage || 0),
             0
           ) / results.length
-        ).toFixed(1)
-      : "0.0";
+        ).toFixed(2)
+      : "0.00";
+
+  /*
+   * =========================================
+   * Semester Information
+   * =========================================
+   */
+
+  const semesterName =
+    results.length > 0
+      ? results[0].semester_name || "Current Semester"
+      : "Current Semester";
+
+  const academicYear =
+    results.length > 0
+      ? results[0].academic_year || ""
+      : "";
+
+  /*
+   * =========================================
+   * Filter State
+   * =========================================
+   */
+
+  const hasActiveFilters =
+    searchTerm.trim() !== "" ||
+    gradeFilter !== "ALL" ||
+    statusFilter !== "ALL";
+
+  /*
+   * =========================================
+   * Clear Filters
+   * =========================================
+   */
+
+  const handleClearFilters = () => {
+    setSearchTerm("");
+    setGradeFilter("ALL");
+    setStatusFilter("ALL");
+  };
+
+  /*
+   * =========================================
+   * Loading State
+   * =========================================
+   */
+
+  if (loading) {
+    return (
+      <div className="student-results">
+
+        <div className="results-page-header mb-4">
+          <span className="results-label">
+            STUDENT PORTAL
+          </span>
+
+          <h2>Results</h2>
+
+          <p>
+            View your finalized academic results and
+            course grades.
+          </p>
+        </div>
+
+        <div className="results-state-card">
+          <FaSpinner className="results-loading-icon" />
+
+          <h5>Loading Results...</h5>
+
+          <p>
+            Please wait while we load your academic
+            results.
+          </p>
+        </div>
+
+      </div>
+    );
+  }
+
+  /*
+   * =========================================
+   * Main Page
+   * =========================================
+   */
 
   return (
     <div className="student-results">
@@ -115,299 +227,568 @@ const StudentResults = () => {
       </div>
 
       {/* =========================================
-          SEMESTER
+          ERROR MESSAGE
       ========================================= */}
 
-      <div className="result-semester-card mb-4">
+      {error && (
+        <div className="results-message error mb-4">
+          <FaTimesCircle />
 
-        <div>
-          <span className="result-semester-label">
-            CURRENT SEMESTER
-          </span>
-
-          <h5>Spring 2026</h5>
-
-          <p>
-            Finalized results for your enrolled courses.
-          </p>
+          <span>{error}</span>
         </div>
+      )}
 
-        <div className="result-semester-icon">
-          <FaGraduationCap />
+      {/* =========================================
+          SEMESTER CARD
+      ========================================= */}
+
+      {!error && results.length > 0 && (
+        <div className="result-semester-card mb-4">
+
+          <div>
+            <span className="result-semester-label">
+              CURRENT RESULTS
+            </span>
+
+            <h5>
+              {semesterName}
+              {academicYear
+                ? ` ${academicYear}`
+                : ""}
+            </h5>
+
+            <p>
+              Finalized results for your published
+              courses.
+            </p>
+          </div>
+
+          <div className="result-semester-icon">
+            <FaGraduationCap />
+          </div>
+
         </div>
-
-      </div>
+      )}
 
       {/* =========================================
           SUMMARY CARDS
       ========================================= */}
 
-      <div className="row g-4 mb-4">
+      {!error && results.length > 0 && (
+        <div className="row g-4 mb-4">
 
-        {/* GPA */}
+          {/* Average Percentage */}
 
-        <div className="col-md-3">
+          <div className="col-md-4">
 
-          <div className="result-summary-card">
+            <div className="result-summary-card">
 
-            <div className="result-summary-icon blue">
-              <FaChartLine />
+              <div className="result-summary-icon blue">
+                <FaChartLine />
+              </div>
+
+              <span>
+                Average Percentage
+              </span>
+
+              <strong>
+                {averagePercentage}%
+              </strong>
+
+              <small>
+                Across all published courses
+              </small>
+
             </div>
 
-            <span>Semester GPA</span>
+          </div>
 
-            <strong>{semesterGPA}</strong>
+          {/* Passed */}
 
-            <small>
-              Out of 4.00
-            </small>
+          <div className="col-md-4">
+
+            <div className="result-summary-card">
+
+              <div className="result-summary-icon green">
+                <FaCheckCircle />
+              </div>
+
+              <span>
+                Passed Courses
+              </span>
+
+              <strong>
+                {passedCourses.length}
+              </strong>
+
+              <small>
+                Successfully completed
+              </small>
+
+            </div>
+
+          </div>
+
+          {/* Failed */}
+
+          <div className="col-md-4">
+
+            <div className="result-summary-card">
+
+              <div className="result-summary-icon red">
+                <FaTimesCircle />
+              </div>
+
+              <span>
+                Failed Courses
+              </span>
+
+              <strong>
+                {failedCourses.length}
+              </strong>
+
+              <small>
+                Courses requiring attention
+              </small>
+
+            </div>
 
           </div>
 
         </div>
+      )}
 
-        {/* Average */}
+      {/* =========================================
+          SEARCH & FILTER
+      ========================================= */}
 
-        <div className="col-md-3">
+      {!error && results.length > 0 && (
+        <div className="results-filter-card mb-4">
 
-          <div className="result-summary-card">
+          <div className="results-filter-header">
 
-            <div className="result-summary-icon purple">
-              <FaChartLine />
+            <div>
+              <h5>
+                Find Result
+              </h5>
+
+              <p>
+                Search and filter your course results.
+              </p>
             </div>
 
-            <span>Average Percentage</span>
+            <FaFilter />
 
-            <strong>{averagePercentage}%</strong>
+          </div>
 
-            <small>
-              Across all courses
-            </small>
+          <div className="row g-3 align-items-end">
+
+            {/* Search */}
+
+            <div className="col-md-5">
+
+              <label
+                htmlFor="result-search"
+                className="results-filter-label"
+              >
+                Search Course
+              </label>
+
+              <div className="results-search-wrapper">
+
+                <FaSearch className="results-search-icon" />
+
+                <input
+                  id="result-search"
+                  type="text"
+                  className="form-control results-search-input"
+                  placeholder="Search by course code or title..."
+                  value={searchTerm}
+                  onChange={(event) =>
+                    setSearchTerm(event.target.value)
+                  }
+                />
+
+                {searchTerm && (
+                  <button
+                    type="button"
+                    className="results-search-clear"
+                    onClick={() =>
+                      setSearchTerm("")
+                    }
+                  >
+                    <FaTimes />
+                  </button>
+                )}
+
+              </div>
+
+            </div>
+
+            {/* Grade Filter */}
+
+            <div className="col-md-3">
+
+              <label
+                htmlFor="grade-filter"
+                className="results-filter-label"
+              >
+                Grade
+              </label>
+
+              <select
+                id="grade-filter"
+                className="form-select"
+                value={gradeFilter}
+                onChange={(event) =>
+                  setGradeFilter(event.target.value)
+                }
+              >
+                <option value="ALL">
+                  All Grades
+                </option>
+
+                <option value="A+">A+</option>
+                <option value="A">A</option>
+                <option value="A-">A-</option>
+                <option value="B+">B+</option>
+                <option value="B">B</option>
+                <option value="B-">B-</option>
+                <option value="C+">C+</option>
+                <option value="C">C</option>
+                <option value="D">D</option>
+                <option value="F">F</option>
+              </select>
+
+            </div>
+
+            {/* Status Filter */}
+
+            <div className="col-md-2">
+
+              <label
+                htmlFor="status-filter"
+                className="results-filter-label"
+              >
+                Status
+              </label>
+
+              <select
+                id="status-filter"
+                className="form-select"
+                value={statusFilter}
+                onChange={(event) =>
+                  setStatusFilter(event.target.value)
+                }
+              >
+                <option value="ALL">
+                  All
+                </option>
+
+                <option value="PASS">
+                  Pass
+                </option>
+
+                <option value="FAIL">
+                  Fail
+                </option>
+              </select>
+
+            </div>
+
+            {/* Clear */}
+
+            <div className="col-md-2">
+
+              {hasActiveFilters && (
+                <button
+                  type="button"
+                  className="results-clear-filter-button"
+                  onClick={handleClearFilters}
+                >
+                  <FaTimes />
+                  Clear Filters
+                </button>
+              )}
+
+            </div>
 
           </div>
 
         </div>
+      )}
 
-        {/* Passed */}
+      {/* =========================================
+          RESULT COUNT
+      ========================================= */}
 
-        <div className="col-md-3">
+      {!error && results.length > 0 && (
+        <div className="results-count mb-3">
 
-          <div className="result-summary-card">
-
-            <div className="result-summary-icon green">
-              <FaCheckCircle />
-            </div>
-
-            <span>Passed Courses</span>
-
-            <strong>{passedCourses.length}</strong>
-
-            <small>
-              Successfully completed
-            </small>
-
-          </div>
+          Showing{" "}
+          <strong>
+            {filteredResults.length}
+          </strong>{" "}
+          of{" "}
+          <strong>
+            {results.length}
+          </strong>{" "}
+          results
 
         </div>
-
-        {/* Failed */}
-
-        <div className="col-md-3">
-
-          <div className="result-summary-card">
-
-            <div className="result-summary-icon red">
-              <FaTimesCircle />
-            </div>
-
-            <span>Failed Courses</span>
-
-            <strong>{failedCourses.length}</strong>
-
-            <small>
-              This semester
-            </small>
-
-          </div>
-
-        </div>
-
-      </div>
+      )}
 
       {/* =========================================
           RESULT TABLE
       ========================================= */}
 
-      <div className="results-section">
+      {!error &&
+        results.length > 0 &&
+        filteredResults.length > 0 && (
 
-        <div className="results-section-header">
+          <div className="results-section">
+
+            <div className="results-section-header">
+
+              <div>
+                <h5>
+                  Course Results
+                </h5>
+
+                <p>
+                  Your finalized published academic
+                  results.
+                </p>
+              </div>
+
+            </div>
+
+            <div className="table-responsive">
+
+              <table className="table results-table mb-0">
+
+                <thead>
+
+                  <tr>
+                    <th>#</th>
+                    <th>Course</th>
+                    <th>Total Marks</th>
+                    <th>Percentage</th>
+                    <th>Grade</th>
+                    <th>Grade Point</th>
+                    <th>Status</th>
+                  </tr>
+
+                </thead>
+
+                <tbody>
+
+                  {filteredResults.map(
+                    (result, index) => (
+
+                      <tr key={result.id}>
+
+                        {/* Number */}
+
+                        <td>
+                          {index + 1}
+                        </td>
+
+                        {/* Course */}
+
+                        <td>
+
+                          <div className="result-course">
+
+                            <div className="result-course-icon">
+                              <FaBookOpen />
+                            </div>
+
+                            <div>
+
+                              <strong>
+                                {result.course_code ||
+                                  "N/A"}
+                              </strong>
+
+                              <span>
+                                {result.course_title ||
+                                  "N/A"}
+                              </span>
+
+                            </div>
+
+                          </div>
+
+                        </td>
+
+                        {/* Total Marks */}
+
+                        <td>
+
+                          <strong className="result-marks">
+                            {Number(
+                              result.total_marks || 0
+                            ).toFixed(2)}
+                          </strong>
+
+                        </td>
+
+                        {/* Percentage */}
+
+                        <td>
+
+                          <strong className="result-percentage">
+                            {Number(
+                              result.percentage || 0
+                            ).toFixed(2)}
+                            %
+                          </strong>
+
+                        </td>
+
+                        {/* Grade */}
+
+                        <td>
+
+                          <span className="letter-grade">
+                            {result.letter_grade ||
+                              "N/A"}
+                          </span>
+
+                        </td>
+
+                        {/* Grade Point */}
+
+                        <td>
+
+                          <strong className="grade-point">
+                            {Number(
+                              result.grade_point || 0
+                            ).toFixed(2)}
+                          </strong>
+
+                        </td>
+
+                        {/* Status */}
+
+                        <td>
+
+                          {result.status ===
+                          "PASS" ? (
+
+                            <span className="result-status pass">
+                              <FaCheckCircle />
+                              Pass
+                            </span>
+
+                          ) : (
+
+                            <span className="result-status fail">
+                              <FaTimesCircle />
+                              Fail
+                            </span>
+
+                          )}
+
+                        </td>
+
+                      </tr>
+
+                    )
+                  )}
+
+                </tbody>
+
+              </table>
+
+            </div>
+
+          </div>
+        )}
+
+      {/* =========================================
+          NO SEARCH RESULT
+      ========================================= */}
+
+      {!error &&
+        results.length > 0 &&
+        filteredResults.length === 0 && (
+
+          <div className="results-state-card">
+
+            <FaSearch />
+
+            <h5>
+              No Results Found
+            </h5>
+
+            <p>
+              No results match your current search
+              or filters.
+            </p>
+
+            <button
+              type="button"
+              className="results-clear-filter-button"
+              onClick={handleClearFilters}
+            >
+              <FaTimes />
+              Clear Filters
+            </button>
+
+          </div>
+        )}
+
+      {/* =========================================
+          NO RESULTS FROM API
+      ========================================= */}
+
+      {!error &&
+        results.length === 0 && (
+
+          <div className="results-state-card">
+
+            <FaGraduationCap />
+
+            <h5>
+              No Published Results
+            </h5>
+
+            <p>
+              Your finalized results have not been
+              published yet.
+            </p>
+
+          </div>
+        )}
+
+      {/* =========================================
+          RESULT INFORMATION
+      ========================================= */}
+
+      {!error && results.length > 0 && (
+        <div className="result-info-box mt-4">
+
+          <FaGraduationCap />
 
           <div>
 
-            <h5>Course Results</h5>
+            <strong>
+              Result Information
+            </strong>
 
             <p>
-              Your finalized results for Spring 2026.
+              Results shown here are finalized and
+              published by authorized academic staff.
+              Your semester GPA and overall CGPA are
+              available separately in the GPA section.
             </p>
 
           </div>
 
         </div>
-
-        <div className="table-responsive">
-
-          <table className="table results-table mb-0">
-
-            <thead>
-
-              <tr>
-                <th>Course</th>
-                <th>Credit</th>
-                <th>Total Marks</th>
-                <th>Percentage</th>
-                <th>Grade</th>
-                <th>Grade Point</th>
-                <th>Status</th>
-              </tr>
-
-            </thead>
-
-            <tbody>
-
-              {results.map((result) => (
-
-                <tr key={result.id}>
-
-                  {/* Course */}
-
-                  <td>
-
-                    <div className="result-course">
-
-                      <div className="result-course-icon">
-                        <FaBookOpen />
-                      </div>
-
-                      <div>
-
-                        <strong>
-                          {result.courseCode}
-                        </strong>
-
-                        <span>
-                          {result.courseTitle}
-                        </span>
-
-                      </div>
-
-                    </div>
-
-                  </td>
-
-                  {/* Credit */}
-
-                  <td>
-                    {Number(result.credit).toFixed(1)}
-                  </td>
-
-                  {/* Marks */}
-
-                  <td>
-
-                    <strong className="result-marks">
-                      {Number(result.totalMarks).toFixed(2)}
-                    </strong>
-
-                  </td>
-
-                  {/* Percentage */}
-
-                  <td>
-
-                    <strong className="result-percentage">
-                      {Number(result.percentage).toFixed(2)}%
-                    </strong>
-
-                  </td>
-
-                  {/* Grade */}
-
-                  <td>
-
-                    <span className="letter-grade">
-                      {result.letterGrade}
-                    </span>
-
-                  </td>
-
-                  {/* Grade Point */}
-
-                  <td>
-
-                    <strong className="grade-point">
-                      {Number(result.gradePoint).toFixed(2)}
-                    </strong>
-
-                  </td>
-
-                  {/* Status */}
-
-                  <td>
-
-                    {result.status === "PASS" ? (
-
-                      <span className="result-status pass">
-                        <FaCheckCircle />
-                        Pass
-                      </span>
-
-                    ) : (
-
-                      <span className="result-status fail">
-                        <FaTimesCircle />
-                        Fail
-                      </span>
-
-                    )}
-
-                  </td>
-
-                </tr>
-
-              ))}
-
-            </tbody>
-
-          </table>
-
-        </div>
-
-      </div>
-
-      {/* =========================================
-          GRADING INFORMATION
-      ========================================= */}
-
-      <div className="result-info-box mt-4">
-
-        <FaGraduationCap />
-
-        <div>
-
-          <strong>
-            Result Information
-          </strong>
-
-          <p>
-            Results are finalized and published by the
-            instructor or authorized academic staff.
-            Semester GPA is calculated based on course
-            credits and grade points.
-          </p>
-
-        </div>
-
-      </div>
+      )}
 
     </div>
   );
