@@ -21,7 +21,7 @@ import InstructorResults from "./pages/instructor/InstructorResults";
 import InstructorProfile from "./pages/instructor/InstructorProfile";
 import InstructorChangePassword from "./pages/instructor/InstructorChangePassword";
 import InstructorAttendance from "./pages/instructor/InstructorAttendance";
-
+import AdminDashboard from "./pages/admin/AdminDashboard";
 import InstructorAssessments from "./pages/instructor/InstructorAssessments";
 function App() {
   return (
@@ -63,32 +63,27 @@ function App() {
               path="courses/:courseOfferingId/students"
               element={<InstructorCourseStudents />}
             />
-             <Route
-            path="courses/:courseOfferingId/attendance"
-            element={<InstructorCourseAttendance />}
-          />
-<Route
-  path="assessments"
-  element={<InstructorAssessments />}
-/>
-          <Route
-  path="courses/:courseOfferingId/assessments"
-  element={<InstructorCourseAssessments />}
-/>
-<Route path="results" element={<InstructorResults />} />
-<Route path="profile" element={<InstructorProfile />} />
-<Route
-  path="change-password"
-  element={<InstructorChangePassword />}
-/>
-<Route
-    path="attendance"
-    element={<InstructorAttendance />}
-  />
+            <Route
+              path="courses/:courseOfferingId/attendance"
+              element={<InstructorCourseAttendance />}
+            />
+            <Route path="assessments" element={<InstructorAssessments />} />
+            <Route
+              path="courses/:courseOfferingId/assessments"
+              element={<InstructorCourseAssessments />}
+            />
+            <Route path="results" element={<InstructorResults />} />
+            <Route path="profile" element={<InstructorProfile />} />
+            <Route
+              path="change-password"
+              element={<InstructorChangePassword />}
+            />
+            <Route path="attendance" element={<InstructorAttendance />} />
           </Route>
 
-         
-         
+          <Route path="/admin" element={<AdminLayout />}>
+            <Route path="dashboard" element={<AdminDashboard />} />
+          </Route>
         </Routes>
       </AuthProvider>
     </BrowserRouter>
