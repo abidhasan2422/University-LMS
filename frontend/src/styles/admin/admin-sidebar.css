@@ -219,3 +219,35 @@
     font-size: 13px;
   }
 }
+/* =========================
+   Admin Layout
+========================= */
+
+.admin-layout {
+  min-height: 100vh;
+  background: #f8f9fa;
+}
+
+.admin-main {
+  margin-left: 250px;
+  width: calc(100% - 250px);
+  min-height: 100vh;
+  box-sizing: border-box;
+}
+
+.admin-main-content {
+  width: 100%;
+  min-height: calc(100vh - 72px);
+  box-sizing: border-box;
+}
+
+/* =========================
+   Responsive
+========================= */
+
+@media (max-width: 768px) {
+  .admin-main {
+    margin-left: 220px;
+    width: calc(100% - 220px);
+  }
+}
