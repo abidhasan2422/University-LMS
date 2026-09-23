@@ -45,7 +45,13 @@ const Login = () => {
         navigate("/instructor/dashboard");
         return;
       }
-
+       // =========================
+      // Admin
+      // =========================
+       if (role === "ADMIN") {
+  navigate("/admin/dashboard");
+  return;
+}
       // =========================
       // UNKNOWN ROLE
       // =========================

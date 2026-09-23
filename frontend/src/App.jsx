@@ -23,6 +23,7 @@ import InstructorChangePassword from "./pages/instructor/InstructorChangePasswor
 import InstructorAttendance from "./pages/instructor/InstructorAttendance";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import InstructorAssessments from "./pages/instructor/InstructorAssessments";
+import AdminLayout from "./layouts/AdminLayout";
 function App() {
   return (
     <BrowserRouter>
@@ -82,8 +83,8 @@ function App() {
           </Route>
 
           <Route path="/admin" element={<AdminLayout />}>
-            <Route path="dashboard" element={<AdminDashboard />} />
-          </Route>
+  <Route path="dashboard" element={<AdminDashboard />} />
+</Route>
         </Routes>
       </AuthProvider>
     </BrowserRouter>
