@@ -1,96 +1,140 @@
+import { useEffect, useState } from "react";
+
 import {
   FaUsers,
   FaUserTie,
   FaBookOpen,
   FaBuilding,
   FaClock,
-  FaUserPlus,
   FaClipboardList,
   FaChartLine,
   FaArrowRight,
 } from "react-icons/fa";
+
 import { useNavigate } from "react-router-dom";
 
+import api from "../../api/axios";
 import "../../styles/admin/admin-dashboard.css";
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
 
+  const [dashboardData, setDashboardData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
   // =========================================================
-  // TEMPORARY DASHBOARD DATA
-  // We will connect these values to APIs later.
+  // FETCH DASHBOARD DATA
+  // =========================================================
+
+  useEffect(() => {
+    const fetchDashboardData = async () => {
+      try {
+        const response = await api.get("admin/dashboard/");
+        setDashboardData(response.data);
+      } catch (error) {
+        console.error("Failed to fetch dashboard data:", error);
+
+        setError(
+          error.response?.data?.detail ||
+            "Failed to load dashboard data."
+        );
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchDashboardData();
+  }, []);
+
+  // =========================================================
+  // LOADING STATE
+  // =========================================================
+
+  if (loading) {
+    return (
+      <div className="admin-dashboard">
+        <div className="admin-section-card text-center py-5">
+          <h5>Loading dashboard...</h5>
+        </div>
+      </div>
+    );
+  }
+
+  // =========================================================
+  // ERROR STATE
+  // =========================================================
+
+  if (error) {
+    return (
+      <div className="admin-dashboard">
+        <div className="admin-section-card text-center py-5">
+          <h5 className="text-danger">{error}</h5>
+        </div>
+      </div>
+    );
+  }
+
+  // =========================================================
+  // API DATA
+  // =========================================================
+
+  const statistics = dashboardData?.statistics || {};
+  const pending = dashboardData?.pending || {};
+  const overview = dashboardData?.overview || {};
+
+  // =========================================================
+  // STATISTICS
   // =========================================================
 
   const stats = [
     {
       title: "Total Students",
-      value: "120",
+      value: statistics.total_students ?? 0,
       subtitle: "Registered students",
       icon: <FaUsers />,
       className: "blue",
     },
     {
       title: "Total Instructors",
-      value: "18",
+      value: statistics.total_instructors ?? 0,
       subtitle: "Registered instructors",
       icon: <FaUserTie />,
       className: "purple",
     },
     {
       title: "Total Courses",
-      value: "35",
+      value: statistics.total_courses ?? 0,
       subtitle: "Available courses",
       icon: <FaBookOpen />,
       className: "green",
     },
     {
       title: "Departments",
-      value: "6",
+      value: statistics.total_departments ?? 0,
       subtitle: "Academic departments",
       icon: <FaBuilding />,
       className: "orange",
     },
   ];
 
+  // =========================================================
+  // PENDING ACTIONS
+  // =========================================================
+
   const pendingItems = [
     {
       title: "Instructor Approvals",
-      value: "4",
+      value: pending.instructor_approvals ?? 0,
       description: "Instructor accounts waiting for approval",
       icon: <FaClock />,
       link: "/admin/instructors",
     },
-    {
-      title: "Pending Enrollments",
-      value: "12",
-      description: "Enrollment requests waiting for review",
-      icon: <FaClipboardList />,
-      link: "/admin/enrollments",
-    },
   ];
 
-  const recentActivities = [
-    {
-      title: "New student registered",
-      description: "A new student account was created.",
-      time: "Today",
-    },
-    {
-      title: "Instructor registration",
-      description: "A new instructor is waiting for approval.",
-      time: "Today",
-    },
-    {
-      title: "Course offering created",
-      description: "A new course offering was added.",
-      time: "Yesterday",
-    },
-    {
-      title: "Result generated",
-      description: "An instructor generated student results.",
-      time: "Yesterday",
-    },
-  ];
+  // =========================================================
+  // QUICK ACTIONS
+  // =========================================================
 
   const quickActions = [
     {
@@ -268,74 +312,10 @@ const AdminDashboard = () => {
       <div className="row g-4 mb-4">
 
         {/* ---------------------------------------------------
-            RECENT ACTIVITIES
-        --------------------------------------------------- */}
-
-        <div className="col-xl-7">
-
-          <div className="admin-section-card h-100">
-
-            <div className="admin-section-header">
-
-              <div>
-                <h2>
-                  Recent Activities
-                </h2>
-
-                <p>
-                  Latest activities in the LMS.
-                </p>
-              </div>
-
-            </div>
-
-
-            <div className="admin-activity-list">
-
-              {recentActivities.map(
-                (activity, index) => (
-
-                  <div
-                    className="admin-activity-item"
-                    key={index}
-                  >
-
-                    <div className="admin-activity-dot">
-                    </div>
-
-                    <div className="admin-activity-content">
-
-                      <strong>
-                        {activity.title}
-                      </strong>
-
-                      <p>
-                        {activity.description}
-                      </p>
-
-                    </div>
-
-                    <span className="admin-activity-time">
-                      {activity.time}
-                    </span>
-
-                  </div>
-
-                )
-              )}
-
-            </div>
-
-          </div>
-
-        </div>
-
-
-        {/* ---------------------------------------------------
             SYSTEM OVERVIEW
         --------------------------------------------------- */}
 
-        <div className="col-xl-5">
+        <div className="col-12">
 
           <div className="admin-section-card h-100">
 
@@ -360,13 +340,14 @@ const AdminDashboard = () => {
 
                 <div>
                   <FaUsers />
+
                   <span>
                     Active Students
                   </span>
                 </div>
 
                 <strong>
-                  120
+                  {overview.active_students ?? 0}
                 </strong>
 
               </div>
@@ -376,13 +357,14 @@ const AdminDashboard = () => {
 
                 <div>
                   <FaUserTie />
+
                   <span>
                     Active Instructors
                   </span>
                 </div>
 
                 <strong>
-                  14
+                  {overview.active_instructors ?? 0}
                 </strong>
 
               </div>
@@ -392,13 +374,14 @@ const AdminDashboard = () => {
 
                 <div>
                   <FaBookOpen />
+
                   <span>
                     Active Courses
                   </span>
                 </div>
 
                 <strong>
-                  30
+                  {overview.active_courses ?? 0}
                 </strong>
 
               </div>
@@ -408,13 +391,14 @@ const AdminDashboard = () => {
 
                 <div>
                   <FaChartLine />
+
                   <span>
                     Active Enrollments
                   </span>
                 </div>
 
                 <strong>
-                  245
+                  {overview.active_enrollments ?? 0}
                 </strong>
 
               </div>
