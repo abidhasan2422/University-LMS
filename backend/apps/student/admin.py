@@ -27,6 +27,7 @@ class StudentAdmin(admin.ModelAdmin):
         "user__last_name",
         "user__email",
         "department__name",
+        "user__phone_number",
     )
 
     list_filter = (
