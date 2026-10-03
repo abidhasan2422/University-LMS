@@ -7,6 +7,8 @@ import {
   FaTimes,
   FaSyncAlt,
   FaIdCard,
+  FaEdit,
+  FaSave,
 } from "react-icons/fa";
 
 import api from "../../api/axios";
@@ -38,6 +40,26 @@ const StudentManagement = () => {
   const [customStudentId, setCustomStudentId] = useState("");
 
   const [generatingId, setGeneratingId] = useState(false);
+
+  // Edit modal state
+  const [editingStudent, setEditingStudent] = useState(null);
+
+  const [editForm, setEditForm] = useState({
+    department: "",
+    semester: "",
+    admission_year: "",
+    session: "",
+    gender: "",
+    date_of_birth: "",
+    blood_group: "",
+    present_address: "",
+    permanent_address: "",
+    guardian_name: "",
+    guardian_phone: "",
+    status: "",
+  });
+
+  const [editLoading, setEditLoading] = useState(false);
 
   // =========================================================
   // FETCH STUDENTS
@@ -284,6 +306,113 @@ const StudentManagement = () => {
   };
 
   // =========================================================
+  // OPEN EDIT MODAL
+  // =========================================================
+
+  const handleOpenEdit = (student) => {
+    setEditingStudent(student);
+
+    setEditForm({
+      department: student.department || "",
+      semester: student.semester || "",
+      admission_year: student.admission_year || "",
+      session: student.session || "",
+      gender: student.gender || "",
+      date_of_birth: student.date_of_birth || "",
+      blood_group: student.blood_group || "",
+      present_address: student.present_address || "",
+      permanent_address: student.permanent_address || "",
+      guardian_name: student.guardian_name || "",
+      guardian_phone: student.guardian_phone || "",
+      status: student.status || "",
+    });
+
+    setSelectedStudent(null);
+  };
+
+  // =========================================================
+  // EDIT FORM CHANGE
+  // =========================================================
+
+  const handleEditChange = (e) => {
+    const { name, value } = e.target;
+
+    setEditForm((previous) => ({
+      ...previous,
+      [name]: value,
+    }));
+  };
+
+  // =========================================================
+  // UPDATE STUDENT
+  // =========================================================
+
+  const handleUpdateStudent = async (e) => {
+    e.preventDefault();
+
+    if (!editingStudent) {
+      return;
+    }
+
+    try {
+      setEditLoading(true);
+
+      await api.put(
+        `students/${editingStudent.id}/`,
+        {
+          department: editForm.department,
+          semester: editForm.semester,
+          admission_year: editForm.admission_year,
+          session: editForm.session,
+          gender: editForm.gender,
+          date_of_birth: editForm.date_of_birth,
+          blood_group: editForm.blood_group || null,
+          present_address: editForm.present_address,
+          permanent_address: editForm.permanent_address,
+          guardian_name: editForm.guardian_name,
+          guardian_phone: editForm.guardian_phone,
+          status: editForm.status,
+        }
+      );
+
+      alert("Student updated successfully.");
+
+      setEditingStudent(null);
+
+      await fetchStudents();
+    } catch (error) {
+      console.error(
+        "Failed to update student:",
+        error
+      );
+
+      const errorData = error.response?.data;
+
+      if (typeof errorData === "string") {
+        alert(errorData);
+      } else if (errorData) {
+        const messages = Object.entries(errorData)
+          .map(([field, message]) => {
+            const text = Array.isArray(message)
+              ? message.join(", ")
+              : message;
+
+            return `${field}: ${text}`;
+          })
+          .join("\n");
+
+        alert(
+          messages || "Failed to update student."
+        );
+      } else {
+        alert("Failed to update student.");
+      }
+    } finally {
+      setEditLoading(false);
+    }
+  };
+
+  // =========================================================
   // STATUS BADGE
   // =========================================================
 
@@ -345,9 +474,7 @@ const StudentManagement = () => {
             STUDENT MANAGEMENT
           </span>
 
-          <h1>
-            Students
-          </h1>
+          <h1>Students</h1>
 
           <p>
             Manage and monitor university students.
@@ -418,6 +545,7 @@ const StudentManagement = () => {
       <div className="student-table-card">
 
         <div className="student-table-header">
+
           <div>
             <h2>
               Student List
@@ -431,17 +559,14 @@ const StudentManagement = () => {
           <span className="student-count">
             {students.length} students
           </span>
-        </div>
 
-        {/* ERROR */}
+        </div>
 
         {error && (
           <div className="student-error">
             {error}
           </div>
         )}
-
-        {/* LOADING */}
 
         {loading ? (
           <div className="student-loading">
@@ -458,33 +583,13 @@ const StudentManagement = () => {
 
               <thead>
                 <tr>
-                  <th>
-                    Student ID
-                  </th>
-
-                  <th>
-                    Student
-                  </th>
-
-                  <th>
-                    Department
-                  </th>
-
-                  <th>
-                    Semester
-                  </th>
-
-                  <th>
-                    Admission Status
-                  </th>
-
-                  <th>
-                    Status
-                  </th>
-
-                  <th>
-                    Actions
-                  </th>
+                  <th>Student ID</th>
+                  <th>Student</th>
+                  <th>Department</th>
+                  <th>Semester</th>
+                  <th>Admission Status</th>
+                  <th>Status</th>
+                  <th>Actions</th>
                 </tr>
               </thead>
 
@@ -563,7 +668,7 @@ const StudentManagement = () => {
                           <FaEye />
                         </button>
 
-                        {/* APPROVE */}
+                        {/* APPROVE / REJECT */}
 
                         {student.admission_status ===
                           "PENDING" && (
@@ -579,8 +684,6 @@ const StudentManagement = () => {
                             >
                               <FaCheck />
                             </button>
-
-                            {/* REJECT */}
 
                             <button
                               type="button"
@@ -608,9 +711,7 @@ const StudentManagement = () => {
           </div>
         )}
 
-        {/* =================================================
-            PAGINATION
-        ================================================= */}
+        {/* PAGINATION */}
 
         {!loading &&
           students.length > 0 &&
@@ -666,8 +767,6 @@ const StudentManagement = () => {
             }
           >
 
-            {/* HEADER */}
-
             <div className="student-modal-header">
 
               <div>
@@ -691,8 +790,6 @@ const StudentManagement = () => {
               </button>
 
             </div>
-
-            {/* BODY */}
 
             <div className="student-modal-body">
 
@@ -719,9 +816,7 @@ const StudentManagement = () => {
 
               </div>
 
-              {/* =================================================
-                  PERSONAL INFORMATION
-              ================================================= */}
+              {/* PERSONAL INFORMATION */}
 
               <div className="student-detail-section">
 
@@ -732,10 +827,7 @@ const StudentManagement = () => {
                 <div className="student-detail-grid">
 
                   <div>
-                    <span>
-                      Full Name
-                    </span>
-
+                    <span>Full Name</span>
                     <strong>
                       {selectedStudent.full_name ||
                         "-"}
@@ -743,10 +835,7 @@ const StudentManagement = () => {
                   </div>
 
                   <div>
-                    <span>
-                      Student ID
-                    </span>
-
+                    <span>Student ID</span>
                     <strong>
                       {selectedStudent.student_id ||
                         "Not assigned"}
@@ -754,10 +843,7 @@ const StudentManagement = () => {
                   </div>
 
                   <div>
-                    <span>
-                      Date of Birth
-                    </span>
-
+                    <span>Date of Birth</span>
                     <strong>
                       {selectedStudent.date_of_birth ||
                         "-"}
@@ -765,10 +851,7 @@ const StudentManagement = () => {
                   </div>
 
                   <div>
-                    <span>
-                      Gender
-                    </span>
-
+                    <span>Gender</span>
                     <strong>
                       {selectedStudent.gender ||
                         "-"}
@@ -776,10 +859,7 @@ const StudentManagement = () => {
                   </div>
 
                   <div>
-                    <span>
-                      Blood Group
-                    </span>
-
+                    <span>Blood Group</span>
                     <strong>
                       {selectedStudent.blood_group ||
                         "-"}
@@ -790,9 +870,7 @@ const StudentManagement = () => {
 
               </div>
 
-              {/* =================================================
-                  ACADEMIC INFORMATION
-              ================================================= */}
+              {/* ACADEMIC INFORMATION */}
 
               <div className="student-detail-section">
 
@@ -803,10 +881,7 @@ const StudentManagement = () => {
                 <div className="student-detail-grid">
 
                   <div>
-                    <span>
-                      Department
-                    </span>
-
+                    <span>Department</span>
                     <strong>
                       {selectedStudent.department_name ||
                         "-"}
@@ -814,10 +889,7 @@ const StudentManagement = () => {
                   </div>
 
                   <div>
-                    <span>
-                      Semester
-                    </span>
-
+                    <span>Semester</span>
                     <strong>
                       {selectedStudent.semester_name ||
                         "-"}
@@ -825,10 +897,7 @@ const StudentManagement = () => {
                   </div>
 
                   <div>
-                    <span>
-                      Admission Year
-                    </span>
-
+                    <span>Admission Year</span>
                     <strong>
                       {selectedStudent.admission_year ||
                         "-"}
@@ -836,10 +905,7 @@ const StudentManagement = () => {
                   </div>
 
                   <div>
-                    <span>
-                      Session
-                    </span>
-
+                    <span>Session</span>
                     <strong>
                       {selectedStudent.session ||
                         "-"}
@@ -847,10 +913,7 @@ const StudentManagement = () => {
                   </div>
 
                   <div>
-                    <span>
-                      Admission Status
-                    </span>
-
+                    <span>Admission Status</span>
                     <strong>
                       {selectedStudent.admission_status ||
                         "-"}
@@ -858,10 +921,7 @@ const StudentManagement = () => {
                   </div>
 
                   <div>
-                    <span>
-                      Student Status
-                    </span>
-
+                    <span>Student Status</span>
                     <strong>
                       {selectedStudent.status ||
                         "-"}
@@ -872,9 +932,7 @@ const StudentManagement = () => {
 
               </div>
 
-              {/* =================================================
-                  GUARDIAN INFORMATION
-              ================================================= */}
+              {/* GUARDIAN INFORMATION */}
 
               <div className="student-detail-section">
 
@@ -885,10 +943,7 @@ const StudentManagement = () => {
                 <div className="student-detail-grid">
 
                   <div>
-                    <span>
-                      Guardian Name
-                    </span>
-
+                    <span>Guardian Name</span>
                     <strong>
                       {selectedStudent.guardian_name ||
                         "-"}
@@ -896,10 +951,7 @@ const StudentManagement = () => {
                   </div>
 
                   <div>
-                    <span>
-                      Guardian Phone
-                    </span>
-
+                    <span>Guardian Phone</span>
                     <strong>
                       {selectedStudent.guardian_phone ||
                         "-"}
@@ -910,9 +962,7 @@ const StudentManagement = () => {
 
               </div>
 
-              {/* =================================================
-                  ADDRESS INFORMATION
-              ================================================= */}
+              {/* ADDRESS INFORMATION */}
 
               <div className="student-detail-section">
 
@@ -923,10 +973,7 @@ const StudentManagement = () => {
                 <div className="student-detail-address">
 
                   <div>
-                    <span>
-                      Present Address
-                    </span>
-
+                    <span>Present Address</span>
                     <strong>
                       {selectedStudent.present_address ||
                         "-"}
@@ -934,10 +981,7 @@ const StudentManagement = () => {
                   </div>
 
                   <div>
-                    <span>
-                      Permanent Address
-                    </span>
-
+                    <span>Permanent Address</span>
                     <strong>
                       {selectedStudent.permanent_address ||
                         "-"}
@@ -948,47 +992,445 @@ const StudentManagement = () => {
 
               </div>
 
-              {/* =================================================
-                  ACTIONS
-              ================================================= */}
+              {/* EDIT BUTTON */}
 
-              {selectedStudent.admission_status ===
-                "PENDING" && (
+              <div className="student-modal-actions">
 
-                <div className="student-modal-actions">
+                <button
+                  type="button"
+                  className="student-modal-edit"
+                  disabled={actionLoading}
+                  onClick={() =>
+                    handleOpenEdit(selectedStudent)
+                  }
+                >
+                  <FaEdit />
+                  Edit Student
+                </button>
 
-                  <button
-                    type="button"
-                    className="student-modal-approve"
-                    disabled={actionLoading}
-                    onClick={() =>
-                      handleOpenApproval(
-                        selectedStudent
-                      )
-                    }
-                  >
-                    <FaCheck />
-                    Approve Student
-                  </button>
+                {selectedStudent.admission_status ===
+                  "PENDING" && (
+                  <>
+                    <button
+                      type="button"
+                      className="student-modal-approve"
+                      disabled={actionLoading}
+                      onClick={() =>
+                        handleOpenApproval(
+                          selectedStudent
+                        )
+                      }
+                    >
+                      <FaCheck />
+                      Approve Student
+                    </button>
 
-                  <button
-                    type="button"
-                    className="student-modal-reject"
-                    disabled={actionLoading}
-                    onClick={() =>
-                      handleReject(
-                        selectedStudent
-                      )
-                    }
-                  >
-                    <FaTimes />
-                    Reject Student
-                  </button>
+                    <button
+                      type="button"
+                      className="student-modal-reject"
+                      disabled={actionLoading}
+                      onClick={() =>
+                        handleReject(
+                          selectedStudent
+                        )
+                      }
+                    >
+                      <FaTimes />
+                      Reject Student
+                    </button>
+                  </>
+                )}
 
-                </div>
-              )}
+              </div>
 
             </div>
+
+          </div>
+
+        </div>
+      )}
+
+      {/* =====================================================
+          EDIT STUDENT MODAL
+      ===================================================== */}
+
+      {editingStudent && (
+        <div
+          className="student-modal-overlay"
+          onClick={() => {
+            if (!editLoading) {
+              setEditingStudent(null);
+            }
+          }}
+        >
+
+          <div
+            className="student-edit-modal"
+            onClick={(e) =>
+              e.stopPropagation()
+            }
+          >
+
+            {/* HEADER */}
+
+            <div className="student-modal-header">
+
+              <div>
+                <h2>
+                  Edit Student
+                </h2>
+
+                <p>
+                  Update student information.
+                </p>
+              </div>
+
+              <button
+                type="button"
+                className="student-modal-close"
+                disabled={editLoading}
+                onClick={() =>
+                  setEditingStudent(null)
+                }
+              >
+                <FaTimes />
+              </button>
+
+            </div>
+
+            {/* FORM */}
+
+            <form
+              className="student-edit-form"
+              onSubmit={handleUpdateStudent}
+            >
+
+              {/* BASIC INFORMATION */}
+
+              <div className="student-edit-section">
+
+                <h4>
+                  Academic Information
+                </h4>
+
+                <div className="student-edit-grid">
+
+                  <div className="student-form-group">
+                    <label>
+                      Department
+                    </label>
+
+                    <input
+                      type="number"
+                      name="department"
+                      value={editForm.department}
+                      onChange={handleEditChange}
+                      required
+                    />
+
+                    <small>
+                      Enter the Department ID.
+                    </small>
+                  </div>
+
+                  <div className="student-form-group">
+                    <label>
+                      Semester
+                    </label>
+
+                    <input
+                      type="number"
+                      name="semester"
+                      value={editForm.semester}
+                      onChange={handleEditChange}
+                      required
+                    />
+
+                    <small>
+                      Enter the Semester ID.
+                    </small>
+                  </div>
+
+                  <div className="student-form-group">
+                    <label>
+                      Admission Year
+                    </label>
+
+                    <input
+                      type="number"
+                      name="admission_year"
+                      value={editForm.admission_year}
+                      onChange={handleEditChange}
+                      required
+                    />
+                  </div>
+
+                  <div className="student-form-group">
+                    <label>
+                      Session
+                    </label>
+
+                    <input
+                      type="text"
+                      name="session"
+                      value={editForm.session}
+                      onChange={handleEditChange}
+                      required
+                    />
+                  </div>
+
+                  <div className="student-form-group">
+                    <label>
+                      Gender
+                    </label>
+
+                    <select
+                      name="gender"
+                      value={editForm.gender}
+                      onChange={handleEditChange}
+                      required
+                    >
+                      <option value="">
+                        Select Gender
+                      </option>
+
+                      <option value="MALE">
+                        Male
+                      </option>
+
+                      <option value="FEMALE">
+                        Female
+                      </option>
+
+                      <option value="OTHER">
+                        Other
+                      </option>
+                    </select>
+                  </div>
+
+                  <div className="student-form-group">
+                    <label>
+                      Student Status
+                    </label>
+
+                    <select
+                      name="status"
+                      value={editForm.status}
+                      onChange={handleEditChange}
+                      required
+                    >
+                      <option value="ACTIVE">
+                        Active
+                      </option>
+
+                      <option value="GRADUATED">
+                        Graduated
+                      </option>
+
+                      <option value="SUSPENDED">
+                        Suspended
+                      </option>
+
+                      <option value="DROPPED">
+                        Dropped
+                      </option>
+                    </select>
+                  </div>
+
+                </div>
+
+              </div>
+
+              {/* PERSONAL INFORMATION */}
+
+              <div className="student-edit-section">
+
+                <h4>
+                  Personal Information
+                </h4>
+
+                <div className="student-edit-grid">
+
+                  <div className="student-form-group">
+                    <label>
+                      Date of Birth
+                    </label>
+
+                    <input
+                      type="date"
+                      name="date_of_birth"
+                      value={editForm.date_of_birth}
+                      onChange={handleEditChange}
+                      required
+                    />
+                  </div>
+
+                  <div className="student-form-group">
+                    <label>
+                      Blood Group
+                    </label>
+
+                    <select
+                      name="blood_group"
+                      value={editForm.blood_group}
+                      onChange={handleEditChange}
+                    >
+                      <option value="">
+                        Select Blood Group
+                      </option>
+
+                      <option value="A+">
+                        A+
+                      </option>
+
+                      <option value="A-">
+                        A-
+                      </option>
+
+                      <option value="B+">
+                        B+
+                      </option>
+
+                      <option value="B-">
+                        B-
+                      </option>
+
+                      <option value="AB+">
+                        AB+
+                      </option>
+
+                      <option value="AB-">
+                        AB-
+                      </option>
+
+                      <option value="O+">
+                        O+
+                      </option>
+
+                      <option value="O-">
+                        O-
+                      </option>
+                    </select>
+                  </div>
+
+                </div>
+
+              </div>
+
+              {/* GUARDIAN INFORMATION */}
+
+              <div className="student-edit-section">
+
+                <h4>
+                  Guardian Information
+                </h4>
+
+                <div className="student-edit-grid">
+
+                  <div className="student-form-group">
+                    <label>
+                      Guardian Name
+                    </label>
+
+                    <input
+                      type="text"
+                      name="guardian_name"
+                      value={editForm.guardian_name}
+                      onChange={handleEditChange}
+                      required
+                    />
+                  </div>
+
+                  <div className="student-form-group">
+                    <label>
+                      Guardian Phone
+                    </label>
+
+                    <input
+                      type="text"
+                      name="guardian_phone"
+                      value={editForm.guardian_phone}
+                      onChange={handleEditChange}
+                      required
+                    />
+                  </div>
+
+                </div>
+
+              </div>
+
+              {/* ADDRESS */}
+
+              <div className="student-edit-section">
+
+                <h4>
+                  Address Information
+                </h4>
+
+                <div className="student-edit-address-grid">
+
+                  <div className="student-form-group">
+                    <label>
+                      Present Address
+                    </label>
+
+                    <textarea
+                      name="present_address"
+                      value={editForm.present_address}
+                      onChange={handleEditChange}
+                      rows="4"
+                      required
+                    />
+                  </div>
+
+                  <div className="student-form-group">
+                    <label>
+                      Permanent Address
+                    </label>
+
+                    <textarea
+                      name="permanent_address"
+                      value={editForm.permanent_address}
+                      onChange={handleEditChange}
+                      rows="4"
+                      required
+                    />
+                  </div>
+
+                </div>
+
+              </div>
+
+              {/* ACTIONS */}
+
+              <div className="student-edit-actions">
+
+                <button
+                  type="button"
+                  className="student-cancel-button"
+                  disabled={editLoading}
+                  onClick={() =>
+                    setEditingStudent(null)
+                  }
+                >
+                  Cancel
+                </button>
+
+                <button
+                  type="submit"
+                  className="student-save-button"
+                  disabled={editLoading}
+                >
+                  <FaSave />
+
+                  {editLoading
+                    ? "Saving..."
+                    : "Save Changes"}
+                </button>
+
+              </div>
+
+            </form>
 
           </div>
 
@@ -1019,8 +1461,6 @@ const StudentManagement = () => {
             }
           >
 
-            {/* HEADER */}
-
             <div className="student-modal-header">
 
               <div>
@@ -1050,11 +1490,7 @@ const StudentManagement = () => {
 
             </div>
 
-            {/* BODY */}
-
             <div className="student-modal-body">
-
-              {/* STUDENT INFORMATION */}
 
               <div className="approval-student-info">
 
@@ -1077,8 +1513,6 @@ const StudentManagement = () => {
                 </div>
 
               </div>
-
-              {/* STUDENT ID */}
 
               <div className="student-id-section">
 
@@ -1123,8 +1557,6 @@ const StudentManagement = () => {
 
               </div>
 
-              {/* GENERATE BUTTON */}
-
               <button
                 type="button"
                 className="student-generate-id-button"
@@ -1142,8 +1574,6 @@ const StudentManagement = () => {
                   ? "Generating..."
                   : "Generate Student ID"}
               </button>
-
-              {/* ACTIONS */}
 
               <div className="student-approval-actions">
 

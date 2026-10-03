@@ -1096,3 +1096,164 @@
     grid-template-columns: 1fr;
   }
 }
+/* =========================================================
+   EDIT STUDENT MODAL
+========================================================= */
+
+.student-edit-modal {
+  width: 850px;
+  max-width: 95%;
+  max-height: 90vh;
+  overflow-y: auto;
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
+}
+
+.student-modal-edit {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 18px;
+  border: none;
+  border-radius: 7px;
+  background: #2563eb;
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.student-modal-edit:hover {
+  background: #1d4ed8;
+}
+
+.student-edit-form {
+  padding: 24px;
+}
+
+.student-edit-section {
+  margin-bottom: 26px;
+}
+
+.student-edit-section h4 {
+  margin: 0 0 16px;
+  padding-bottom: 9px;
+  border-bottom: 1px solid #e5e7eb;
+  color: #1f2937;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.student-edit-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 18px;
+}
+
+.student-edit-address-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 18px;
+}
+
+.student-form-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.student-form-group label {
+  margin-bottom: 7px;
+  color: #374151;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.student-form-group input,
+.student-form-group select,
+.student-form-group textarea {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 7px;
+  outline: none;
+  background: #ffffff;
+  color: #1f2937;
+  font-size: 14px;
+  box-sizing: border-box;
+}
+
+.student-form-group input:focus,
+.student-form-group select:focus,
+.student-form-group textarea:focus {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.1);
+}
+
+.student-form-group textarea {
+  resize: vertical;
+}
+
+.student-form-group small {
+  margin-top: 5px;
+  color: #6b7280;
+  font-size: 11px;
+}
+
+.student-edit-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 10px;
+  padding-top: 18px;
+  border-top: 1px solid #e5e7eb;
+}
+
+.student-save-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 7px;
+  background: #16a34a;
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.student-save-button:hover {
+  background: #15803d;
+}
+
+.student-save-button:disabled,
+.student-modal-edit:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* =========================================================
+   RESPONSIVE EDIT MODAL
+========================================================= */
+
+@media (max-width: 768px) {
+  .student-edit-grid,
+  .student-edit-address-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .student-edit-form {
+    padding: 18px;
+  }
+
+  .student-edit-actions {
+    flex-direction: column;
+  }
+
+  .student-edit-actions button {
+    width: 100%;
+  }
+}
