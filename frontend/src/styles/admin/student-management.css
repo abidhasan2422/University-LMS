@@ -1257,3 +1257,20 @@
     width: 100%;
   }
 }
+/* =========================================================
+   DELETE STUDENT BUTTON
+========================================================= */
+
+.student-action.delete {
+  color: #dc2626;
+}
+
+.student-action.delete:hover {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+.student-action.delete:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

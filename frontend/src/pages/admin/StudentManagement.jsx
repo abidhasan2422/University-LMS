@@ -9,7 +9,9 @@ import {
   FaIdCard,
   FaEdit,
   FaSave,
+  FaTrash,
 } from "react-icons/fa";
+import Swal from "sweetalert2";
 
 import api from "../../api/axios";
 import "../../styles/admin/student-management.css";
@@ -304,6 +306,63 @@ const StudentManagement = () => {
       setActionLoading(false);
     }
   };
+// =========================================================
+// DELETE STUDENT
+// =========================================================
+
+
+const handleDelete = async (student) => {
+  const result = await Swal.fire({
+    title: "Delete Student?",
+    text: `Are you sure you want to delete ${student.full_name}?`,
+    icon: "warning",
+    showCancelButton: true,
+    confirmButtonText: "Yes, Delete",
+    cancelButtonText: "Cancel",
+    confirmButtonColor: "#dc2626",
+    cancelButtonColor: "#6b7280",
+    reverseButtons: true,
+  });
+
+  if (!result.isConfirmed) {
+    return;
+  }
+
+  try {
+    setActionLoading(true);
+
+    await api.delete(
+      `students/${student.id}/`
+    );
+
+    await Swal.fire({
+      title: "Deleted!",
+      text: "Student deleted successfully.",
+      icon: "success",
+      confirmButtonColor: "#16a34a",
+    });
+
+    setSelectedStudent(null);
+
+    await fetchStudents();
+  } catch (error) {
+    console.error(
+      "Failed to delete student:",
+      error
+    );
+
+    Swal.fire({
+      title: "Delete Failed",
+      text:
+        error.response?.data?.detail ||
+        "Failed to delete student.",
+      icon: "error",
+      confirmButtonColor: "#dc2626",
+    });
+  } finally {
+    setActionLoading(false);
+  }
+};
 
   // =========================================================
   // OPEN EDIT MODAL
@@ -667,6 +726,19 @@ const StudentManagement = () => {
                         >
                           <FaEye />
                         </button>
+                        {/* DELETE */}
+
+<button
+  type="button"
+  className="student-action delete"
+  title="Delete student"
+  disabled={actionLoading}
+  onClick={() =>
+    handleDelete(student)
+  }
+>
+  <FaTrash />
+</button>
 
                         {/* APPROVE / REJECT */}
 
