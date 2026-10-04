@@ -25,6 +25,7 @@ import AdminDashboard from "./pages/admin/AdminDashboard";
 import InstructorAssessments from "./pages/instructor/InstructorAssessments";
 import AdminLayout from "./layouts/AdminLayout";
 import StudentManagement from "./pages/admin/StudentManagement";
+import InstructorManagement from "./pages/admin/InstructorManagement";
 function App() {
   return (
     <BrowserRouter>
@@ -86,6 +87,7 @@ function App() {
           <Route path="/admin" element={<AdminLayout />}>
             <Route path="dashboard" element={<AdminDashboard />} />
             <Route path="students" element={<StudentManagement />} />
+            <Route path="instructors" element={<InstructorManagement />} />
           </Route>
         </Routes>
       </AuthProvider>

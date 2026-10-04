@@ -43,8 +43,8 @@ class InstructorSerializer(serializers.ModelSerializer):
         read_only=True,
     )
 
-    mobile = serializers.CharField(
-        source="user.mobile",
+    phone_number = serializers.CharField(
+        source="user.phone_number",
         read_only=True,
     )
 
@@ -58,7 +58,7 @@ class InstructorSerializer(serializers.ModelSerializer):
             "first_name",
             "last_name",
             "email",
-            "mobile",
+            "phone_number",
             "employee_id",
             "department",
             "department_name",
