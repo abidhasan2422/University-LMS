@@ -1,0 +1,1155 @@
+/* =========================================================
+   INSTRUCTOR MANAGEMENT
+   ========================================================= */
+
+.admin-student-management {
+  width: 100%;
+}
+
+
+/* =========================================================
+   PAGE HEADER
+   ========================================================= */
+
+.student-page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 28px;
+}
+
+.student-page-label {
+  display: inline-block;
+  margin-bottom: 8px;
+  color: #2563eb;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+}
+
+.student-page-header h1 {
+  margin: 0;
+  color: #111827;
+  font-size: 30px;
+  font-weight: 700;
+}
+
+.student-page-header p {
+  margin: 6px 0 0;
+  color: #6b7280;
+  font-size: 14px;
+}
+
+
+/* =========================================================
+   FILTER CARD
+   ========================================================= */
+
+.student-filter-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+
+  padding: 18px;
+
+  margin-bottom: 22px;
+
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
+}
+
+
+/* =========================================================
+   SEARCH BOX
+   ========================================================= */
+
+.student-search-box {
+  position: relative;
+
+  display: flex;
+  align-items: center;
+
+  flex: 1;
+}
+
+.student-search-box svg {
+  position: absolute;
+  left: 15px;
+
+  color: #9ca3af;
+  font-size: 15px;
+}
+
+.student-search-box input {
+  width: 100%;
+
+  height: 44px;
+
+  padding: 0 16px 0 40px;
+
+  border: 1px solid #dbe1ea;
+  border-radius: 10px;
+
+  outline: none;
+
+  color: #111827;
+  background: #ffffff;
+
+  font-size: 13px;
+
+  transition: all 0.2s ease;
+}
+
+.student-search-box input:focus {
+  border-color: #2563eb;
+
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.08);
+}
+
+.student-search-box input::placeholder {
+  color: #9ca3af;
+}
+
+
+/* =========================================================
+   FILTER DROPDOWNS
+   ========================================================= */
+
+.student-status-filter {
+  min-width: 180px;
+
+  height: 44px;
+
+  padding: 0 36px 0 13px;
+
+  border: 1px solid #dbe1ea;
+  border-radius: 10px;
+
+  outline: none;
+
+  color: #374151;
+  background-color: #ffffff;
+
+  font-size: 13px;
+
+  cursor: pointer;
+
+  transition: all 0.2s ease;
+}
+
+.student-status-filter:focus {
+  border-color: #2563eb;
+
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.08);
+}
+
+
+/* =========================================================
+   RESET BUTTON
+   ========================================================= */
+
+.student-reset-button {
+  height: 44px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 8px;
+
+  padding: 0 16px;
+
+  border: 1px solid #dbe1ea;
+  border-radius: 10px;
+
+  background: #ffffff;
+
+  color: #374151;
+
+  font-size: 13px;
+  font-weight: 500;
+
+  cursor: pointer;
+
+  transition: all 0.2s ease;
+}
+
+.student-reset-button svg {
+  font-size: 13px;
+}
+
+.student-reset-button:hover {
+  border-color: #2563eb;
+  color: #2563eb;
+  background: #f8faff;
+}
+
+
+/* =========================================================
+   TABLE CARD
+   ========================================================= */
+
+.student-table-card {
+  background: #ffffff;
+
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+
+  overflow: hidden;
+
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
+}
+
+
+/* =========================================================
+   TABLE HEADER
+   ========================================================= */
+
+.student-table-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  padding: 22px 24px;
+
+  border-bottom: 1px solid #edf0f4;
+}
+
+.student-table-header h2 {
+  margin: 0;
+
+  color: #111827;
+
+  font-size: 17px;
+  font-weight: 700;
+}
+
+.student-table-header p {
+  margin: 5px 0 0;
+
+  color: #8a94a6;
+
+  font-size: 12px;
+}
+
+.student-count {
+  display: inline-flex;
+  align-items: center;
+
+  padding: 7px 12px;
+
+  border-radius: 20px;
+
+  color: #2563eb;
+  background: #eff6ff;
+
+  font-size: 12px;
+  font-weight: 600;
+}
+
+
+/* =========================================================
+   TABLE WRAPPER
+   ========================================================= */
+
+.student-table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+}
+
+
+/* =========================================================
+   TABLE
+   ========================================================= */
+
+.student-table {
+  width: 100%;
+
+  border-collapse: collapse;
+
+  min-width: 1050px;
+}
+
+.student-table thead {
+  background: #f8fafc;
+}
+
+.student-table th {
+  padding: 14px 18px;
+
+  color: #64748b;
+
+  font-size: 11px;
+  font-weight: 700;
+
+  text-align: left;
+
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+
+  white-space: nowrap;
+
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.student-table td {
+  padding: 16px 18px;
+
+  color: #374151;
+
+  font-size: 13px;
+
+  border-bottom: 1px solid #f0f2f5;
+
+  vertical-align: middle;
+}
+
+.student-table tbody tr {
+  transition: background 0.2s ease;
+}
+
+.student-table tbody tr:hover {
+  background: #fafcff;
+}
+
+.student-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+
+/* =========================================================
+   INSTRUCTOR NAME CELL
+   ========================================================= */
+
+.student-name-cell {
+  display: flex;
+  align-items: center;
+
+  gap: 12px;
+
+  min-width: 190px;
+}
+
+.student-avatar {
+  width: 38px;
+  height: 38px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  flex-shrink: 0;
+
+  border-radius: 50%;
+
+  color: #2563eb;
+  background: #eaf2ff;
+
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.student-name-cell strong {
+  display: block;
+
+  color: #1f2937;
+
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.student-name-cell small {
+  display: block;
+
+  margin-top: 3px;
+
+  color: #8a94a6;
+
+  font-size: 11px;
+}
+
+
+/* =========================================================
+   EMPLOYEE ID
+   ========================================================= */
+
+.student-id {
+  display: inline-block;
+
+  color: #2563eb;
+
+  font-size: 12px;
+  font-weight: 600;
+
+  white-space: nowrap;
+}
+
+
+/* =========================================================
+   STATUS BADGES
+   ========================================================= */
+
+.student-status-badge {
+  display: inline-flex;
+  align-items: center;
+
+  padding: 5px 10px;
+
+  border-radius: 20px;
+
+  font-size: 10px;
+  font-weight: 700;
+
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+
+/* ACTIVE */
+
+.student-status-badge.active {
+  color: #15803d;
+  background: #dcfce7;
+}
+
+
+/* ON LEAVE */
+
+.student-status-badge.on_leave {
+  color: #a16207;
+  background: #fef9c3;
+}
+
+
+/* RETIRED */
+
+.student-status-badge.retired {
+  color: #475569;
+  background: #e2e8f0;
+}
+
+
+/* RESIGNED */
+
+.student-status-badge.resigned {
+  color: #dc2626;
+  background: #fee2e2;
+}
+
+
+/* =========================================================
+   ACTION BUTTONS
+   ========================================================= */
+
+.student-action-buttons {
+  display: flex;
+  align-items: center;
+
+  gap: 7px;
+}
+
+.student-action {
+  width: 34px;
+  height: 34px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+
+  background: #ffffff;
+
+  cursor: pointer;
+
+  font-size: 12px;
+
+  transition: all 0.2s ease;
+}
+
+.student-action:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+
+/* VIEW */
+
+.student-action.view {
+  color: #2563eb;
+}
+
+.student-action.view:hover {
+  color: #ffffff;
+  background: #2563eb;
+  border-color: #2563eb;
+}
+
+
+/* EDIT */
+
+.student-action.approve {
+  color: #16a34a;
+}
+
+.student-action.approve:hover {
+  color: #ffffff;
+  background: #16a34a;
+  border-color: #16a34a;
+}
+
+
+/* DELETE */
+
+.student-action.delete {
+  color: #dc2626;
+}
+
+.student-action.delete:hover {
+  color: #ffffff;
+  background: #dc2626;
+  border-color: #dc2626;
+}
+
+
+/* =========================================================
+   LOADING / EMPTY / ERROR
+   ========================================================= */
+
+.student-loading,
+.student-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  min-height: 180px;
+
+  color: #6b7280;
+
+  font-size: 14px;
+}
+
+.student-error {
+  margin: 16px 20px;
+  padding: 12px 15px;
+
+  border: 1px solid #fecaca;
+  border-radius: 8px;
+
+  color: #b91c1c;
+  background: #fef2f2;
+
+  font-size: 13px;
+}
+
+
+/* =========================================================
+   PAGINATION
+   ========================================================= */
+
+.student-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 18px;
+
+  padding: 18px;
+
+  border-top: 1px solid #edf0f4;
+}
+
+.student-pagination button {
+  height: 36px;
+
+  padding: 0 14px;
+
+  border: 1px solid #dbe1ea;
+  border-radius: 8px;
+
+  color: #374151;
+  background: #ffffff;
+
+  font-size: 12px;
+  font-weight: 500;
+
+  cursor: pointer;
+
+  transition: all 0.2s ease;
+}
+
+.student-pagination button:hover:not(:disabled) {
+  border-color: #2563eb;
+  color: #2563eb;
+}
+
+.student-pagination button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.student-pagination span {
+  color: #6b7280;
+
+  font-size: 12px;
+}
+
+
+/* =========================================================
+   MODAL OVERLAY
+   ========================================================= */
+
+.student-modal-overlay {
+  position: fixed;
+
+  inset: 0;
+
+  z-index: 9999;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 25px;
+
+  background: rgba(15, 23, 42, 0.55);
+
+  backdrop-filter: blur(3px);
+}
+
+
+/* =========================================================
+   VIEW MODAL
+   ========================================================= */
+
+.student-modal {
+  width: 100%;
+  max-width: 760px;
+  max-height: 90vh;
+
+  overflow-y: auto;
+
+  background: #ffffff;
+
+  border-radius: 16px;
+
+  box-shadow: 0 20px 50px rgba(15, 23, 42, 0.2);
+}
+
+
+/* =========================================================
+   EDIT MODAL
+   ========================================================= */
+
+.student-edit-modal {
+  width: 100%;
+  max-width: 850px;
+  max-height: 92vh;
+
+  overflow-y: auto;
+
+  background: #ffffff;
+
+  border-radius: 16px;
+
+  box-shadow: 0 20px 50px rgba(15, 23, 42, 0.2);
+}
+
+
+/* =========================================================
+   MODAL HEADER
+   ========================================================= */
+
+.student-modal-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+
+  padding: 22px 24px;
+
+  border-bottom: 1px solid #edf0f4;
+}
+
+.student-modal-header h2 {
+  margin: 0;
+
+  color: #111827;
+
+  font-size: 19px;
+  font-weight: 700;
+}
+
+.student-modal-header p {
+  margin: 5px 0 0;
+
+  color: #8a94a6;
+
+  font-size: 12px;
+}
+
+.student-modal-close {
+  width: 34px;
+  height: 34px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border: none;
+  border-radius: 8px;
+
+  color: #64748b;
+  background: #f1f5f9;
+
+  cursor: pointer;
+
+  transition: all 0.2s ease;
+}
+
+.student-modal-close:hover {
+  color: #dc2626;
+  background: #fee2e2;
+}
+
+
+/* =========================================================
+   MODAL BODY
+   ========================================================= */
+
+.student-modal-body {
+  padding: 24px;
+}
+
+
+/* =========================================================
+   PROFILE
+   ========================================================= */
+
+.student-detail-profile {
+  display: flex;
+  align-items: center;
+
+  gap: 15px;
+
+  padding-bottom: 22px;
+
+  margin-bottom: 22px;
+
+  border-bottom: 1px solid #edf0f4;
+}
+
+.student-detail-avatar {
+  width: 58px;
+  height: 58px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  flex-shrink: 0;
+
+  border-radius: 50%;
+
+  color: #2563eb;
+  background: #eaf2ff;
+
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.student-detail-profile h3 {
+  margin: 0;
+
+  color: #111827;
+
+  font-size: 19px;
+  font-weight: 700;
+}
+
+.student-detail-profile p {
+  margin: 5px 0 0;
+
+  color: #64748b;
+
+  font-size: 12px;
+}
+
+
+/* =========================================================
+   DETAIL SECTION
+   ========================================================= */
+
+.student-detail-section {
+  margin-bottom: 24px;
+}
+
+.student-detail-section h4 {
+  margin: 0 0 14px;
+
+  color: #1f2937;
+
+  font-size: 14px;
+  font-weight: 700;
+}
+
+
+/* =========================================================
+   DETAIL GRID
+   ========================================================= */
+
+.student-detail-grid {
+  display: grid;
+
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+
+  gap: 1px;
+
+  overflow: hidden;
+
+  border: 1px solid #edf0f4;
+  border-radius: 10px;
+
+  background: #edf0f4;
+}
+
+.student-detail-grid > div {
+  padding: 13px 15px;
+
+  background: #ffffff;
+}
+
+.student-detail-grid span {
+  display: block;
+
+  margin-bottom: 5px;
+
+  color: #8a94a6;
+
+  font-size: 11px;
+}
+
+.student-detail-grid strong {
+  display: block;
+
+  color: #374151;
+
+  font-size: 13px;
+
+  word-break: break-word;
+}
+
+
+/* =========================================================
+   MODAL ACTIONS
+   ========================================================= */
+
+.student-modal-actions {
+  display: flex;
+
+  gap: 10px;
+
+  padding-top: 8px;
+}
+
+.student-modal-edit,
+.student-modal-reject {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 8px;
+
+  height: 40px;
+
+  padding: 0 16px;
+
+  border: none;
+  border-radius: 8px;
+
+  font-size: 12px;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition: all 0.2s ease;
+}
+
+.student-modal-edit {
+  color: #ffffff;
+  background: #2563eb;
+}
+
+.student-modal-edit:hover {
+  background: #1d4ed8;
+}
+
+.student-modal-reject {
+  color: #ffffff;
+  background: #dc2626;
+}
+
+.student-modal-reject:hover {
+  background: #b91c1c;
+}
+
+.student-modal-edit:disabled,
+.student-modal-reject:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+
+/* =========================================================
+   EDIT FORM
+   ========================================================= */
+
+.student-edit-form {
+  padding: 24px;
+}
+
+.student-edit-section {
+  margin-bottom: 26px;
+}
+
+.student-edit-section h4 {
+  margin: 0 0 15px;
+
+  color: #1f2937;
+
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.student-edit-grid {
+  display: grid;
+
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+
+  gap: 16px;
+}
+
+.student-form-group {
+  display: flex;
+  flex-direction: column;
+
+  gap: 7px;
+}
+
+.student-form-group label {
+  color: #374151;
+
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.student-form-group input,
+.student-form-group select {
+  width: 100%;
+
+  height: 42px;
+
+  padding: 0 12px;
+
+  border: 1px solid #dbe1ea;
+  border-radius: 8px;
+
+  outline: none;
+
+  color: #374151;
+  background: #ffffff;
+
+  font-size: 13px;
+
+  transition: all 0.2s ease;
+}
+
+.student-form-group input:focus,
+.student-form-group select:focus {
+  border-color: #2563eb;
+
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.08);
+}
+
+
+/* =========================================================
+   EDIT ACTIONS
+   ========================================================= */
+
+.student-edit-actions {
+  display: flex;
+  justify-content: flex-end;
+
+  gap: 10px;
+
+  padding-top: 18px;
+
+  border-top: 1px solid #edf0f4;
+}
+
+.student-cancel-button,
+.student-save-button {
+  height: 40px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 8px;
+
+  padding: 0 17px;
+
+  border-radius: 8px;
+
+  font-size: 12px;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition: all 0.2s ease;
+}
+
+.student-cancel-button {
+  border: 1px solid #dbe1ea;
+
+  color: #475569;
+  background: #ffffff;
+}
+
+.student-cancel-button:hover {
+  background: #f8fafc;
+}
+
+.student-save-button {
+  border: none;
+
+  color: #ffffff;
+  background: #2563eb;
+}
+
+.student-save-button:hover {
+  background: #1d4ed8;
+}
+
+.student-cancel-button:disabled,
+.student-save-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+
+@media (max-width: 1200px) {
+
+  .student-filter-card {
+    flex-wrap: wrap;
+  }
+
+  .student-search-box {
+    flex-basis: 100%;
+  }
+
+  .student-status-filter {
+    flex: 1;
+    min-width: 160px;
+  }
+
+}
+
+
+@media (max-width: 768px) {
+
+  .student-page-header h1 {
+    font-size: 25px;
+  }
+
+  .student-filter-card {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .student-search-box {
+    width: 100%;
+  }
+
+  .student-status-filter {
+    width: 100%;
+  }
+
+  .student-reset-button {
+    width: 100%;
+  }
+
+  .student-table-header {
+    padding: 18px;
+  }
+
+  .student-modal-overlay {
+    padding: 12px;
+  }
+
+  .student-modal,
+  .student-edit-modal {
+    max-height: 95vh;
+  }
+
+  .student-modal-body,
+  .student-edit-form {
+    padding: 18px;
+  }
+
+  .student-detail-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .student-edit-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .student-modal-actions {
+    flex-direction: column;
+  }
+
+  .student-modal-edit,
+  .student-modal-reject {
+    width: 100%;
+  }
+
+}
+
+
+@media (max-width: 480px) {
+
+  .student-page-header {
+    margin-bottom: 20px;
+  }
+
+  .student-page-header h1 {
+    font-size: 22px;
+  }
+
+  .student-page-header p {
+    font-size: 12px;
+  }
+
+  .student-table-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .student-pagination {
+    gap: 10px;
+  }
+
+  .student-pagination button {
+    padding: 0 10px;
+  }
+
+}
