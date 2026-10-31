@@ -42,14 +42,18 @@ class DepartmentSerializer(serializers.ModelSerializer):
         return value
        
 
-    def validate_code(self, value):
-        """
-        Ensure the department code is unique.
-        """
-        value = value.upper()
+    
+def validate_code(self, value):
+    value = value.upper()
 
-        if Department.objects.filter(code__iexact=value).exists():
-            raise serializers.ValidationError(
-                "A department with this code already exists."
-            )
-        return value
+    queryset = Department.objects.filter(code__iexact=value)
+
+    if self.instance:
+        queryset = queryset.exclude(pk=self.instance.pk)
+
+    if queryset.exists():
+        raise serializers.ValidationError(
+            "A department with this code already exists."
+        )
+
+    return value
