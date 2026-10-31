@@ -43,6 +43,7 @@ class DepartmentSerializer(serializers.ModelSerializer):
        
 
     
+
 def validate_code(self, value):
     value = value.upper()
 
@@ -57,3 +58,4 @@ def validate_code(self, value):
         )
 
     return value
+

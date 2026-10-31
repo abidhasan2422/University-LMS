@@ -6,6 +6,7 @@ from rest_framework.views import APIView
 from apps.authentication.permissions import IsAdmin
 from .serializers import DepartmentSerializer
 from .services import DepartmentService
+from django.shortcuts import get_object_or_404
 from apps.common.pagination import (StandardResultsSetPagination)
 
 class DepartmentListCreateView(APIView):
@@ -158,16 +159,33 @@ class DepartmentDetailView(APIView):
             },
             status=status.HTTP_200_OK,
         )
-class DepartmentRestoreView(APIView):
 
+class DepartmentRestoreView(APIView):
     permission_classes = [IsAuthenticated, IsAdmin]
 
     def patch(self, request, department_id):
-        department = Department.objects.get(id=department_id)
+        department = get_object_or_404(
+            Department.all_objects,
+            id=department_id,
+        )
 
-        department = DepartmentService.restore_department(department)
+        DepartmentService.restore_department(department)
 
         return Response(
             {"message": "Department restored successfully."},
             status=status.HTTP_200_OK,
         )
+
+
+class DeletedDepartmentListView(APIView):
+    permission_classes = [IsAuthenticated, IsAdmin]
+
+    def get(self, request):
+        departments = DepartmentService.get_deleted_departments()
+
+        paginator = StandardResultsSetPagination()
+        result = paginator.paginate_queryset(departments, request)
+
+        serializer = DepartmentSerializer(result, many=True)
+        return paginator.get_paginated_response(serializer.data)
+
