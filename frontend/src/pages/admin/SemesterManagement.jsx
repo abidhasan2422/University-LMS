@@ -59,7 +59,7 @@ const SemesterManagement = () => {
       if (!Array.isArray(data)) {
         const pageSize = results.length || 10;
         setTotalPages(
-          Math.max(1, Math.ceil((data.count || 0) / pageSize))
+          Math.max(1, Math.ceil((data.count || 0) / 10))
         );
       } else {
         setTotalPages(1);
