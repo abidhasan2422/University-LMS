@@ -40,6 +40,7 @@ class CourseSerializer(serializers.ModelSerializer):
             "semester_name",
             "course_code",
             "course_title",
+            "course_type", 
             "credit",
             "description",
             "is_active",
