@@ -8,11 +8,15 @@ urlpatterns = [
     path("api/semesters/",include("apps.semester.urls")),
     path("api/students/",include("apps.student.urls")),
     path("api/instructors/",include("apps.instructor.urls")),
-    path("api/course-offering/", include("apps.course_offering.urls")), 
+    # path("api/course-offering/", include("apps.course_offering.urls")), 
     path("api/enrollments/", include("apps.enrollments.urls")),  
     path("api/attendance/", include("apps.attendance.urls")),
      path("api/results/",include("apps.result.urls")),
      path("api/assessments/", include("apps.assessment.urls")),
       path("api/admin/dashboard/",include("apps.admin_dashboard.urls")),
       path("api/courses/", include("apps.course.urls")),
+      path(
+    "api/course-offerings/",
+    include("apps.course_offering.urls"),
+),
 ]
