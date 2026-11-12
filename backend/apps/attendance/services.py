@@ -44,7 +44,7 @@ class AttendanceService:
 
         # Prevent duplicate attendance for the same
         # enrollment and date.
-        queryset = Attendance.objects.filter(
+        queryset = Attendance.all_objects.filter(
             enrollment=enrollment,
             date=attendance_date,
             is_active=True,
@@ -215,25 +215,28 @@ class AttendanceService:
                 "enrollment__course_offering__semester",
             )
         )
-    @staticmethod
-    def get_student_attendance_summary(
-        student,
-        course_offering=None,
-    ):
-        """
-        Calculate attendance summary for a student.
-        """
+@staticmethod
+def get_student_attendance_summary(
+    student,
+    course_offering=None,
+):
+    """
+    Calculate attendance summary for a student.
+    """
 
-        queryset = Attendance.objects.filter(
-            enrollment__student=student,
-            enrollment__status="ENROLLED",
-            is_active=True,
+    queryset = Attendance.objects.filter(
+        enrollment__student=student,
+        enrollment__status__in=[
+            "ENROLLED",
+            "COMPLETED",
+        ],
+        is_active=True,
+    )
+
+    if course_offering:
+        queryset = queryset.filter(
+            enrollment__course_offering_id=course_offering
         )
-
-        if course_offering:
-            queryset = queryset.filter(
-                enrollment__course_offering_id=course_offering
-            )
 
         summary = queryset.aggregate(
             total_classes=Count("id"),
