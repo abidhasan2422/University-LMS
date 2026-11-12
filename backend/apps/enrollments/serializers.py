@@ -39,6 +39,15 @@ class EnrollmentSerializer(serializers.ModelSerializer):
         source="course_offering.semester.name",
         read_only=True,
     )
+    academic_year = serializers.IntegerField(
+    source="course_offering.academic_year",
+    read_only=True,
+)
+
+    semester_year = serializers.IntegerField(
+    source="course_offering.semester.year",
+    read_only=True,
+)
 
     class Meta:
         model = Enrollment
@@ -57,6 +66,8 @@ class EnrollmentSerializer(serializers.ModelSerializer):
             "is_active",
             "created_at",
             "updated_at",
+            "academic_year",
+             "semester_year",
         )
         read_only_fields = (
             "id",

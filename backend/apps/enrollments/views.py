@@ -16,7 +16,11 @@ class EnrollmentListCreateView(APIView):
     GET  : List all enrollments (Admin sees all, students can filter)
     POST : Enroll a student into a course offering
     """
-    permission_classes = [IsAuthenticated]
+    def get_permissions(self):
+        if self.request.method == "POST":
+            return [IsAuthenticated(), IsAdmin()]
+
+        return [IsAuthenticated()]
 
     def get(self, request):
         search = request.query_params.get("search")
@@ -70,7 +74,11 @@ class EnrollmentDetailView(APIView):
     GET    : Retrieve specific enrollment
     DELETE : Drop/Cancel an enrollment
     """
-    permission_classes = [IsAuthenticated]
+    def get_permissions(self):
+        if self.request.method == "PATCH":
+            return [IsAuthenticated(), IsAdmin()]
+
+        return [IsAuthenticated()]
 
     def get(self, request, enrollment_id):
         try:
@@ -114,5 +122,49 @@ class EnrollmentDetailView(APIView):
         EnrollmentService.drop_enrollment(enrollment)
         return Response(
             {"message": "Course enrollment dropped successfully."},
+            status=status.HTTP_200_OK,
+        )
+    def patch(self, request, enrollment_id):
+        """
+        Update enrollment status (Admin only).
+        """
+
+        try:
+            enrollment = Enrollment.objects.get(id=enrollment_id)
+        except Enrollment.DoesNotExist:
+            return Response(
+                {"detail": "Enrollment not found."},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+
+        new_status = request.data.get("status")
+
+        # Validate status
+        if new_status not in Enrollment.Status.values:
+            return Response(
+                {"status": "Invalid enrollment status."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        # Only allow marking active enrollments as completed
+        if enrollment.status != Enrollment.Status.ENROLLED:
+            return Response(
+                {"detail": "Only enrolled students can be marked as completed."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        if new_status != Enrollment.Status.COMPLETED:
+            return Response(
+                {"status": "Only COMPLETED is allowed through this endpoint."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        enrollment.status = Enrollment.Status.COMPLETED
+        enrollment.save(update_fields=["status", "updated_at"])
+
+        serializer = EnrollmentSerializer(enrollment)
+
+        return Response(
+            serializer.data,
             status=status.HTTP_200_OK,
         )
