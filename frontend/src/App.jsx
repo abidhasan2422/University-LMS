@@ -30,6 +30,7 @@ import DepartmentManagement from "./pages/admin/DepartmentManagement";
 import SemesterManagement from "./pages/admin/SemesterManagement";
 import CourseManagement from "./pages/admin/CourseManagement";
 import CourseOfferingManagement from "./pages/admin/CourseOfferingManagement";
+import EnrollmentManagement from "./pages/admin/EnrollmentManagement";
 function App() {
   return (
     <BrowserRouter>
@@ -99,6 +100,10 @@ function App() {
               path="course-offerings"
               element={<CourseOfferingManagement />}
             />
+              <Route
+    path="enrollments"
+    element={<EnrollmentManagement />}
+  />
           </Route>
         </Routes>
       </AuthProvider>
