@@ -95,39 +95,43 @@ class ResultSerializer(serializers.ModelSerializer):
         return obj.enrollment.student.user.get_full_name()
 
     def validate_enrollment(self, value):
-        """
-        Only enrolled and active students can have results.
-        """
-
         if not value.is_active:
             raise serializers.ValidationError(
                 "This enrollment is inactive."
             )
 
-        if value.status != Enrollment.Status.ENROLLED:
+        if value.status not in [
+            Enrollment.Status.ENROLLED,
+            Enrollment.Status.COMPLETED,
+        ]:
             raise serializers.ValidationError(
-                "A result can only be generated for "
-                "an enrolled student."
+                "A result can only be generated for an enrolled "
+                "or completed student."
+            )
+
+        existing_result = Result.objects.filter(
+            enrollment=value
+        ).exclude(pk=getattr(self.instance, "pk", None)).exists()
+
+        if existing_result:
+            raise serializers.ValidationError(
+                "A result already exists for this enrollment."
             )
 
         return value
 
 class SemesterGPASerializer(serializers.Serializer):
-    """
-    Serializer for semester GPA.
-    """
-
     semester_gpa = serializers.DecimalField(
         max_digits=3,
         decimal_places=2,
     )
-
     total_credits = serializers.DecimalField(
         max_digits=6,
         decimal_places=2,
     )
-
-    courses = serializers.ListField()
+    courses = serializers.ListField(
+        child=serializers.DictField()
+    )
 
 
 class CGPASerializer(serializers.Serializer):

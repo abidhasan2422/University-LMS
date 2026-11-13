@@ -48,6 +48,7 @@ class Result(BaseModel):
         decimal_places=2,
         validators=[
             MinValueValidator(0),
+            MaxValueValidator(4)
         ],
     )
 
