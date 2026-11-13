@@ -140,37 +140,42 @@ class AssessmentService:
     # Assessment Marks
     # =========================================================
 
+  
     @staticmethod
     def create_assessment_mark(serializer):
-        """
-        Create a student's assessment mark.
+        assessment = serializer.validated_data.get("assessment")
+        enrollment = serializer.validated_data.get("enrollment")
 
-        One student can have only one active mark
-        for one assessment.
-        """
-
-        data = serializer.validated_data
-
-        assessment = data["assessment"]
-        enrollment = data["enrollment"]
-
-        existing_mark = AssessmentMark.objects.filter(
+        # Check if a mark already exists, including soft-deleted marks
+        existing_mark = AssessmentMark.all_objects.filter(
             assessment=assessment,
             enrollment=enrollment,
-            is_active=True,
-        ).exists()
+        ).first()
 
         if existing_mark:
-            raise ValidationError(
-                {
-                    "assessment": (
-                        "This student already has marks "
-                        "for this assessment."
-                    )
-                }
-            )
+            # If the mark is already active, prevent duplicate creation
+            if existing_mark.is_active:
+                raise ValidationError({
+                    "detail": "Marks already exist for this student in this assessment."
+                })
 
+            # If soft-deleted, restore and update the existing mark
+            existing_mark.restore()
+
+            existing_mark.obtained_marks = serializer.validated_data.get(
+                "obtained_marks"
+            )
+            existing_mark.remarks = serializer.validated_data.get("remarks", "")
+
+            existing_mark.save()
+
+            return existing_mark
+
+        # No existing record: create a new mark
         return serializer.save()
+
+    
+        
 
     @staticmethod
     def get_all_assessment_marks(
@@ -182,53 +187,50 @@ class AssessmentService:
         course_offering=None,
         assessment_type=None,
     ):
-        """
-        Return assessment marks with search,
-        filtering and ordering.
-        """
-
         queryset = AssessmentMark.objects.select_related(
             "assessment",
-            "assessment__course_offering",
-            "assessment__course_offering__course",
-            "assessment__course_offering__instructor",
-            "assessment__course_offering__instructor__user",
-            "assessment__course_offering__semester",
             "enrollment",
             "enrollment__student",
-            "enrollment__student__user",
-        )
+            "assessment__course_offering",
+            "assessment__course_offering__course",
+        ).filter(is_active=True)
 
-        return QueryService.apply(
-            queryset=queryset,
-            search=search,
-            search_fields=[
-                "enrollment__student__student_id",
-                "enrollment__student__user__first_name",
-                "enrollment__student__user__last_name",
-                "enrollment__student__user__email",
-                "assessment__course_offering__course__course_code",
-                "assessment__course_offering__course__course_title",
-            ],
-            ordering=ordering,
-            allowed_ordering=[
-                "obtained_marks",
-                "-obtained_marks",
-                "created_at",
-                "-created_at",
-                "assessment__assessment_date",
-                "-assessment__assessment_date",
-                "assessment__assessment_type",
-                "-assessment__assessment_type",
-            ],
-            filters={
-                "assessment_id": assessment,
-                "enrollment_id": enrollment,
-                "enrollment__student_id": student,
-                "assessment__course_offering_id": course_offering,
-                "assessment__assessment_type": assessment_type,
-            },
-        )
+        if assessment:
+            queryset = queryset.filter(assessment_id=assessment)
+
+        if enrollment:
+            queryset = queryset.filter(enrollment_id=enrollment)
+
+        if student:
+            queryset = queryset.filter(
+                enrollment__student_id=student
+            )
+
+        if course_offering:
+            queryset = queryset.filter(
+                assessment__course_offering_id=course_offering
+            )
+
+        if assessment_type:
+            queryset = queryset.filter(
+                assessment__assessment_type=assessment_type
+            )
+
+        if search:
+            from django.db.models import Q
+
+            queryset = queryset.filter(
+                Q(enrollment__student__student_id__icontains=search)
+                | Q(assessment__title__icontains=search)
+            )
+
+        if ordering:
+            queryset = queryset.order_by(ordering)
+        else:
+            queryset = queryset.order_by("assessment", "enrollment")
+
+        return queryset
+
 
     @staticmethod
     def get_assessment_mark_by_id(mark_id):

@@ -32,6 +32,7 @@ import CourseManagement from "./pages/admin/CourseManagement";
 import CourseOfferingManagement from "./pages/admin/CourseOfferingManagement";
 import EnrollmentManagement from "./pages/admin/EnrollmentManagement";
 import AttendanceManagement from "./pages/admin/AttendanceManagement";
+import AssessmentManagement from "./pages/admin/AssessmentManagement";
 function App() {
   return (
     <BrowserRouter>
@@ -101,14 +102,10 @@ function App() {
               path="course-offerings"
               element={<CourseOfferingManagement />}
             />
-              <Route
-    path="enrollments"
-    element={<EnrollmentManagement />}
-  />
-  <Route
-  path="attendance"
-  element={<AttendanceManagement />}
-/>
+            <Route path="enrollments" element={<EnrollmentManagement />} />
+
+            <Route path="attendance" element={<AttendanceManagement />} />
+            <Route path="assessments" element={<AssessmentManagement />} />
           </Route>
         </Routes>
       </AuthProvider>

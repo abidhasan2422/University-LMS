@@ -46,6 +46,7 @@ class AssessmentSerializer(serializers.ModelSerializer):
 
         fields = (
             "id",
+                "title",
             "course_offering",
             "course_code",
             "course_title",
@@ -93,12 +94,14 @@ class AssessmentSerializer(serializers.ModelSerializer):
         """
 
         course_offering = attrs.get(
-            "course_offering"
-        )
+        "course_offering",
+        getattr(self.instance, "course_offering", None),
+    )
 
         assessment_type = attrs.get(
-            "assessment_type"
-        )
+        "assessment_type",
+        getattr(self.instance, "assessment_type", None),
+    )
 
         if not course_offering or not assessment_type:
             return attrs

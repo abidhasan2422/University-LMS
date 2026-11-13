@@ -602,9 +602,6 @@ class AssessmentMarkListCreateView(APIView):
             )
         )
 
-        # =====================================================
-        # INSTRUCTOR
-        # =====================================================
 
         if (
             request.user.role == "INSTRUCTOR"
