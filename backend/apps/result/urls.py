@@ -1,11 +1,12 @@
+
 from django.urls import path
 
 from .views import (
     ResultListCreateView,
     ResultDetailView,
     ResultPublishView,
-    CGPAView,
     SemesterGPAView,
+    CGPAView,
 )
 
 urlpatterns = [
@@ -29,13 +30,16 @@ urlpatterns = [
         ResultPublishView.as_view(),
         name="result-publish",
     ),
-    # GPA
+
+    # Semester GPA
     path(
         "gpa/semester/",
         SemesterGPAView.as_view(),
         name="semester-gpa",
     ),
-       path(
+
+    # CGPA
+    path(
         "gpa/cgpa/",
         CGPAView.as_view(),
         name="cgpa",
