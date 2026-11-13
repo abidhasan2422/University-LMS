@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     "apps.assessment",
     "apps.result",
     "apps.admin_dashboard",
+    "apps.reports",
     
 ]
 
