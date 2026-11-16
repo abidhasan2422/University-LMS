@@ -35,6 +35,7 @@ import AttendanceManagement from "./pages/admin/AttendanceManagement";
 import AssessmentManagement from "./pages/admin/AssessmentManagement";
 import ResultManagement from "./pages/admin/ResultManagement";
 import ReportsManagement from "./pages/admin/ReportsManagement";
+import AdminProfile from "./pages/admin/AdminProfile";
 function App() {
   return (
     <BrowserRouter>
@@ -114,6 +115,8 @@ function App() {
 />
 
 <Route path="reports" element={<ReportsManagement />} />
+<Route path="profile" element={<AdminProfile />} />
+
           </Route>
         </Routes>
       </AuthProvider>

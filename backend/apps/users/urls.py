@@ -1,7 +1,7 @@
 
 from django.urls import path
 
-from .views import (
+from apps.authentication.views import (
     ProfileView,
     ChangePasswordView,
 )

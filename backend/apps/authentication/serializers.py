@@ -215,6 +215,12 @@ class ForgotPasswordSerializer(serializers.Serializer):
 User = get_user_model()
 
 
+class LogoutSerializer(serializers.Serializer):
+    refresh = serializers.CharField(
+        required=True
+    )
+
+
 class ResetPasswordSerializer(serializers.Serializer):
     """
     Serializer for setting a new password using
