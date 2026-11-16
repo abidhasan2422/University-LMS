@@ -87,10 +87,10 @@ class LoginSerializer(serializers.Serializer):
         attrs["user"] = user
         return attrs
     
+
 class ProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-
         fields = [
             "id",
             "first_name",
@@ -101,11 +101,26 @@ class ProfileSerializer(serializers.ModelSerializer):
             "status",
             "created_at",
         ]
+        read_only_fields = [
+            "id",
+            "email",
+            "role",
+            "status",
+            "created_at",
+        ]
 
-        read_only_fields = fields
-class LogoutSerializer(serializers.Serializer):
-    refresh = serializers.CharField()
+    def validate_phone_number(self, value):
+        user = self.instance
 
+        if User.objects.filter(
+            phone_number=value
+        ).exclude(pk=user.pk).exists():
+            raise serializers.ValidationError(
+                "This phone number is already in use."
+            )
+
+        validate_phone_number(value)
+        return value
 
 
 

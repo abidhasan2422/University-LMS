@@ -16,6 +16,7 @@ from django.utils.encoding import (
 from django.utils.http import (
     urlsafe_base64_encode,
 )
+from .permissions import IsAdmin
 
 class RegisterView(APIView):
     """
@@ -75,12 +76,13 @@ class LoginView(APIView):
             status=status.HTTP_400_BAD_REQUEST,
         )
     
+
 class ProfileView(APIView):
     """
-    User Profile API
+    Admin profile retrieve and update API.
     """
 
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsAdmin]
 
     def get(self, request):
         serializer = ProfileSerializer(request.user)
@@ -89,6 +91,25 @@ class ProfileView(APIView):
             serializer.data,
             status=status.HTTP_200_OK,
         )
+
+    def patch(self, request):
+        serializer = ProfileSerializer(
+            request.user,
+            data=request.data,
+            partial=True,
+        )
+
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+
+        return Response(
+            {
+                "message": "Profile updated successfully.",
+                "user": serializer.data,
+            },
+            status=status.HTTP_200_OK,
+        )
+
 class LogoutView(APIView):
     """
     Logout API
@@ -128,7 +149,7 @@ class ChangePasswordView(APIView):
         Admin
     """
 
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsAdmin]
 
     def post(self, request):
 
