@@ -36,6 +36,7 @@ import AssessmentManagement from "./pages/admin/AssessmentManagement";
 import ResultManagement from "./pages/admin/ResultManagement";
 import ReportsManagement from "./pages/admin/ReportsManagement";
 import AdminProfile from "./pages/admin/AdminProfile";
+import ChangePassword from "./pages/admin/ChangePassword";
 function App() {
   return (
     <BrowserRouter>
@@ -116,6 +117,10 @@ function App() {
 
 <Route path="reports" element={<ReportsManagement />} />
 <Route path="profile" element={<AdminProfile />} />
+<Route
+    path="change-password"
+    element={<ChangePassword />}
+/>
 
           </Route>
         </Routes>
